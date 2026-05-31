@@ -26,6 +26,10 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 const ENABLE_MOCKS = import.meta.env.VITE_ENABLE_MOCKS === 'true'
 const useMockApi = () => !API_BASE_URL && ENABLE_MOCKS
 
+export function isMockApiEnabled() {
+  return useMockApi()
+}
+
 export function isRemoteApiEnabled() {
   return Boolean(API_BASE_URL)
 }

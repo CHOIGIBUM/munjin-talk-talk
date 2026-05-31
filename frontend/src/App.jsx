@@ -6,7 +6,7 @@ import DoctorView from './components/doctor/DoctorView.jsx'
 import DoctorQueueView from './components/doctor/DoctorQueueView.jsx'
 import PatientGuideScreen from './components/patient/PatientGuideScreen.jsx'
 import ReceptionView from './components/staff/ReceptionView.jsx'
-import { getDoctorQueue } from './services/api.js'
+import { getDoctorQueue, isMockApiEnabled } from './services/api.js'
 
 // v4 변경:
 // - 우측 상단에 시연용 Flag 메뉴 (드롭다운)
@@ -16,6 +16,7 @@ import { getDoctorQueue } from './services/api.js'
 export default function App() {
   const [sessions, setSessions] = useState([])
   const location = useLocation()
+  const mockMode = isMockApiEnabled()
 
   useEffect(() => {
     const refresh = async () => setSessions(await getDoctorQueue())
@@ -66,7 +67,7 @@ export default function App() {
 
       <main className="app-stage">
         <Routes>
-          <Route path="/" element={<PatientFlowWithDemoMenu />} />
+          <Route path="/" element={mockMode ? <PatientFlowWithDemoMenu /> : <ReceptionView />} />
           <Route path="/staff" element={<ReceptionView />} />
           <Route path="/patient/:sessionId" element={<PatientKioskView />} />
           <Route path="/doctor/queue" element={<DoctorQueueView />} />
