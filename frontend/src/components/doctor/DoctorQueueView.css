@@ -1,0 +1,147 @@
+.doctor-queue-page {
+  width: min(1040px, calc(100vw - 40px));
+  margin: 0 auto;
+}
+.dq-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.dq-header p {
+  margin: 0 0 4px;
+  color: var(--teal2);
+  font-size: 12px;
+  font-weight: 1000;
+}
+.dq-header h1 {
+  margin: 0;
+  color: var(--navy);
+  font-size: 28px;
+  line-height: 1.2;
+}
+.dq-header a {
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 13px;
+  border-radius: 7px;
+  background: white;
+  border: 1px solid var(--line);
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 1000;
+  text-decoration: none;
+}
+.dq-board {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.dq-row {
+  display: grid;
+  grid-template-columns: 54px 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow3);
+}
+.dq-row.risk {
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+.dq-num {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: var(--navy);
+  color: white;
+  font-size: 18px;
+  font-weight: 1000;
+}
+.dq-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dq-name strong {
+  color: var(--navy);
+  font-size: 17px;
+}
+.dq-name span,
+.dq-name mark {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-size: 11px;
+  font-weight: 1000;
+}
+.dq-name mark {
+  background: #ffedd5;
+  color: #c2410c;
+}
+.dq-main p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+.dq-status {
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 1000;
+  white-space: nowrap;
+}
+.dq-status.completed,
+.dq-status.reviewed {
+  background: #dcfce7;
+  color: #15803d;
+}
+.dq-status.needs_priority,
+.dq-status.staff_help {
+  background: #ffedd5;
+  color: #c2410c;
+}
+.dq-actions {
+  display: flex;
+  gap: 7px;
+}
+.dq-actions a {
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 6px;
+  background: var(--navy);
+  color: white;
+  font-size: 12px;
+  font-weight: 1000;
+  text-decoration: none;
+}
+.dq-actions a + a {
+  background: white;
+  color: var(--navy);
+  border: 1px solid var(--line2);
+}
+@media (max-width: 800px) {
+  .doctor-queue-page {
+    width: min(100vw - 24px, 680px);
+    padding-top: 54px;
+  }
+  .dq-row {
+    grid-template-columns: 48px 1fr;
+  }
+  .dq-status,
+  .dq-actions {
+    grid-column: 2;
+  }
+}

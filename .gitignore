@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Backend generated files
+backend/.env
+backend/serverless/.aws-sam/
+backend/serverless/samconfig.toml
+
+# Frontend generated files
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Local env and OS files
+.env
+.env.local
+.DS_Store
+Thumbs.db
+
+# Deployment archives
+*.zip

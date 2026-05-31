@@ -1,0 +1,32 @@
+.kiosk-missing {
+  width: min(560px, calc(100vw - 32px));
+  padding: 30px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow2);
+  text-align: center;
+}
+.kiosk-missing h1 {
+  margin: 0 0 10px;
+  color: var(--navy);
+  font-size: 24px;
+}
+.kiosk-missing p {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-weight: 800;
+}
+.kiosk-missing a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 7px;
+  background: var(--navy);
+  color: white;
+  font-size: 13px;
+  font-weight: 1000;
+  text-decoration: none;
+}

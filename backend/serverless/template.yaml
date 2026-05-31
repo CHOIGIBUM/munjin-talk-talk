@@ -1,0 +1,143 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: MunjinTokTok MVP serverless backend
+
+Parameters:
+  SessionsTableName:
+    Type: String
+    Default: MunjinSessions
+    Description: Existing DynamoDB table name. Partition key must be session_id.
+  ArtifactsBucketName:
+    Type: String
+    Description: Existing S3 bucket for uploaded audio and transcript artifacts.
+  LambdaRoleArn:
+    Type: String
+    Description: Existing IAM role ARN for the Lambda function.
+  CustomVocabularyName:
+    Type: String
+    Default: ''
+    Description: Optional Amazon Transcribe custom vocabulary name.
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 60
+    MemorySize: 512
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        SESSIONS_TABLE: !Ref SessionsTableName
+        ARTIFACT_BUCKET: !Ref ArtifactsBucketName
+        CUSTOM_VOCABULARY: !Ref CustomVocabularyName
+        USE_BEDROCK_LLM: 'true'
+        ALLOW_RULE_FALLBACK: 'false'
+        ENABLE_BEDROCK_REVIEW: 'true'
+        ENABLE_BEDROCK_GUIDE: 'true'
+        STRONG_MODEL_ID: apac.amazon.nova-pro-v1:0
+        LIGHT_MODEL_ID: apac.amazon.nova-lite-v1:0
+        REVIEWER_MODEL_ID: apac.amazon.nova-pro-v1:0
+        GUIDE_MODEL_ID: apac.amazon.nova-lite-v1:0
+        MAX_LLM_TOKENS: '1600'
+        REVIEW_MAX_TOKENS: '900'
+        GUIDE_MAX_TOKENS: '900'
+
+Resources:
+  MunjinHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - '*'
+        AllowHeaders:
+          - Content-Type
+          - Authorization
+        AllowMethods:
+          - GET
+          - POST
+          - OPTIONS
+
+  MunjinApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: handler.handler
+      Role: !Ref LambdaRoleArn
+      Events:
+        CreateSession:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /sessions
+            Method: POST
+        GetSession:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /sessions/{session_id}
+            Method: GET
+        StaffHelp:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /sessions/{session_id}/staff-help
+            Method: POST
+        UploadUrl:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /upload-url
+            Method: POST
+        TranscribeResult:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /transcribe-result
+            Method: GET
+        Extract:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /extract
+            Method: POST
+        Match:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /match
+            Method: POST
+        Validate:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /validate
+            Method: POST
+        DoctorQueue:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /doctor/queue
+            Method: GET
+        OnePager:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /onepager/{session_id}
+            Method: GET
+        DoctorResponse:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /doctor-response
+            Method: POST
+        Guide:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /guide/{session_id}
+            Method: GET
+
+Outputs:
+  ApiEndpoint:
+    Description: HTTP API endpoint for VITE_API_BASE_URL
+    Value: !Sub 'https://${MunjinHttpApi}.execute-api.${AWS::Region}.amazonaws.com'
