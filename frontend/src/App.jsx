@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Routes, Route, NavLink } from 'react-router-dom'
+import { Link, Routes, Route, useLocation } from 'react-router-dom'
 import PatientFlow from './components/patient/PatientFlow.jsx'
 import PatientKioskView from './components/patient/PatientKioskView.jsx'
 import DoctorView from './components/doctor/DoctorView.jsx'
@@ -15,6 +15,7 @@ import { getDoctorQueue } from './services/api.js'
 
 export default function App() {
   const [sessions, setSessions] = useState([])
+  const location = useLocation()
 
   useEffect(() => {
     const refresh = async () => setSessions(await getDoctorQueue())
@@ -42,24 +43,30 @@ export default function App() {
     }
   }, [sessions])
 
+  const path = location.pathname
+  const navClass = (active) => (active ? 'active' : '')
+
   return (
     <>
       <nav className="mode-switcher">
-        <NavLink to="/staff" className={({ isActive }) => (isActive ? 'active' : '')}>
+        <Link to="/staff" className={navClass(path === '/staff')}>
           직원 접수
-        </NavLink>
-        <NavLink to={navTargets.patient} className={({ isActive }) => (isActive ? 'active' : '')}>
+        </Link>
+        <Link to={navTargets.patient} className={navClass(path.startsWith('/patient/'))}>
           환자 태블릿
-        </NavLink>
-        <NavLink to="/doctor/queue" className={({ isActive }) => (isActive ? 'active' : '')}>
+        </Link>
+        <Link to="/doctor/queue" className={navClass(path === '/doctor/queue')}>
           의사 대기열
-        </NavLink>
-        <NavLink to={navTargets.doctor} className={({ isActive }) => (isActive ? 'active' : '')}>
+        </Link>
+        <Link
+          to={navTargets.doctor}
+          className={navClass(path.startsWith('/doctor/') && path !== '/doctor/queue')}
+        >
           원페이퍼
-        </NavLink>
-        <NavLink to={navTargets.guide} className={({ isActive }) => (isActive ? 'active' : '')}>
+        </Link>
+        <Link to={navTargets.guide} className={navClass(path.startsWith('/guide'))}>
           안내문 출력
-        </NavLink>
+        </Link>
       </nav>
 
       <main className="app-stage">
