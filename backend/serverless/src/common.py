@@ -1943,22 +1943,14 @@ def save_doctor_response(body):
 
 
 def generate_patient_guide(session, answers, patient_instruction):
-    if USE_BEDROCK_LLM and ENABLE_BEDROCK_GUIDE:
-        try:
-            return generate_patient_guide_bedrock(session, answers, patient_instruction)
-        except Exception:
-            pass
+    # Patient-facing guide must preserve the clinician's answer.  Bedrock can be
+    # used later for optional rewriting, but the MVP should never replace a
+    # concrete doctor answer with a generic placeholder.
     return {
         "generated_at": now_iso(),
-        "items": [
-            {
-                "question": ans.get("question_summary") or ans.get("question") or "환자 질문",
-                "answer_simple": split_answer(ans.get("answer_text") or ans.get("answer") or ""),
-                "tts_emphasis_words": [],
-            }
-            for ans in answers
-        ],
+        "items": doctor_answer_guide_items(answers),
         "delivery_options": ["screen", "tts", "print"],
+        "generation_method": "doctor_answer_direct",
     }
 
 
@@ -2019,6 +2011,27 @@ Data:
 def split_answer(text):
     parts = [p.strip() for p in re.split(r"[.\n]", text or "") if p.strip()]
     return parts or ["진료실에서 안내받은 내용을 따라 주세요."]
+
+
+def doctor_answer_guide_items(answers):
+    items = []
+    for ans in answers or []:
+        answer_text = ans.get("answer_text") or ans.get("answer") or ""
+        answer_simple = split_answer(answer_text)
+        items.append({
+            "question": ans.get("question_summary") or ans.get("question") or "환자 질문",
+            "answer_simple": answer_simple,
+            "tts_emphasis_words": extract_emphasis_words(answer_text),
+        })
+    return items
+
+
+def extract_emphasis_words(text):
+    words = []
+    for token in ("복용", "약", "영양제", "검토", "중단", "재내원", "검사", "X-ray"):
+        if token in str(text or ""):
+            words.append(token)
+    return unique(words)[:5]
 
 
 def default_guide_items(session):
