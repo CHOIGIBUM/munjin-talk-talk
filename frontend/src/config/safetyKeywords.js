@@ -16,6 +16,8 @@ export const SAFETY_KEYWORDS = [
   // 심한 호흡곤란
   { keyword: '숨을 못 쉬', category: 'dyspnea', severity: 'high' },
   { keyword: '숨이 막', category: 'dyspnea', severity: 'high' },
+  { keyword: '숨이 너무 차', category: 'dyspnea', severity: 'high' },
+  { keyword: '숨이 많이 차', category: 'dyspnea', severity: 'high' },
   { keyword: '말을 못 하', category: 'dyspnea', severity: 'high' },
   { keyword: '숨이 차서', category: 'dyspnea', severity: 'medium' },
 
@@ -26,6 +28,8 @@ export const SAFETY_KEYWORDS = [
 
   // 흉통 (심혈관)
   { keyword: '가슴이 너무 아', category: 'chest_pain', severity: 'high' },
+  { keyword: '가슴이 아', category: 'chest_pain', severity: 'high' },
+  { keyword: '가슴이 답답', category: 'chest_pain', severity: 'high' },
   { keyword: '심장이 조여', category: 'chest_pain', severity: 'high' }
 ]
 

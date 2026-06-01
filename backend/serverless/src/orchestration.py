@@ -13,6 +13,7 @@ constant mirrors the same node/edge shape that can later be moved into
 LangGraph without changing the business modules.
 """
 
+from clinical_terms import find_safety_flag
 from extraction import extract_question
 from onepager import validate_and_save
 from retrieval import match_slots
@@ -56,6 +57,7 @@ def process_answer(body):
     if not transcript:
         return None, response(400, {"error": "empty_transcript"})
 
+    preliminary_safety_flag = find_safety_flag(transcript, [])
     extracted = extract_question({
         **body,
         "session_id": session_id,
@@ -65,6 +67,17 @@ def process_answer(body):
         "transcript": transcript,
     })
     if extracted.get("validator_passed") is False or extracted.get("method") in {"bedrock_error", "bedrock_disabled"}:
+        if preliminary_safety_flag:
+            return save_safety_only_answer(
+                body,
+                session_id,
+                question_id,
+                question_type,
+                visit_type,
+                transcript,
+                extracted,
+                preliminary_safety_flag,
+            )
         return None, response(422, {
             "error": "semantic_extraction_failed",
             "message": extracted.get("error") or "LLM schema/quote validation failed after retries.",
@@ -108,5 +121,62 @@ def process_answer(body):
             "graph": "serverless_pipeline_v1",
             "nodes": PIPELINE_GRAPH["nodes"],
             "question_type": question_type,
+        },
+    }, None
+
+
+def save_safety_only_answer(body, session_id, question_id, question_type, visit_type, transcript, extracted, safety_flag):
+    """Persist an urgent safety signal even when semantic extraction fails.
+
+    Safety flags are deterministic guardrails, not a substitute for LLM
+    semantic extraction. If the LLM schema/quote loop fails on a red-flag
+    utterance, the intake must still be paused and visible to staff instead of
+    disappearing behind a 422 response.
+    """
+    structured = {
+        "standardized_text": transcript,
+        "clinical_clues": [],
+        "questions": [],
+        "unresolved_items": [
+            {
+                "source_quote": safety_flag.get("matched_pattern") or transcript,
+                "summary": "안전 플래그 감지 후 LLM 의미 추출 검증 실패",
+            }
+        ],
+    }
+    validated, err = validate_and_save({
+        **body,
+        "session_id": session_id,
+        "question_id": question_id,
+        "question_type": question_type,
+        "visit_type": visit_type,
+        "transcript": transcript,
+        "spans": [],
+        "matched_slots": [],
+        "structured": structured,
+        "method": extracted.get("method") or "safety_guardrail_only",
+        "llm_meta": {
+            **(extracted.get("llm_meta") or {}),
+            "semantic_extraction_failed": True,
+            "safety_saved_without_extraction": True,
+        },
+    })
+    if err:
+        return None, err
+    return {
+        "spans": [],
+        "structured": structured,
+        "matched_slots": [],
+        "unmatched_spans": [],
+        "validator_passed": True,
+        "semantic_extraction_failed": True,
+        "safety_flag": validated.get("safety_flag") or safety_flag,
+        "errors": ["semantic_extraction_failed_but_safety_saved"],
+        "onepager_ready": validated.get("onepager_ready", False),
+        "orchestration": {
+            "graph": "serverless_pipeline_v1",
+            "nodes": PIPELINE_GRAPH["nodes"],
+            "question_type": question_type,
+            "safety_guardrail": "saved_before_llm_failure_response",
         },
     }, None
