@@ -4,11 +4,16 @@
 이 모듈은 세션 생성, 조회, 업데이트, 프론트 공개용 변환만 담당합니다.
 """
 
-import os
 import time
+import uuid
 
 from settings import table
 from utils import calculate_age, ddb_value, mask_name, normalize_visit_type, now_iso
+
+
+def make_session_id():
+    """새 문진 세션의 고유 ID를 만듭니다."""
+    return f"s_{int(time.time())}_{uuid.uuid4().hex[:8]}"
 
 def get_session(session_id):
     """session_id로 DynamoDB item을 조회합니다."""
