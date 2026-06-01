@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import TabletFrame from '../tablet/TabletFrame.jsx'
 import VisitTypeScreen from './VisitTypeScreen.jsx'
 import VoiceScreen from './VoiceScreen.jsx'
+import ConfirmTranscriptScreen from './ConfirmTranscriptScreen.jsx'
 import SafetyAlertScreen from './SafetyAlertScreen.jsx'
 import StaffCallScreen from './StaffCallScreen.jsx'
 import DoneScreen from './DoneScreen.jsx'
@@ -28,6 +29,7 @@ const EMPTY_PATIENT = {
 const STEPS = {
   VISIT_TYPE: 'visit_type',
   Q_VOICE: 'q_voice',
+  Q_CONFIRM: 'q_confirm',
   SAFETY_ALERT: 'safety_alert',
   STAFF_CALL: 'staff_call',
   DONE: 'done',
@@ -136,14 +138,30 @@ export default function PatientFlow({
     })
   }, [currentQuestion, session.sessionId, visitType])
 
-  const handleVoiceFinish = useCallback(async (sttText) => {
+  const handleVoiceFinish = useCallback((sttText) => {
     const answerText = String(sttText || '').trim()
+    if (!answerText) {
+      setTranscript('음성 인식 결과가 비어 있습니다. 다시 말씀해 주세요.')
+      return
+    }
     setTranscript(answerText)
+    setStep(STEPS.Q_CONFIRM)
+  }, [])
+
+  const handleRetryTranscript = useCallback(() => {
+    setTranscript('')
+    setStep(STEPS.Q_VOICE)
+  }, [])
+
+  const handleConfirmTranscript = useCallback(async () => {
+    const answerText = String(transcript || '').trim()
+    if (!answerText || answerText.includes('음성 인식 결과가 비어 있습니다')) {
+      setStep(STEPS.Q_VOICE)
+      return
+    }
     setIsTranscribing(true)
 
     try {
-      if (!answerText) throw new Error('empty_transcript')
-
       const safety = detectSafetyKeyword(answerText)
       if (safety && safety.severity === 'high') {
         setSafetyKeyword(safety)
@@ -169,16 +187,12 @@ export default function PatientFlow({
       advanceWithConfirmedAnswer(result, answerText)
     } catch (err) {
       console.error('STT/process failed:', err)
-      setTranscript(
-        err?.message === 'empty_transcript'
-          ? '음성 인식 결과가 비어 있습니다. 다시 말씀해 주세요.'
-          : '문진 처리 중 오류가 발생했습니다. 다시 말씀해 주세요.'
-      )
+      setTranscript('문진 처리 중 오류가 발생했습니다. 다시 말씀해 주세요.')
       setStep(STEPS.Q_VOICE)
     } finally {
       setIsTranscribing(false)
     }
-  }, [advanceWithConfirmedAnswer, currentQuestion, onStaffCallRequest, runBackendPipeline, session.sessionId])
+  }, [advanceWithConfirmedAnswer, currentQuestion, onStaffCallRequest, runBackendPipeline, session.sessionId, transcript])
 
   const handleSafetyContinue = useCallback(async () => {
     const answerText = transcript.trim()
@@ -275,6 +289,21 @@ export default function PatientFlow({
             partialText={transcript}
             isProcessing={isTranscribing}
             onFinish={handleVoiceFinish}
+            onStaffCall={handleStaffCall}
+          />
+        )
+
+      case STEPS.Q_CONFIRM:
+        return (
+          <ConfirmTranscriptScreen
+            patient={displayPatient}
+            visitType={visitType}
+            question={currentQuestion}
+            stepIndex={questionIndex + 1}
+            transcript={transcript}
+            isProcessing={isTranscribing}
+            onConfirm={handleConfirmTranscript}
+            onRetry={handleRetryTranscript}
             onStaffCall={handleStaffCall}
           />
         )

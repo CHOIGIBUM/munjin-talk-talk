@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import ScreenHeader from '../tablet/ScreenHeader.jsx'
 import { useStreamingTranscribe } from '../../hooks/useStreamingTranscribe.js'
 
@@ -33,6 +34,13 @@ export default function VoiceScreen({
     visitType,
   })
 
+  useEffect(() => {
+    const timer = setTimeout(() => start(), 400)
+    return () => clearTimeout(timer)
+    // 질문이 바뀌면 새 STT 세션을 준비합니다. 자동 시작이 막히면 마이크 버튼으로 다시 시작할 수 있습니다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [question.id])
+
   const handleEnd = async () => {
     const finalText = await stop()
     onFinish(finalText)
@@ -44,10 +52,10 @@ export default function VoiceScreen({
   }
 
   const displayTranscript = error
-    ? '마이크 연결이 안정적이지 않습니다. 마이크 버튼을 다시 눌러 말씀해 주세요.'
-    : transcript || partialText || (isRecording
-      ? '말씀하신 내용이 여기에 바로 표시됩니다.'
-      : '마이크 버튼을 누른 뒤 말씀해 주세요.')
+    ? '마이크 버튼을 다시 눌러 말씀해 주세요.'
+    : isRecording
+      ? (transcript || '듣고 있어요. 한 문장으로 말씀해 주세요.')
+      : (transcript || partialText || '말씀하실 준비가 되면 마이크를 눌러 주세요.')
 
   return (
     <>
@@ -70,8 +78,8 @@ export default function VoiceScreen({
           <b>예시</b>{question.example}
         </div>
 
-        <div className="transcript-box transcript-box-v4">
-          <div className="transcript-text transcript-text-large">
+        <div className="transcript-box transcript-box-v4 voice-live-box">
+          <div className="transcript-text transcript-text-large voice-live-line">
             {displayTranscript}
           </div>
         </div>

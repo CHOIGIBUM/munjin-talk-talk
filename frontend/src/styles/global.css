@@ -989,6 +989,41 @@ body {
 }
 .confirm-v4:hover { transform: translateY(-1px); }
 
+/* 음성 입력 화면: 한 줄 미리보기 + 마이크 영역이 footer에 가려지지 않도록 보정 */
+.voice-body .voice-live-box {
+  width: calc(100% - 28px);
+  max-width: 560px;
+  min-height: 76px;
+  margin: 6px auto 6px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.voice-body .voice-live-line {
+  width: 100%;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 22px !important;
+  line-height: 1.25 !important;
+}
+.voice-body .voice-mic-wrap {
+  flex: 0 0 auto !important;
+  min-height: 142px !important;
+  justify-content: flex-start !important;
+  margin: 10px 0 0 !important;
+}
+.voice-body .voice-mic {
+  width: 84px;
+  height: 84px;
+}
+.verify-footer-btn {
+  min-height: 52px;
+  margin: 0;
+}
+
 /* ─── DoneScreen v4 ─── */
 .done-body-v4 {
   text-align: center;

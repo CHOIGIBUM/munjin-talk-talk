@@ -45,7 +45,9 @@ export async function openTranscribeStream({
   const source = audioContext.createMediaStreamSource(stream)
   const processor = audioContext.createScriptProcessor(4096, 1, 1)
   const silentGain = audioContext.createGain()
-  silentGain.gain.value = 0
+  // 완전한 0 gain은 일부 브라우저에서 오디오 그래프가 쉬어버릴 수 있어
+  // 들리지 않는 수준의 아주 작은 gain으로 그래프를 계속 당겨옵니다.
+  silentGain.gain.value = 0.00001
 
   const finalSegments = []
   let latestText = ''
@@ -122,6 +124,7 @@ export async function openTranscribeStream({
   source.connect(processor)
   processor.connect(silentGain)
   silentGain.connect(audioContext.destination)
+  await resumeAudioContext(audioContext)
   started = true
   onStatus?.('recording')
 
