@@ -1943,14 +1943,25 @@ def save_doctor_response(body):
 
 
 def generate_patient_guide(session, answers, patient_instruction):
-    # Patient-facing guide must preserve the clinician's answer.  Bedrock can be
-    # used later for optional rewriting, but the MVP should never replace a
-    # concrete doctor answer with a generic placeholder.
+    if USE_BEDROCK_LLM and ENABLE_BEDROCK_GUIDE:
+        try:
+            guide = generate_patient_guide_bedrock(session, answers, patient_instruction)
+            if is_patient_guide_usable(guide, answers):
+                guide["generation_method"] = "bedrock_nova_lite_grounded"
+                return guide
+        except Exception as exc:
+            guide_error = str(exc)
+        else:
+            guide_error = "bedrock_output_failed_validation"
+    else:
+        guide_error = "bedrock_guide_disabled"
+
     return {
         "generated_at": now_iso(),
-        "items": doctor_answer_guide_items(answers),
+        "items": doctor_answer_guide_items(answers, patient_friendly=True),
         "delivery_options": ["screen", "tts", "print"],
-        "generation_method": "doctor_answer_direct",
+        "generation_method": "deterministic_patient_friendly_fallback",
+        "guide_warning": guide_error,
     }
 
 
@@ -1959,6 +1970,7 @@ def generate_patient_guide_bedrock(session, answers, patient_instruction):
         "patient": session.get("patient", {}),
         "onepager": session.get("onepager", {}),
         "doctor_answers": answers,
+        "doctor_patient_instruction_displayed_separately": patient_instruction,
     }
     prompt = f"""
 You are a Korean patient instruction writer for older adults after a clinic visit.
@@ -1966,8 +1978,12 @@ Convert doctor's answers into easy Korean guide items.
 
 Rules:
 - Do not add medical facts not present in doctor_answers or notes.
-- Keep each bullet short and clear.
+- Do not copy the doctor's answer verbatim. Rewrite it into polite, easy Korean for an older patient.
+- Preserve the doctor's meaning, permission, warnings, timing, and follow-up conditions.
+- Keep each bullet short and clear. Prefer 1-3 sentences per question.
 - Avoid difficult medical terms unless the doctor used them.
+- Do not output generic placeholders like "진료실에서 안내받은 내용을 따라 주세요."
+- The field doctor_patient_instruction_displayed_separately is shown as a separate blue "선생님 강조사항" card. Do not duplicate it inside question answer items.
 - Return JSON only.
 
 Schema:
@@ -2013,17 +2029,71 @@ def split_answer(text):
     return parts or ["진료실에서 안내받은 내용을 따라 주세요."]
 
 
-def doctor_answer_guide_items(answers):
+def doctor_answer_guide_items(answers, patient_friendly=False):
     items = []
     for ans in answers or []:
         answer_text = ans.get("answer_text") or ans.get("answer") or ""
-        answer_simple = split_answer(answer_text)
+        if patient_friendly:
+            answer_simple = rewrite_answer_for_patient(answer_text)
+        else:
+            answer_simple = split_answer(answer_text)
         items.append({
             "question": ans.get("question_summary") or ans.get("question") or "환자 질문",
             "answer_simple": answer_simple,
             "tts_emphasis_words": extract_emphasis_words(answer_text),
         })
     return items
+
+
+def rewrite_answer_for_patient(text):
+    if not normalize_text(text):
+        return ["진료실에서 안내받은 내용을 확인해 주세요."]
+    sentences = split_answer(text)
+    out = []
+    for sentence in sentences:
+        s = normalize_text(sentence)
+        s = s.replace("추후", "나중에")
+        s = s.replace("검토 필요", "다시 확인이 필요합니다")
+        s = s.replace("검토", "확인")
+        if "복용 가능" in s or "먹어도" in s or "드셔도" in s:
+            if "문제 없이" in s:
+                s = "같이 드셔도 괜찮습니다"
+            else:
+                s = s.replace("복용 가능", "드셔도 됩니다")
+        if "약물 추가" in s or "다른 약" in s:
+            s = "나중에 다른 약이 추가되면 병원이나 약국에 다시 확인해 주세요"
+        if not re.search(r"(요|다|세요|습니다)$", s):
+            s += "습니다"
+        out.append(s)
+    return unique(out) or ["진료실에서 안내받은 내용을 확인해 주세요."]
+
+
+def is_patient_guide_usable(guide, answers):
+    items = guide.get("items") if isinstance(guide, dict) else []
+    if not isinstance(items, list) or not items:
+        return False
+    generic_patterns = [
+        "진료실에서 안내받은 내용을 따라 주세요",
+        "오늘 진료에서 안내받은 내용을 확인해 주세요",
+        "의사 선생님의 안내를 따라 주세요",
+    ]
+    answer_texts = [normalize_text(ans.get("answer_text") or ans.get("answer") or "") for ans in (answers or [])]
+    usable_count = 0
+    for idx, item in enumerate(items):
+        answers_simple = item.get("answer_simple") if isinstance(item, dict) else []
+        if not isinstance(answers_simple, list):
+            continue
+        cleaned = [clean_quote(x) for x in answers_simple if clean_quote(x)]
+        if not cleaned:
+            continue
+        joined = " ".join(cleaned)
+        if any(pattern in joined for pattern in generic_patterns):
+            continue
+        source = answer_texts[idx] if idx < len(answer_texts) else " ".join(answer_texts)
+        if source and compact_ir(joined) == compact_ir(" ".join(split_answer(source))):
+            continue
+        usable_count += 1
+    return usable_count > 0
 
 
 def extract_emphasis_words(text):
