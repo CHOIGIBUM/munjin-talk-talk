@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react'
 import ScreenHeader from '../tablet/ScreenHeader.jsx'
 
-// 초진/재진을 환자가 최종 확인하는 첫 화면입니다.
-// 접수처에서 선택한 값이 있으면 기본 선택값으로 내려오지만, 환자가 수정할 수 있습니다.
-
 // v5 변경 (v3 디자인 복구):
 // - v3의 vt-* 클래스 그대로 유지 (디자인 망가지지 않게)
 // - 실시간 시계만 추가 (useLiveClock)
@@ -53,7 +50,6 @@ export default function VisitTypeScreen({ patient, defaultVisitType = null, onCo
   const [selected, setSelected] = useState(defaultVisitType)
   const clock = useLiveClock()
 
-  // 접수처에서 세션 정보를 다시 불러와 기본값이 바뀌면 선택 상태도 맞춥니다.
   useEffect(() => {
     setSelected(defaultVisitType)
   }, [defaultVisitType])

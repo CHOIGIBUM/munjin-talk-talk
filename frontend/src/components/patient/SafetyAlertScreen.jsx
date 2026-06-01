@@ -1,7 +1,5 @@
 import ScreenHeader from '../tablet/ScreenHeader.jsx'
 
-// 객혈 등 우선 확인이 필요한 표현이 감지되었을 때 보여주는 안심 안내 화면입니다.
-// 환자를 놀라게 하지 않으면서 직원 확인 또는 문진 종료를 선택할 수 있게 합니다.
 const AlertIcon = () => (
   <svg viewBox="0 0 64 64" fill="none">
     <circle cx="32" cy="32" r="30" fill="#DBEAFE"/>

@@ -2,8 +2,6 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: MunjinTokTok MVP serverless backend
 
-# SAM/CloudFormation 배포 템플릿입니다.
-# 프론트는 Amplify가 담당하고, 이 템플릿은 API Gateway + Lambda 연결과 환경 변수를 관리합니다.
 Parameters:
   SessionsTableName:
     Type: String
@@ -11,7 +9,7 @@ Parameters:
     Description: Existing DynamoDB table name. Partition key must be session_id.
   ArtifactsBucketName:
     Type: String
-    Description: Existing S3 bucket for deployment/transient artifacts. Patient audio is not uploaded.
+    Description: Existing S3 bucket for uploaded audio and transcript artifacts.
   LambdaRoleArn:
     Type: String
     Description: Existing IAM role ARN for the Lambda function.
@@ -29,7 +27,6 @@ Globals:
       - x86_64
     Environment:
       Variables:
-        # 세션/STT/LLM/IR 설정은 Lambda 코드가 settings.py에서 읽습니다.
         SESSIONS_TABLE: !Ref SessionsTableName
         ARTIFACT_BUCKET: !Ref ArtifactsBucketName
         CUSTOM_VOCABULARY: !Ref CustomVocabularyName
@@ -44,8 +41,6 @@ Globals:
         MAX_LLM_TOKENS: '1600'
         REVIEW_MAX_TOKENS: '900'
         GUIDE_MAX_TOKENS: '900'
-        EXTRACTION_RETRY_ATTEMPTS: '3'
-        REVIEW_RETRY_ATTEMPTS: '2'
         USE_TITAN_EMBEDDING: 'true'
         EMBEDDING_MODEL_ID: amazon.titan-embed-text-v2:0
         EMBEDDING_DIMENSIONS: '512'
@@ -54,13 +49,9 @@ Globals:
         HYBRID_ACCEPT_THRESHOLD: '0.18'
         HYBRID_BM25_WEIGHT: '0.35'
         HYBRID_VECTOR_WEIGHT: '0.65'
-        HYBRID_MIN_VECTOR_SCORE: '0.12'
-        HYBRID_MIN_BM25_SCORE: '0.04'
-        HYBRID_MIN_LABEL_SCORE: '0.55'
         HYBRID_PRECOMPUTE_DOC_EMBEDDINGS: 'false'
 
 Resources:
-  # 프론트엔드가 호출하는 HTTP API Gateway입니다.
   MunjinHttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
@@ -75,7 +66,6 @@ Resources:
           - POST
           - OPTIONS
 
-  # 모든 REST endpoint를 하나의 Lambda handler.py로 라우팅합니다.
   MunjinApiFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -113,18 +103,6 @@ Resources:
             ApiId: !Ref MunjinHttpApi
             Path: /transcribe-result
             Method: GET
-        TranscribeStreamUrl:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref MunjinHttpApi
-            Path: /transcribe-stream-url
-            Method: POST
-        ProcessAnswer:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref MunjinHttpApi
-            Path: /process-answer
-            Method: POST
         Extract:
           Type: HttpApi
           Properties:

@@ -1,5 +1,3 @@
-// 로컬 목업 모드 전용 세션 저장소입니다.
-// 운영 배포에서는 DynamoDB가 세션 저장소이고, 이 파일은 VITE_ENABLE_MOCKS=true일 때만 쓰입니다.
 const STORAGE_KEY = 'munjin_demo_sessions_v1'
 
 const nowIso = () => new Date().toISOString()
@@ -86,7 +84,6 @@ export function getDemoSession(sessionId) {
   return listDemoSessions().find((session) => session.sessionId === sessionId) || null
 }
 
-// 접수처 목업 세션을 생성하고 localStorage에 저장합니다.
 export function createDemoSession(input) {
   const sessions = readSessions()
   const queueNumber = Math.max(10, ...sessions.map((s) => Number(s.queueNumber) || 0)) + 1
@@ -130,7 +127,6 @@ export function updateDemoSession(sessionId, patch) {
   return updated.find((session) => session.sessionId === sessionId) || null
 }
 
-// 태블릿에서 확정한 답변을 목업 세션 responses에 저장합니다.
 export function saveTranscriptAnswer(sessionId, answer) {
   const session = getDemoSession(sessionId)
   if (!session) return null
@@ -173,7 +169,6 @@ export function saveDoctorResponse(sessionId, payload) {
   })
 }
 
-// 목업 원페이퍼 JSON을 실제 백엔드 응답과 비슷한 구조로 만들어 UI 테스트에 사용합니다.
 export function getDemoOnePager(sessionId) {
   const session = getDemoSession(sessionId)
   if (!session) return null
@@ -248,7 +243,6 @@ export function getDemoOnePager(sessionId) {
   }
 }
 
-// 목업 환자 안내문 JSON입니다.
 export function getDemoGuide(sessionId) {
   const session = getDemoSession(sessionId)
   const patient = session?.patient || DEMO_SESSIONS[0].patient

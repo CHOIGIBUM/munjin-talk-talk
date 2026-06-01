@@ -3,8 +3,6 @@
 // - 우측 visit 태그 (선택)
 // - 진행 바 (6세그먼트)
 
-// 모든 태블릿 문진 화면 상단에서 공통으로 쓰는 헤더입니다.
-// 환자 식별 정보, 초진/재진 태그, 진행률 막대를 한 곳에서 관리합니다.
 import logoUrl from '../../assets/munjin-logo.svg'
 
 export default function ScreenHeader({

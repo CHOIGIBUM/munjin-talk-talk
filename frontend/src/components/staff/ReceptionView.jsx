@@ -1,19 +1,42 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { createIntakeSession, getDoctorQueue, getIntakeSession, processTranscript } from '../../services/api.js'
 import { QUESTIONS } from '../../config/questions.js'
 import logoUrl from '../../assets/munjin-logo.svg'
-import ReceptionForm from './ReceptionForm.jsx'
-import ReceptionManualInput from './ReceptionManualInput.jsx'
-import ReceptionSessionList from './ReceptionSessionList.jsx'
-import { INITIAL_RECEPTION_FORM } from './receptionUtils.js'
 import './ReceptionView.css'
 
-// 접수처 화면의 controller 역할만 담당합니다.
-// 실제 폼/목록/직원 대리 입력 UI는 하위 컴포넌트로 분리했습니다.
+const INITIAL_FORM = {
+  fullName: '최영자',
+  birthDate: '1950-09-17',
+  gender: '여성',
+  receiptId: '',
+  department: '이비인후과',
+  doctor: '이민우',
+  phone: '',
+  visitType: 'initial',
+}
+
+const statusLabel = {
+  waiting_tablet: '문진 대기',
+  in_progress: '문진 진행중',
+  staff_help: '직원 도움 요청',
+  completed: '의사 답변 대기',
+  needs_priority: '우선 확인 필요',
+  reviewed: '답변·안내 완료',
+}
+
+const manualInputStatuses = new Set(['staff_help', 'needs_priority', 'in_progress', 'waiting_tablet'])
+
+function formatPhone(value) {
+  const digits = String(value || '').replace(/\D/g, '').slice(0, 11)
+  if (digits.length <= 3) return digits
+  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`
+  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`
+}
+
 export default function ReceptionView() {
   const navigate = useNavigate()
-  const [form, setForm] = useState(INITIAL_RECEPTION_FORM)
+  const [form, setForm] = useState(INITIAL_FORM)
   const [sessions, setSessions] = useState([])
   const [created, setCreated] = useState(null)
   const [manualSession, setManualSession] = useState(null)
@@ -47,18 +70,17 @@ export default function ReceptionView() {
     setForm((prev) => ({ ...prev, [key]: value }))
   }
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    const next = await createIntakeSession(form)
-    await loadSessions()
-    setCreated(next)
-  }
-
   const openManualInput = async (session) => {
     setManualStatus('문진 내용을 불러오는 중입니다.')
     const detail = await getIntakeSession(session.sessionId)
     const nextSession = detail || session
-    const nextTexts = makeManualTextState(nextSession)
+    const responses = nextSession.responses || {}
+    const nextTexts = Object.fromEntries(
+      (QUESTIONS[nextSession.visitType] || QUESTIONS.initial).map((question) => [
+        question.id,
+        responses[question.id]?.text || responses[question.id]?.transcript || '',
+      ])
+    )
     setManualSession(nextSession)
     setManualTexts(nextTexts)
     setManualOriginalTexts(nextTexts)
@@ -69,11 +91,22 @@ export default function ReceptionView() {
     setManualTexts((prev) => ({ ...prev, [questionId]: value }))
   }
 
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    const next = await createIntakeSession(form)
+    await loadSessions()
+    setCreated(next)
+  }
+
   const handleManualSubmit = async (event) => {
     event.preventDefault()
     if (!manualSession || manualSubmitting) return
 
-    const filled = getChangedManualAnswers(manualSession, manualTexts, manualOriginalTexts)
+    const questions = QUESTIONS[manualSession.visitType] || QUESTIONS.initial
+    const filled = questions
+      .map((question) => ({ question, transcript: (manualTexts[question.id] || '').trim() }))
+      .filter((item) => item.transcript && item.transcript !== (manualOriginalTexts[item.question.id] || '').trim())
+
     if (!filled.length) {
       setManualStatus('새로 입력하거나 수정한 문진 내용이 없습니다.')
       return
@@ -127,42 +160,150 @@ export default function ReceptionView() {
       </header>
 
       <div className="reception-grid">
-        <ReceptionForm
-          form={form}
-          created={created}
-          updateField={updateField}
-          onSubmit={handleSubmit}
-          onOpenTablet={(sessionId) => navigate(`/patient/${sessionId}`)}
-        />
-        <ReceptionSessionList sessions={sessions} onOpenManualInput={openManualInput} />
+        <section className="rp-panel">
+          <div className="rp-panel-title">
+            <h2>신분 확인</h2>
+            <span>생년월일 확인 기반</span>
+          </div>
+
+          <form className="rp-form" onSubmit={handleSubmit}>
+            <label>
+              <span>이름</span>
+              <input value={form.fullName} onChange={(e) => updateField('fullName', e.target.value)} />
+            </label>
+            <label>
+              <span>생년월일</span>
+              <input type="date" value={form.birthDate} onChange={(e) => updateField('birthDate', e.target.value)} />
+            </label>
+            <label>
+              <span>성별</span>
+              <select value={form.gender} onChange={(e) => updateField('gender', e.target.value)}>
+                <option>여성</option>
+                <option>남성</option>
+              </select>
+            </label>
+            <label>
+              <span>접수번호</span>
+              <input placeholder="비우면 자동 생성" value={form.receiptId} onChange={(e) => updateField('receiptId', e.target.value)} />
+            </label>
+            <label>
+              <span>진료과</span>
+              <input value={form.department} onChange={(e) => updateField('department', e.target.value)} />
+            </label>
+            <label>
+              <span>담당 의사</span>
+              <input value={form.doctor} onChange={(e) => updateField('doctor', e.target.value)} />
+            </label>
+            <label className="wide">
+              <span>연락처</span>
+              <input
+                inputMode="numeric"
+                placeholder="010-0000-0000"
+                value={form.phone}
+                onChange={(e) => updateField('phone', formatPhone(e.target.value))}
+              />
+            </label>
+
+            <div className="rp-segment wide">
+              <button
+                type="button"
+                className={form.visitType === 'initial' ? 'active' : ''}
+                onClick={() => updateField('visitType', 'initial')}
+              >
+                초진
+              </button>
+              <button
+                type="button"
+                className={form.visitType === 'followup' ? 'active' : ''}
+                onClick={() => updateField('visitType', 'followup')}
+              >
+                재진
+              </button>
+            </div>
+
+            <button className="rp-primary wide" type="submit">문진 세션 생성</button>
+          </form>
+
+          {created && (
+            <div className="rp-created">
+              <strong>{created.patient.name} 문진 준비 완료</strong>
+              <p>태블릿에서 아래 환자용 URL을 열어 문진을 시작합니다.</p>
+              <div className="rp-created-actions">
+                <button onClick={() => navigate(`/patient/${created.sessionId}`)}>태블릿 화면 열기</button>
+                <Link to={`/doctor/${created.sessionId}`}>원페이퍼 미리보기</Link>
+              </div>
+            </div>
+          )}
+        </section>
+
+        <section className="rp-panel">
+          <div className="rp-panel-title">
+            <h2>오늘 접수</h2>
+            <Link to="/doctor/queue">의사 대기열 보기</Link>
+          </div>
+          <div className="rp-session-list">
+            {sessions.map((session) => (
+              <article key={session.sessionId} className={`rp-session ${session.risk === 'high' ? 'risk' : ''}`}>
+                <div>
+                  <strong>{session.patient.name}</strong>
+                  <p>
+                    #{session.patient.receiptId} · {session.patient.age}세 {session.patient.gender} · {session.visitType === 'initial' ? '초진' : '재진'}
+                  </p>
+                </div>
+                <span className={`rp-status ${session.status}`}>{statusLabel[session.status] || session.status}</span>
+                <div className="rp-row-actions">
+                  <Link to={`/patient/${session.sessionId}`}>태블릿</Link>
+                  <Link to={`/doctor/${session.sessionId}`}>원페이퍼</Link>
+                  <Link to={`/guide/${session.sessionId}`}>안내문</Link>
+                  {manualInputStatuses.has(session.status) && (
+                    <button type="button" onClick={() => openManualInput(session)}>직원 입력</button>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
       </div>
 
-      <ReceptionManualInput
-        session={manualSession}
-        manualTexts={manualTexts}
-        manualStatus={manualStatus}
-        submitting={manualSubmitting}
-        updateManualText={updateManualText}
-        onSubmit={handleManualSubmit}
-        onClose={() => setManualSession(null)}
-      />
+      {manualSession && (
+        <section className="rp-panel rp-manual-panel" aria-live="polite">
+          <div className="rp-panel-title">
+            <div>
+              <h2>직원 대리 문진 입력</h2>
+              <span>
+                {manualSession.patient.name} · #{manualSession.patient.receiptId} · {manualSession.visitType === 'initial' ? '초진' : '재진'}
+              </span>
+            </div>
+            <button className="rp-ghost" type="button" onClick={() => setManualSession(null)}>닫기</button>
+          </div>
+
+          <form className="rp-manual-form" onSubmit={handleManualSubmit}>
+            {(QUESTIONS[manualSession.visitType] || QUESTIONS.initial).map((question) => (
+              <label key={question.id} className="rp-manual-field">
+                <span>
+                  <b>{question.badge}</b>
+                  {question.title.replace(/\s+/g, ' ')}
+                </span>
+                <textarea
+                  value={manualTexts[question.id] || ''}
+                  onChange={(event) => updateManualText(question.id, event.target.value)}
+                  placeholder="환자가 말한 내용을 직원이 대신 입력합니다."
+                />
+              </label>
+            ))}
+
+            <div className="rp-manual-footer">
+              <p>{manualStatus}</p>
+              <div>
+                <Link to={`/doctor/${manualSession.sessionId}`}>원페이퍼 열기</Link>
+                <button type="submit" disabled={manualSubmitting}>
+                  {manualSubmitting ? '저장 중' : '직원 입력 저장'}
+                </button>
+              </div>
+            </div>
+          </form>
+        </section>
+      )}
     </div>
   )
-}
-
-function makeManualTextState(session) {
-  const responses = session.responses || {}
-  return Object.fromEntries(
-    (QUESTIONS[session.visitType] || QUESTIONS.initial).map((question) => [
-      question.id,
-      responses[question.id]?.text || responses[question.id]?.transcript || '',
-    ])
-  )
-}
-
-function getChangedManualAnswers(session, manualTexts, originalTexts) {
-  const questions = QUESTIONS[session.visitType] || QUESTIONS.initial
-  return questions
-    .map((question) => ({ question, transcript: (manualTexts[question.id] || '').trim() }))
-    .filter((item) => item.transcript && item.transcript !== (originalTexts[item.question.id] || '').trim())
 }

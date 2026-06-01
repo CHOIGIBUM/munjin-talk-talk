@@ -1,11 +1,14 @@
 import { useEffect } from 'react'
 import ScreenHeader from '../tablet/ScreenHeader.jsx'
-import { useStreamingTranscribe } from '../../hooks/useStreamingTranscribe.js'
+import { useAudioRecorder } from '../../hooks/useAudioRecorder.js'
+
+// Q1~Q4 공통 음성 입력 화면
+// 같은 컴포넌트에 props만 다르게 들어와서 4번 재사용됨
 
 const MicIcon = () => (
   <svg viewBox="0 0 24 24" fill="none">
-    <rect x="9" y="3" width="6" height="14" rx="3" fill="currentColor" />
-    <path d="M5 11a7 7 0 0 0 14 0M12 18v4M9 22h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    <rect x="9" y="3" width="6" height="14" rx="3" fill="currentColor"/>
+    <path d="M5 11a7 7 0 0 0 14 0M12 18v4M9 22h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
   </svg>
 )
 
@@ -15,45 +18,41 @@ function formatTime(seconds) {
   return `${m}:${s}`
 }
 
-// Q1~Q4 공통 음성 입력 화면입니다.
-// 브라우저 마이크 음성을 Amazon Transcribe Streaming으로 보내고, 받은 텍스트만 다음 단계로 전달합니다.
 export default function VoiceScreen({
-  sessionId,
   patient,
   visitType,
   question,
   stepIndex,
-  partialText = '',
+  partialText,
   isProcessing = false,
   onFinish,
-  onStaffCall,
+  onStaffCall
 }) {
-  const { isRecording, transcript, error, elapsed, start, stop } = useStreamingTranscribe({
-    sessionId,
-    questionId: question.id,
-    visitType,
-  })
+  const { isRecording, audioBlob, elapsed, start, stop } = useAudioRecorder()
 
+  // v4: 화면 진입 시 자동 녹음 시작
   useEffect(() => {
     const t = setTimeout(() => start(), 300)
     return () => clearTimeout(t)
-    // 질문이 바뀔 때마다 새 스트리밍 세션을 시작합니다.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question.id])
 
-  const handleEnd = async () => {
-    const finalText = await stop()
-    onFinish(finalText)
-  }
+  // 녹음 완료되면 부모에게 Blob 전달
+  useEffect(() => {
+    if (audioBlob && !isRecording) {
+      onFinish(audioBlob)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioBlob, isRecording])
 
   const handleMicClick = () => {
-    if (isRecording) handleEnd()
+    if (isRecording) stop()
     else start()
   }
 
-  const displayTranscript = error
-    ? '실시간 음성 인식 연결 오류입니다. 다시 말씀해 주세요.'
-    : transcript || partialText || '말씀하신 내용이 여기에 바로 표시됩니다.'
+  const handleEnd = () => {
+    if (isRecording) stop()
+  }
 
   return (
     <>
@@ -74,12 +73,6 @@ export default function VoiceScreen({
         </p>
         <div className="voice-example">
           <b>예시</b>{question.example}
-        </div>
-
-        <div className="transcript-box transcript-box-v4">
-          <div className="transcript-text transcript-text-large">
-            {displayTranscript}
-          </div>
         </div>
 
         <div className="voice-mic-wrap">
@@ -103,7 +96,14 @@ export default function VoiceScreen({
 
         {isProcessing && (
           <div className="voice-processing">
-            말씀하신 내용을 문진 결과로 정리하는 중입니다. 보통 5~15초 정도 걸립니다.
+            음성을 텍스트로 바꾸는 중입니다. 보통 5~15초 정도 걸립니다.
+          </div>
+        )}
+
+        {partialText && (
+          <div className="voice-partial">
+            <div className="voice-partial-label">실시간 자막</div>
+            <div className="voice-partial-text">"{partialText}…"</div>
           </div>
         )}
       </div>
