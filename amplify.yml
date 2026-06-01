@@ -5,11 +5,14 @@ applications:
       phases:
         preBuild:
           commands:
+            # Amplify 빌드 컨테이너에서 로컬과 같은 Node 22 환경을 맞춥니다.
             - nvm install 22
             - nvm use 22
+            # package-lock 동기화 이슈를 피하기 위해 현재 MVP는 npm install을 사용합니다.
             - npm install
         build:
           commands:
+            # Vite production build 결과는 frontend/dist에 생성됩니다.
             - npm run build
       artifacts:
         baseDirectory: dist
