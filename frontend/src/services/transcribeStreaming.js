@@ -18,16 +18,20 @@ export async function openTranscribeStream({
   }
   ensureApiConfigured()
 
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext
+  const audioContext = new AudioContextClass({ sampleRate: 16000 })
+  await resumeAudioContext(audioContext)
+  const sampleRate = audioContext.sampleRate
+
   const stream = await navigator.mediaDevices.getUserMedia({
     audio: {
+      channelCount: 1,
+      sampleRate,
       echoCancellation: true,
       noiseSuppression: true,
       autoGainControl: true,
     },
   })
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext
-  const audioContext = new AudioContextClass({ sampleRate: 16000 })
-  const sampleRate = audioContext.sampleRate
   const { stream_url: streamUrl } = await getTranscribeStreamUrl({
     sessionId,
     questionId,
@@ -47,12 +51,28 @@ export async function openTranscribeStream({
   let latestText = ''
   let started = false
   let stopped = false
+  let framesSent = 0
+  let bytesSent = 0
+  const noAudioTimer = window.setTimeout(async () => {
+    if (stopped || framesSent > 0) return
+    await resumeAudioContext(audioContext)
+    if (audioContext.state === 'suspended') {
+      onError?.(new Error('audio_context_suspended'))
+    } else {
+      onError?.(new Error('audio_stream_no_frames'))
+    }
+  }, 2500)
 
   socket.onmessage = async (event) => {
     try {
       const buffer = event.data instanceof Blob ? await event.data.arrayBuffer() : event.data
       const message = decodeEventMessage(buffer)
-      const payload = JSON.parse(decoder.decode(message.payload))
+      const payloadText = decoder.decode(message.payload)
+      const payload = payloadText ? JSON.parse(payloadText) : {}
+      if (message.headers[':message-type'] === 'exception') {
+        onError?.(new Error(payload.Message || message.headers[':exception-type'] || 'transcribe_stream_exception'))
+        return
+      }
       const results = payload?.Transcript?.Results || []
       for (const result of results) {
         const text = result?.Alternatives?.[0]?.Transcript || ''
@@ -88,8 +108,15 @@ export async function openTranscribeStream({
 
   processor.onaudioprocess = (event) => {
     if (!started || stopped || socket.readyState !== WebSocket.OPEN) return
+    if (audioContext.state === 'suspended') {
+      resumeAudioContext(audioContext)
+      return
+    }
     const input = event.inputBuffer.getChannelData(0)
-    socket.send(encodeAudioEvent(floatToPcm16(input)))
+    const chunk = floatToPcm16(input)
+    socket.send(encodeAudioEvent(chunk))
+    framesSent += 1
+    bytesSent += chunk.byteLength
   }
 
   source.connect(processor)
@@ -104,10 +131,11 @@ export async function openTranscribeStream({
     },
     async stop() {
       stopped = true
+      window.clearTimeout(noAudioTimer)
       try {
         if (socket.readyState === WebSocket.OPEN) {
           socket.send(encodeAudioEvent(new Uint8Array()))
-          await sleep(250)
+          await sleep(bytesSent > 0 ? 1000 : 250)
           socket.close()
         }
       } finally {
@@ -120,6 +148,16 @@ export async function openTranscribeStream({
       }
       return latestText.trim()
     },
+  }
+}
+
+async function resumeAudioContext(audioContext) {
+  if (audioContext.state !== 'suspended') return
+  try {
+    await audioContext.resume()
+  } catch {
+    // Chrome may require a direct user gesture. The UI surfaces this as an
+    // empty-audio error so the patient can tap the microphone again.
   }
 }
 

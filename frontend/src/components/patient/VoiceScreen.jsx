@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import ScreenHeader from '../tablet/ScreenHeader.jsx'
 import { useStreamingTranscribe } from '../../hooks/useStreamingTranscribe.js'
 
@@ -34,13 +33,6 @@ export default function VoiceScreen({
     visitType,
   })
 
-  useEffect(() => {
-    const t = setTimeout(() => start(), 300)
-    return () => clearTimeout(t)
-    // 질문이 바뀔 때마다 새 스트리밍 세션을 시작합니다.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [question.id])
-
   const handleEnd = async () => {
     const finalText = await stop()
     onFinish(finalText)
@@ -52,8 +44,10 @@ export default function VoiceScreen({
   }
 
   const displayTranscript = error
-    ? '실시간 음성 인식 연결 오류입니다. 다시 말씀해 주세요.'
-    : transcript || partialText || '말씀하신 내용이 여기에 바로 표시됩니다.'
+    ? '마이크 연결이 안정적이지 않습니다. 마이크 버튼을 다시 눌러 말씀해 주세요.'
+    : transcript || partialText || (isRecording
+      ? '말씀하신 내용이 여기에 바로 표시됩니다.'
+      : '마이크 버튼을 누른 뒤 말씀해 주세요.')
 
   return (
     <>
@@ -110,8 +104,8 @@ export default function VoiceScreen({
 
       <div className="screen-footer">
         <button className="btn-help staff-button-wide" onClick={onStaffCall} disabled={isProcessing}>직원 도움</button>
-        <button className="btn-primary" onClick={handleEnd} disabled={isProcessing}>
-          {isProcessing ? '분석 중...' : '발화 마치기'}
+        <button className="btn-primary" onClick={isRecording ? handleEnd : start} disabled={isProcessing}>
+          {isProcessing ? '분석 중...' : isRecording ? '발화 마치기' : '녹음 시작'}
         </button>
       </div>
     </>
