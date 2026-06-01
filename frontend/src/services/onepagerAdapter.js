@@ -1,3 +1,7 @@
+// 백엔드 onepager JSON을 의사 UI가 기대하는 형태로 정규화하는 어댑터입니다.
+// 백엔드 스키마가 조금 바뀌어도 화면 컴포넌트 수정 범위를 이 파일에 가두기 위한 층입니다.
+import { buildFallbackBrief, buildHeadline } from './onepagerBrief.js'
+
 const DEFAULT_PATIENT = {
   name: '환자',
   age: 0,
@@ -20,6 +24,8 @@ export function normalizeOnePager(raw, fallback = null) {
   return fallback || raw
 }
 
+// DoctorAgendaPanel은 Q4 환자 질문과 안내문 입력에 필요한 부분만 읽습니다.
+// 전체 onepager를 몰라도 agenda 관련 필드만 안정적으로 꺼내기 위한 helper입니다.
 export function normalizeAgendaSource(raw, fallbackAgenda = []) {
   const normalized = normalizeOnePager(raw, null)
   return {
@@ -29,6 +35,7 @@ export function normalizeAgendaSource(raw, fallbackAgenda = []) {
   }
 }
 
+// 현재 MVP 백엔드가 저장하는 session.onepager 구조를 화면용 구조로 변환합니다.
 function normalizeCurrentBackend(raw) {
   const session = raw.session || raw
   const onepager = session.onepager || raw.onepager
@@ -65,6 +72,7 @@ function normalizeCurrentBackend(raw) {
   }
 }
 
+// 예전 로컬 목업/초기 MVP 구조도 아직 읽을 수 있게 남겨둔 호환 변환기입니다.
 function normalizeLegacyBackend(raw) {
   if (!raw.patient && !raw.symptom_card && !raw.transfer_text && !raw.symptomSlots) return null
 
@@ -107,6 +115,7 @@ function normalizeLegacyBackend(raw) {
   }
 }
 
+// 원페이퍼 좌측 상단의 환자 표시용 필드를 안전한 기본값과 함께 만듭니다.
 function normalizePatientSummary(summary, visitType) {
   return {
     ...DEFAULT_PATIENT,
@@ -120,6 +129,7 @@ function normalizePatientSummary(summary, visitType) {
   }
 }
 
+// Q4에서 분리된 환자 질문 목록을 의사 답변 패널이 쓰는 agenda 형태로 맞춥니다.
 function normalizeAgenda(items) {
   return (items || []).map(item => ({
     type: item.type || item.category || 'other',
@@ -131,6 +141,7 @@ function normalizeAgenda(items) {
   }))
 }
 
+// 증상 매칭 결과를 카드 UI에서 바로 렌더링할 수 있는 필드명으로 맞춥니다.
 function normalizeSymptomSlots(slots) {
   return (slots || []).map(slot => ({
     name: slot.name || slot.display_text || '-',
@@ -204,88 +215,6 @@ function normalizeBriefSection(section) {
   }
 }
 
-function buildFallbackBrief({ visitType, symptomSlots, clinicalClues, agenda, safetyFlag }) {
-  const priority = safetyFlag || clinicalClues?.some(c => c.priority === '우선') ? '우선' : '일반'
-  const sections = []
-  const symptoms = unique(symptomSlots?.map(s => s.name).filter(Boolean) || [])
-  const course = clinicalClues?.filter(c => ['재진경과', '증상맥락'].includes(c.category)) || []
-  const meds = clinicalClues?.filter(c => ['복약정보', '복약순응도', '약물반응'].includes(c.category)) || []
-
-  if (safetyFlag) {
-    sections.push({
-      key: 'priority',
-      title: '우선 확인',
-      priority: '우선',
-      summary: safetyFlag.message || `${safetyFlag.label || safetyFlag.category} 확인 필요`,
-      items: [{ text: safetyFlag.message || safetyFlag.matched_pattern || '', source_question: '', source_quote: safetyFlag.matched_pattern || '' }],
-    })
-  }
-  if (symptoms.length || course.length) {
-    sections.push({
-      key: 'symptom_course',
-      title: '증상 및 경과',
-      priority: course.some(c => c.priority === '우선') ? '우선' : '일반',
-      summary: [
-        symptoms.length ? `주호소 ${symptoms.join(', ')}` : '',
-        summarizeClues(course),
-      ].filter(Boolean).join(' / '),
-      items: course.map(clueToBriefItem),
-    })
-  }
-  if (meds.length) {
-    sections.push({
-      key: 'medication',
-      title: '복약 및 반응',
-      priority: meds.some(c => c.priority === '우선') ? '우선' : '일반',
-      summary: summarizeClues(meds),
-      items: meds.map(clueToBriefItem),
-    })
-  }
-  if (agenda?.length) {
-    sections.push({
-      key: 'agenda',
-      title: '환자 질문',
-      priority: '일반',
-      summary: unique(agenda.map(a => a.summary).filter(Boolean)).join(', '),
-      items: agenda.map(a => ({ text: a.summary, source_question: a.source_question || 'Q4', source_quote: a.original_quote || '' })),
-    })
-  }
-
-  return {
-    headline: buildHeadline({ visitType, symptomSlots, clinicalClues, agenda, safetyFlag }),
-    priority,
-    sections,
-  }
-}
-
-function buildHeadline({ visitType, symptomSlots, clinicalClues, agenda, safetyFlag }) {
-  const parts = []
-  const symptoms = unique(symptomSlots?.map(s => s.name).filter(Boolean) || [])
-  if (safetyFlag) parts.push(`우선 확인: ${safetyFlag.label || safetyFlag.category}`)
-  if (symptoms.length) parts.push(`증상: ${symptoms.slice(0, 4).join(', ')}`)
-  const course = clinicalClues?.find(c => c.category === '재진경과') || clinicalClues?.find(c => c.category === '증상맥락')
-  if (course) parts.push(`${visitType === 'followup' ? '경과' : '맥락'}: ${course.summary || course.source_quote}`)
-  const med = clinicalClues?.find(c => ['복약정보', '복약순응도', '약물반응'].includes(c.category))
-  if (med) parts.push(`복약: ${med.summary || med.source_quote}`)
-  if (agenda?.length) parts.push(`질문: ${agenda[0].summary}`)
-  return parts.join(' | ') || '문진 요약'
-}
-
-function summarizeClues(clues, limit = 4) {
-  return unique((clues || []).slice(0, limit).map(c => {
-    if (c.label && c.summary && !c.summary.includes(c.label)) return `${c.label}: ${c.summary}`
-    return c.summary || c.source_quote
-  }).filter(Boolean)).join(', ')
-}
-
-function clueToBriefItem(clue) {
-  return {
-    text: clue.summary || clue.source_quote || '',
-    source_question: clue.source_question || '',
-    source_quote: clue.source_quote || '',
-  }
-}
-
 function normalizeSafetyFlag(flag) {
   if (!flag) return null
   return {
@@ -307,10 +236,6 @@ function getResponseText(responses, qid) {
 function normalizeVisitType(value) {
   if (value === '재진' || value === 'followup') return 'followup'
   return 'initial'
-}
-
-function unique(values) {
-  return Array.from(new Set(values.filter(Boolean)))
 }
 
 function categoryToKorean(cat) {

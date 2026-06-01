@@ -4,6 +4,9 @@ import { getPatientGuide } from '../../services/api.js'
 import logoUrl from '../../assets/munjin-logo.svg'
 import './PatientGuideScreen.css'
 
+// 진료 후 환자에게 보여주거나 출력할 안내문 화면입니다.
+// LLM이 쉬운 표현으로 바꾼 답변과 의사가 직접 적은 강조사항을 함께 보여줍니다.
+
 // 환자 안내 화면 (Phase B - 진료 후 태블릿).
 // 의사 답변을 LLM이 어르신 친화적 문장으로 변환한 결과를 큰 글씨로 표시.
 // TTS 음성 안내, 보호자 공유(SMS), 종이 출력 옵션 제공.
@@ -26,6 +29,7 @@ function normalizeGuideItems(guide) {
   ]
 }
 
+// 의사 강조사항은 일반 환자 질문 답변과 다른 스타일로 보이게 라벨을 통일합니다.
 function guideQuestionLabel(item) {
   if (item.is_doctor_instruction || /의사 안내|선생님|강조사항|진료 안내/.test(item.question || '')) {
     return '선생님 강조사항'
@@ -39,6 +43,7 @@ export default function PatientGuideScreen() {
   const [loading, setLoading] = useState(Boolean(sessionId))
   const [playingIdx, setPlayingIdx] = useState(null)  // 현재 재생 중 인덱스
 
+  // doctor-response 저장 후 생성된 안내문 JSON을 조회합니다.
   useEffect(() => {
     if (!sessionId) {
       setGuide(null)
@@ -60,6 +65,7 @@ export default function PatientGuideScreen() {
   }, [])
 
   // v4: 토글 동작 — 같은 항목 다시 누르면 멈춤
+  // 브라우저 내장 speechSynthesis로 안내문을 큰 글씨 화면에서 바로 읽어줍니다.
   const handlePlayToggle = (idx) => {
     if (!('speechSynthesis' in window)) {
       alert('이 브라우저는 음성 안내를 지원하지 않습니다.')
@@ -96,6 +102,7 @@ export default function PatientGuideScreen() {
     alert('보호자 휴대폰으로 안내문이 전송되었습니다. (시연 mock)')
   }
 
+  // 인쇄 버튼은 별도 PDF 생성 없이 브라우저 print CSS를 사용합니다.
   const handlePrint = () => {
     window.print()
   }

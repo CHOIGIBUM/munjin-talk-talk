@@ -9,11 +9,14 @@ import {
 } from '../../services/demoSessions.js'
 import './PatientKioskView.css'
 
+// 접수처에서 만든 sessionId를 받아 실제 환자 태블릿 문진을 시작하는 화면입니다.
+// 운영 모드에서는 백엔드 세션을, 목업 모드에서는 localStorage 세션을 사용합니다.
 export default function PatientKioskView() {
   const { sessionId } = useParams()
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // URL의 sessionId로 환자 정보와 초진/재진 설정을 불러옵니다.
   useEffect(() => {
     let active = true
     setLoading(true)
@@ -54,6 +57,8 @@ export default function PatientKioskView() {
       frameVariant="device"
       skipVisitTypeWhenPreset={false}
       onTranscriptConfirmed={(answer) => {
+        // 운영 모드에서는 processTranscript가 이미 백엔드 저장까지 수행합니다.
+        // 목업 모드에서만 localStorage에 답변을 저장합니다.
         if (!isRemoteApiEnabled()) saveTranscriptAnswer(session.sessionId, answer)
       }}
       onStaffCallRequest={() => {

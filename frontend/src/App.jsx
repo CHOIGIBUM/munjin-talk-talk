@@ -8,6 +8,10 @@ import PatientGuideScreen from './components/patient/PatientGuideScreen.jsx'
 import ReceptionView from './components/staff/ReceptionView.jsx'
 import { getDoctorQueue, isMockApiEnabled } from './services/api.js'
 
+// 앱의 최상위 라우터입니다.
+// 접수처, 환자 태블릿, 의사 대기열, 원페이퍼, 안내문 화면을 URL 단위로 나누고
+// 상단 메뉴가 현재 세션 상태에 맞는 화면으로 이동하도록 연결합니다.
+
 // v4 변경:
 // - 우측 상단에 시연용 Flag 메뉴 (드롭다운)
 // - 초진/재진/위험 분기 강제 트리거 시연 가능
@@ -18,6 +22,8 @@ export default function App() {
   const location = useLocation()
   const mockMode = isMockApiEnabled()
 
+  // 대기열 숫자와 상단 메뉴 이동 대상은 세션 상태가 바뀌면 계속 새로고침합니다.
+  // 로컬 목업은 storage event를, 운영 환경은 주기적 API 조회를 사용합니다.
   useEffect(() => {
     const refresh = async () => setSessions(await getDoctorQueue())
     refresh()
@@ -31,6 +37,8 @@ export default function App() {
     }
   }, [])
 
+  // 아무 세션도 없을 때는 환자 태블릿/원페이퍼/안내문 메뉴를 비활성화하고,
+  // 세션이 생기면 가장 자연스러운 대상 세션으로 메뉴 링크를 잡습니다.
   const navTargets = useMemo(() => {
     const tablet = sessions.find((session) => session.status === 'waiting_tablet')
       || sessions.find((session) => session.status === 'in_progress')
@@ -98,6 +106,8 @@ function NavItem({ to, active, label }) {
 
 
 // 환자 화면에 시연 메뉴를 감싸는 래퍼
+// API 없이 화면만 시연할 때 쓰는 환자 플로우 데모 래퍼입니다.
+// 운영 라우팅에서는 접수처에서 만든 sessionId 기반 화면을 사용합니다.
 function PatientFlowWithDemoMenu() {
   const [demoConfig, setDemoConfig] = useState({
     visitType: null,           // null=시작화면부터, 'initial'/'followup'

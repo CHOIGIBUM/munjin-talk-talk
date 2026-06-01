@@ -1,5 +1,7 @@
 /* UI 개선안 2 - 우측 통합 패널 */
 
+/* 원페이퍼 우측의 환자 질문/의사 답변 패널 스타일입니다. */
+/* Q4 원문, 분류된 질문, 의사 강조사항 textarea를 한 카드 안에서 정렬합니다. */
 .doctor-agenda-panel {
   background: white;
   border: 1px solid #e2e8f0;
