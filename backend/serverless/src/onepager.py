@@ -34,6 +34,8 @@ def validate_and_save(body):
     structured = body.get("structured") or {}
     spans = body.get("spans") or []
     matched_slots = body.get("matched_slots") or []
+    orchestration = body.get("orchestration") or {}
+    pipeline_trace = body.get("pipeline_trace") or orchestration.get("trace") or []
     safety_flag = scan_safety(transcript, matched_slots)
 
     responses = session.get("responses", {})
@@ -44,6 +46,8 @@ def validate_and_save(body):
         "structured": structured,
         "extract_method": body.get("method") or body.get("extract_method"),
         "llm_meta": body.get("llm_meta") or {},
+        "orchestration": orchestration,
+        "pipeline_trace": pipeline_trace,
         "confirmed": True,
     }
     question_results = session.get("question_results", {})
