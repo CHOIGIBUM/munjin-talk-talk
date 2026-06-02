@@ -28,6 +28,12 @@ UNSUPPORTED_TERM_PATTERNS = [
     r"폐암|암",
 ]
 
+LOW_VALUE_NEGATIVE_TASK_PATTERNS = [
+    r"(추가\s*질문|묻고\s*싶|물어\s*볼|궁금).{0,16}(없|없는지).{0,12}(확인|재확인)",
+    r"(복용\s*중인\s*약|처방약|약).{0,16}(없|없는지).{0,12}(확인|재확인)",
+    r"(새\s*증상).{0,16}(없|없는지).{0,12}(확인|재확인)",
+]
+
 
 def apply_bedrock_onepager_review(session, onepager, fallback_review_items=None):
     """Nova Pro review를 수행하고, 비어 있거나 근거 없는 결과면 제한 횟수만큼 재시도합니다."""
@@ -81,7 +87,7 @@ def merge_review_output(onepager, obj, raw_text, attempt):
             }
 
     transfer = clean_quote(obj.get("transfer_text") or "")
-    if transfer:
+    if transfer and is_transfer_text_safe(transfer, onepager):
         reviewed["transfer_text"] = transfer
     if isinstance(obj.get("doctor_brief"), dict) and is_grounded_text(json.dumps(obj.get("doctor_brief"), ensure_ascii=False), onepager):
         reviewed["doctor_brief"] = obj.get("doctor_brief")
@@ -147,18 +153,22 @@ Review item rules:
 8. If Q4 contains patient questions, create one task per distinct question so the doctor can answer it.
    - The task must preserve the same medication/food/test names as the agenda.
    - Never introduce new drug classes, sprays, tests, or disease names that are absent from the evidence.
-9. If medication/supplement/adherence appears, create a task only when it affects patient counseling, safety, interactions, or adherence.
-10. Use "[우선]" only when safety_flags is non-empty or the raw patient wording clearly describes a red flag. Ordinary sore throat, nasal obstruction, cough, or runny nose must not be marked urgent.
-11. Keep review_items short, Korean, and directly actionable. Good style: "콧물/코막힘 지속 정도와 알레르기 병력 확인".
-12. Preserve uncertainty. Do not assert unsupported diagnoses or treatment decisions.
-13. Return JSON only. No markdown, no prose outside JSON.
-14. The backend validates this with a strict Pydantic schema. Missing required fields, invalid keys, or extra fields will fail.
+9. Do NOT turn negative answers into tasks by themselves.
+   - "추가 질문 없음", "복용 약 없음", "새 증상 없음", or "발열 없음" may be mentioned in transfer_text, but should not become a review_item unless there is a conflict, safety issue, interaction concern, or follow-up action.
+   - Avoid low-value tasks such as "현재 복용 중인 약이 없는지 재확인" or "환자가 추가 질문이 없는지 확인" when the only evidence is a negative answer.
+10. If medication/supplement/adherence appears, create a task only when it affects patient counseling, safety, interactions, or adherence.
+11. Use "[우선]" only when safety_flags is non-empty or the raw patient wording clearly describes a red flag. Ordinary sore throat, nasal obstruction, cough, or runny nose must not be marked urgent.
+12. Keep review_items short, Korean, and directly actionable. Good style: "콧물/코막힘 지속 정도와 알레르기 병력 확인".
+13. Preserve uncertainty. Do not assert unsupported diagnoses or treatment decisions.
+14. Return JSON only. No markdown, no prose outside JSON.
+15. The backend validates this with a strict Pydantic schema. Missing required fields, invalid keys, or extra fields will fail.
 
 Output quality target:
 - Ordinary low-risk cases: 2 to 5 review_items.
 - Safety or complex cases: up to 8 review_items, urgent items first.
 - doctor_brief: 1 to 3 sections that summarize why those tasks matter.
 - transfer_text: one concise Korean EMR-style sentence or two short sentences, grounded only in intake data.
+- If transfer_text mentions age or sex, copy them exactly from draft_onepager.patient_summary. Never change patient sex or age.
 
 Return schema:
 {{
@@ -188,10 +198,49 @@ def sanitize_review_items(items, onepager):
             continue
         if not has_safety:
             text = re.sub(r"^\[우선\]\s*", "", text)
+        if is_low_value_negative_confirmation_task(text):
+            continue
         if not is_grounded_text(text, onepager):
             continue
         sanitized.append(text)
     return sanitized
+
+
+def is_low_value_negative_confirmation_task(text):
+    """'없음' 답변만 근거로 만들어진 재확인 task를 제거합니다.
+
+    환자 질문 없음/복용 약 없음/새 증상 없음은 기록에는 의미가 있지만, 그 자체가
+    의사가 답변해야 할 agenda나 우선 확인 업무는 아닙니다. 실제 충돌이나 안전 이슈가
+    있으면 LLM이 더 구체적인 task를 만들 수 있고, 이 함수는 그런 구체 task는 건드리지
+    않습니다.
+    """
+    return any(re.search(pattern, text) for pattern in LOW_VALUE_NEGATIVE_TASK_PATTERNS)
+
+
+def is_transfer_text_safe(text, onepager):
+    """LLM EMR 초안이 환자 메타데이터와 충돌하지 않는지 확인합니다.
+
+    transfer_text는 Nova Pro가 문장을 자연스럽게 만들 수는 있지만, 나이/성별 같은
+    접수 메타데이터를 바꾸면 안 됩니다. 충돌이 있으면 LLM 문장을 채택하지 않고
+    onepager_sections.build_transfer_text가 만든 deterministic 초안을 유지합니다.
+    """
+    patient = onepager.get("patient_summary") or {}
+    age_text = clean_quote(patient.get("age_text") or "")
+    sex = clean_quote(patient.get("sex") or "")
+
+    mentioned_age = re.search(r"\d+\s*세", text)
+    if mentioned_age and age_text:
+        normalized_expected_age = re.sub(r"\s+", "", age_text)
+        normalized_mentioned_age = re.sub(r"\s+", "", mentioned_age.group(0))
+        if normalized_expected_age != normalized_mentioned_age:
+            return False
+
+    if sex in {"여성", "남성"}:
+        mentioned_sex = set(re.findall(r"여성|남성", text))
+        if mentioned_sex and sex not in mentioned_sex:
+            return False
+
+    return is_grounded_text(text, onepager)
 
 
 def evidence_text(onepager):

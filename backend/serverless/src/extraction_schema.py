@@ -5,6 +5,7 @@
 뒤 Pydantic 검증 결과를 기존 파이프라인 형식으로 돌려줍니다.
 """
 
+import re
 from copy import deepcopy
 
 from schemas.extraction import SymptomSlotRef, validate_extraction_payload
@@ -12,6 +13,13 @@ from schemas.extraction import SymptomSlotRef, validate_extraction_payload
 
 SYMPTOM_SLOT_REFS = set(SymptomSlotRef.__args__)
 NON_SYMPTOM_SPAN_TYPES = {"medication", "medication_denial", "adherence_gap", "context"}
+PATIENT_QUESTION_TYPES = {"patient_questions", "unresolved_questions"}
+NEGATIVE_PATIENT_QUESTION_PATTERNS = [
+    r"^(없어요|없습니다|없다|아니요|괜찮아요|괜찮습니다)[.!?\s]*$",
+    r"(따로|별로|딱히).{0,8}(없|아니)",
+    r"(묻고\s*싶|물어\s*볼|궁금|질문).{0,16}(없|아니)",
+    r"(없|아니).{0,10}(묻고\s*싶|물어\s*볼|궁금|질문)",
+]
 
 
 def normalize_extraction_output(obj, transcript, question_id, question_type=""):
@@ -38,6 +46,7 @@ def prepare_extraction_payload(obj, question_id, question_type=""):
     """
     payload = deepcopy(obj) if isinstance(obj, dict) else {}
     normalize_non_symptom_span_slots(payload, question_type)
+    remove_negative_patient_questions(payload, question_type)
     structured = payload.get("structured")
     if isinstance(structured, dict) and isinstance(structured.get("clinical_clues"), list):
         for clue in structured["clinical_clues"]:
@@ -74,6 +83,41 @@ def normalize_non_symptom_span_slots(payload, question_type=""):
             # 증상 span의 잘못된 slot_ref는 고치지 않습니다.
             # 그대로 실패해야 LLM repair loop가 다시 작동합니다.
             continue
+
+
+def remove_negative_patient_questions(payload, question_type=""):
+    """Q4의 '질문 없음' 답변이 agenda로 저장되지 않도록 제거합니다.
+
+    이 함수는 환자 질문을 새로 만들지 않습니다. LLM이 이미 `questions` 안에 넣은
+    항목 중 원문과 요약이 명백히 "물어볼 것이 없음"을 뜻하는 경우만 제거합니다.
+    따라서 "없다는 사실"은 standardized_text와 원문 transcript에는 남고, 의사가
+    답변해야 하는 agenda/체크리스트로는 올라가지 않습니다.
+    """
+    if question_type not in PATIENT_QUESTION_TYPES:
+        return
+
+    structured = payload.get("structured")
+    if not isinstance(structured, dict):
+        return
+    questions = structured.get("questions")
+    if not isinstance(questions, list):
+        return
+
+    structured["questions"] = [
+        item for item in questions
+        if not is_negative_patient_question_item(item)
+    ]
+
+
+def is_negative_patient_question_item(item):
+    """agenda 후보가 실제 질문인지, '질문 없음' 표현인지 판별합니다."""
+    if not isinstance(item, dict):
+        return False
+    text = " ".join([
+        str(item.get("summary") or ""),
+        str(item.get("original_quote") or ""),
+    ]).strip()
+    return bool(text and any(re.search(pattern, text) for pattern in NEGATIVE_PATIENT_QUESTION_PATTERNS))
 
 
 def empty_structured(transcript):

@@ -49,6 +49,7 @@ Critical rules:
 - If unsure, use status "확인필요" and explain the uncertainty in Korean instead of inventing a number.
 - For medication, medication_denial, adherence_gap, and context spans, slot_ref MUST be "other".
 - Only symptom/new/progress spans may use symptom slot_ref values such as cough or fever.
+- For Q4 patient_questions/unresolved_questions, a denial such as "없어요", "따로 없어요", "별로 없어요", or "궁금한 건 없어요" is NOT a patient question. Return questions: [].
 - The backend validates your output with a strict Pydantic schema. Missing required fields, invalid enum values, or extra fields will fail.
 
 Visit type: {visit}
@@ -222,6 +223,22 @@ Expected JSON:
         "original_quote": "심해지면 중간에 다시 와도 될까요"
       }}
     ],
+    "unresolved_items": []
+  }}
+}}
+
+Example 5
+Question id: Q4
+Question type: patient_questions
+Patient answer:
+따로 묻고 싶은 건 없어요. 별로 없어요.
+Expected JSON:
+{{
+  "spans": [],
+  "structured": {{
+    "standardized_text": "의사에게 추가로 묻고 싶은 점은 없다고 말했습니다.",
+    "clinical_clues": [],
+    "questions": [],
     "unresolved_items": []
   }}
 }}
