@@ -7,6 +7,7 @@
 
 - 환자 발화는 먼저 Amazon Transcribe Streaming으로 텍스트가 됩니다.
 - `/process-answer`는 그 텍스트 1개를 받아 LangGraph 파이프라인을 실행합니다.
+- Bedrock Nova 호출 직전의 prompt/message 조립은 LangChain Core를 사용합니다.
 - LLM이 만든 값은 Pydantic schema와 `source_quote` 검증을 통과해야 저장됩니다.
 - 증상 매칭은 LLM이 아니라 Hybrid IR이 수행합니다.
 - 안전 플래그는 LLM 실패 중에도 누락되지 않도록 별도 분기로 저장합니다.
@@ -85,6 +86,19 @@ flowchart LR
 - `hybrid_ir_match`: LLM이 만든 증상 후보를 표준 증상 인덱스와 비교합니다.
 - IR 단계 안에서는 LLM이 새 증상을 생성하지 않습니다.
 - `ir_trace`에는 BM25 점수, Titan vector 점수, label score, 채택/거절 이유가 남습니다.
+
+## LangChain과 LangGraph의 역할 분리
+
+현재 MVP는 두 기술을 모두 사용합니다.
+
+| 기술 | 실제 사용 위치 | 역할 |
+| --- | --- | --- |
+| LangChain Core | `backend/serverless/src/langchain_prompting.py` | Bedrock에 전달할 prompt/message를 `ChatPromptTemplate`으로 조립 |
+| LangGraph | `backend/serverless/src/pipeline_graph.py` | 문항 처리 노드, 조건 분기, safety branch, trace 저장 |
+
+즉, LangChain은 "LLM 입력 계층"이고 LangGraph는 "처리 흐름 계층"입니다.
+향후 방언 RAG, retriever, output parser, runnable chain을 추가할 때는
+`langchain_prompting.py`와 각 LLM 호출부를 확장하면 됩니다.
 
 ## 실패 시 동작
 

@@ -8,13 +8,14 @@ JSON 추출은 이 모듈을 통과합니다. 응답이 markdown fence를 포함
 import json
 import re
 
+from langchain_prompting import build_bedrock_messages
 from settings import bedrock_runtime
 
 def call_bedrock_json(prompt, model_id, max_tokens):
     """Bedrock converse를 호출하고 첫 번째 JSON object만 dict로 파싱합니다."""
     resp = bedrock_runtime.converse(
         modelId=model_id,
-        messages=[{"role": "user", "content": [{"text": prompt}]}],
+        messages=build_bedrock_messages(prompt),
         inferenceConfig={"temperature": 0, "maxTokens": max_tokens},
     )
     raw_text = "".join(
