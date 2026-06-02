@@ -47,6 +47,8 @@ Critical rules:
 - source_quote is raw patient wording. normalized_text/summary is standardized Korean.
 - Do NOT output score, confidence, probability, certainty, or risk percentage fields.
 - If unsure, use status "확인필요" and explain the uncertainty in Korean instead of inventing a number.
+- For medication, medication_denial, adherence_gap, and context spans, slot_ref MUST be "other".
+- Only symptom/new/progress spans may use symptom slot_ref values such as cough or fever.
 - The backend validates your output with a strict Pydantic schema. Missing required fields, invalid enum values, or extra fields will fail.
 
 Visit type: {visit}
@@ -124,6 +126,80 @@ Expected JSON:
 }}
 
 Example 2
+Question id: Q3
+Question type: current_medications
+Patient answer:
+지금 먹는 약은 없어요.
+Expected JSON:
+{{
+  "spans": [
+    {{
+      "source_quote": "지금 먹는 약은 없어요",
+      "type": "medication_denial",
+      "slot_ref": "other",
+      "name": "복용 약 없음",
+      "normalized_text": "현재 복용 중인 약이 없음",
+      "status": "없음",
+      "alert": false,
+      "explain": "환자가 현재 복용 중인 약이 없다고 말했습니다."
+    }}
+  ],
+  "structured": {{
+    "standardized_text": "현재 복용 중인 약은 없다고 말했습니다.",
+    "clinical_clues": [
+      {{
+        "category": "복약정보",
+        "label": "처방약 없음",
+        "summary": "현재 복용 중인 약은 없다고 말함",
+        "source_quote": "지금 먹는 약은 없어요",
+        "source_question": "Q3",
+        "priority": "일반",
+        "related_symptoms": []
+      }}
+    ],
+    "questions": [],
+    "unresolved_items": []
+  }}
+}}
+
+Example 3
+Question id: Q3
+Question type: current_medications
+Patient answer:
+영양제만 먹고 있어요.
+Expected JSON:
+{{
+  "spans": [
+    {{
+      "source_quote": "영양제만 먹고 있어요",
+      "type": "medication",
+      "slot_ref": "other",
+      "name": "영양제",
+      "normalized_text": "건강보조제 복용 중",
+      "status": "있음",
+      "alert": false,
+      "explain": "환자가 영양제만 복용 중이라고 말했습니다."
+    }}
+  ],
+  "structured": {{
+    "standardized_text": "영양제만 복용 중이라고 말했습니다.",
+    "clinical_clues": [
+      {{
+        "category": "복약정보",
+        "label": "건강보조제",
+        "summary": "영양제만 복용 중",
+        "source_quote": "영양제만 먹고 있어요",
+        "source_question": "Q3",
+        "priority": "일반",
+        "related_symptoms": []
+      }}
+    ],
+    "questions": [],
+    "unresolved_items": []
+  }}
+}}
+
+Example 4
 Question id: Q4
 Question type: patient_questions
 Patient answer:

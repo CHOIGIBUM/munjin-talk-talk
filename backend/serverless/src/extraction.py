@@ -64,7 +64,7 @@ def extract_question_bedrock(body):
     for attempt in range(1, attempts + 1):
         prompt = build_extraction_prompt(visit_type, question_id, question_type, transcript, repair_note)
         obj, raw_text = call_bedrock_json(prompt, model_id, MAX_LLM_TOKENS)
-        normalized, validation_errors = normalize_extraction_output(obj, transcript, question_id)
+        normalized, validation_errors = normalize_extraction_output(obj, transcript, question_id, question_type)
         last_normalized = normalized
         last_raw_text = raw_text
         last_errors = validation_errors
