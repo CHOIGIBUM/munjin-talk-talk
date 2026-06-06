@@ -7,6 +7,9 @@ import DoctorOnePager from './DoctorOnePager.jsx'
 import DoctorAgendaPanel from './DoctorAgendaPanel.jsx'
 import './DoctorView.css'
 
+// 의사용 원페이퍼 화면의 컨테이너입니다.
+// 좌측 원페이퍼 요약과 우측 환자 질문/답변 패널을 같은 sessionId로 묶어 보여줍니다.
+
 // UI 개선안 2 적용
 // ────────────────────────────────────────
 // 좌측 (visit_type 분기):
@@ -28,6 +31,7 @@ export default function DoctorView() {
   const [loading, setLoading] = useState(true)
   const [submitStatus, setSubmitStatus] = useState(null)
 
+  // 화면 진입 시 백엔드에 저장된 최신 onepager JSON을 조회합니다.
   useEffect(() => {
     setLoading(true)
     getOnePager(sessionId).then(data => {
@@ -36,6 +40,7 @@ export default function DoctorView() {
     })
   }, [sessionId])
 
+  // 의사가 작성한 답변과 강조사항을 저장하고 환자 안내문 생성 결과 상태를 표시합니다.
   const handleSubmitResponse = async ({ answers, additionalNotes }) => {
     if (!sessionId) {
       setSubmitStatus('error')

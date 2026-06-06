@@ -1,3 +1,5 @@
+/* 의사 대기열 화면 스타일입니다. */
+/* 환자 상태별 badge와 우선 확인 row 강조를 여기서 관리합니다. */
 .doctor-queue-page {
   width: min(1040px, calc(100vw - 40px));
   margin: 0 auto;

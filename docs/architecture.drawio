@@ -41,7 +41,7 @@
         <mxCell id="apiIcon" value="API" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ec4899;strokeColor=#be185d;fontColor=#ffffff;fontSize=20;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="awsCloud">
           <mxGeometry x="340" y="305" width="95" height="95" as="geometry" />
         </mxCell>
-        <mxCell id="apiLabel" value="API Gateway HTTP API&#xa;세션 생성 / 업로드 URL / STT 조회&#xa;추출·매칭·검증 / 원페이퍼 / 안내문" style="text;html=1;strokeColor=none;fillColor=none;fontSize=13;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
+        <mxCell id="apiLabel" value="API Gateway HTTP API&#xa;세션 생성 / Streaming STT URL / process-answer&#xa;추출·매칭·검증 / 원페이퍼 / 안내문" style="text;html=1;strokeColor=none;fillColor=none;fontSize=13;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
           <mxGeometry x="270" y="408" width="240" height="70" as="geometry" />
         </mxCell>
 
@@ -55,21 +55,21 @@
         <mxCell id="iamIcon" value="IAM" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ef4444;strokeColor=#b91c1c;fontColor=#ffffff;fontSize=18;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="awsCloud">
           <mxGeometry x="560" y="580" width="95" height="95" as="geometry" />
         </mxCell>
-        <mxCell id="iamLabel" value="Lambda 실행 역할&#xa;S3 / DynamoDB / Transcribe / Bedrock 권한" style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
+        <mxCell id="iamLabel" value="Lambda 실행 역할&#xa;DynamoDB / Transcribe Streaming / Bedrock 권한" style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
           <mxGeometry x="500" y="684" width="220" height="52" as="geometry" />
         </mxCell>
 
         <mxCell id="s3Icon" value="S3" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#16a34a;strokeColor=#15803d;fontColor=#ffffff;fontSize=24;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="awsCloud">
           <mxGeometry x="850" y="145" width="105" height="105" as="geometry" />
         </mxCell>
-        <mxCell id="s3Label" value="Amazon S3&#xa;음성 파일 / 전사 결과 JSON 저장&#xa;Amplify 도메인 CORS 허용" style="text;html=1;strokeColor=none;fillColor=none;fontSize=13;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
+        <mxCell id="s3Label" value="Amazon S3&#xa;배포/임시 산출물 저장&#xa;환자 음성 미저장" style="text;html=1;strokeColor=none;fillColor=none;fontSize=13;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
           <mxGeometry x="785" y="260" width="235" height="65" as="geometry" />
         </mxCell>
 
         <mxCell id="transcribeIcon" value="STT" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#0891b2;strokeColor=#0e7490;fontColor=#ffffff;fontSize=22;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="awsCloud">
           <mxGeometry x="1095" y="145" width="105" height="105" as="geometry" />
         </mxCell>
-        <mxCell id="transcribeLabel" value="Amazon Transcribe&#xa;한국어 음성 전사&#xa;환자 확인용 transcript 생성" style="text;html=1;strokeColor=none;fillColor=none;fontSize=13;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
+        <mxCell id="transcribeLabel" value="Amazon Transcribe Streaming&#xa;한국어 실시간 전사&#xa;text만 문진 파이프라인 전달" style="text;html=1;strokeColor=none;fillColor=none;fontSize=13;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
           <mxGeometry x="1040" y="260" width="215" height="65" as="geometry" />
         </mxCell>
 
@@ -114,7 +114,7 @@
         <mxCell id="eApiLambda" value="Invoke" style="endArrow=block;html=1;rounded=0;strokeColor=#be185d;fontSize=12;strokeWidth=2;" edge="1" parent="1" source="apiIcon" target="lambdaIcon">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ePatientS3" value="presigned URL로 음성 PUT" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;fontSize=12;strokeWidth=2;" edge="1" parent="1" source="routes" target="s3Icon">
+        <mxCell id="ePatientS3" value="음성 저장 없음" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;fontSize=12;strokeWidth=2;" edge="1" parent="1" source="routes" target="s3Icon">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="610" y="350" />
@@ -122,13 +122,13 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="eLambdaS3" value="업로드 URL 발급 / 결과 읽기" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;fontSize=12;" edge="1" parent="1" source="lambdaIcon" target="s3Icon">
+        <mxCell id="eLambdaS3" value="배포 산출물만" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;fontSize=12;" edge="1" parent="1" source="lambdaIcon" target="s3Icon">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="eLambdaTranscribe" value="작업 시작·조회" style="endArrow=block;html=1;rounded=0;strokeColor=#0891b2;fontSize=12;" edge="1" parent="1" source="lambdaIcon" target="transcribeIcon">
+        <mxCell id="eLambdaTranscribe" value="WebSocket URL 서명" style="endArrow=block;html=1;rounded=0;strokeColor=#0891b2;fontSize=12;" edge="1" parent="1" source="lambdaIcon" target="transcribeIcon">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="eTranscribeS3" value="전사 결과 저장" style="endArrow=block;html=1;rounded=0;strokeColor=#0891b2;fontSize=12;dashed=1;" edge="1" parent="1" source="transcribeIcon" target="s3Icon">
+        <mxCell id="eTranscribeS3" value="텍스트 이벤트 반환" style="endArrow=block;html=1;rounded=0;strokeColor=#0891b2;fontSize=12;dashed=1;" edge="1" parent="1" source="transcribeIcon" target="s3Icon">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="eLambdaBedrock" value="모델 호출" style="endArrow=block;html=1;rounded=0;strokeColor=#db2777;fontSize=12;strokeWidth=2;" edge="1" parent="1" source="lambdaIcon" target="bedrockIcon">

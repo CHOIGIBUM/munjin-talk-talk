@@ -1,12 +1,12 @@
 // 초진과 재진의 4문항 정의. 흐름 단계의 진실의 원천(single source of truth).
 //
 // 각 질문의 question_type은 백엔드 extract Lambda에 전달되어
-// LLM 프롬프트 분기에 사용됨 (옵션 C 하이브리드 전략):
-//   - chief_complaint / progress       → Claude Span Extract
-//   - onset / adherence                → 규칙 기반 (LLM 호출 없음)
-//   - current_medications / new_symptoms → Claude Entity Extract
-//   - patient_questions / unresolved_questions → Claude Categorizer
+// LLM 프롬프트 분기에 사용됨:
+//   - chief_complaint / progress / new_symptoms → Nova Pro + Hybrid IR
+//   - onset / current_medications / adherence / patient_questions → Nova Lite 구조화
 
+// 환자 문진 질문 스키마입니다.
+// question_type은 백엔드 extract/match 프롬프트와 연결되므로 UI 문구를 바꿔도 이 값은 신중히 수정해야 합니다.
 export const QUESTIONS = {
   initial: [
     {
@@ -25,7 +25,7 @@ export const QUESTIONS = {
       sub: '날짜가 명확하지 않으셔도\n"며칠 전부터" 정도로 괜찮아요',
       example: '"그저께 저녁부터요."',
       question_type: 'onset',
-      processing: 'rule_based'  // LLM 호출 없음
+      processing: 'llm_only'
     },
     {
       id: 'Q3',
@@ -34,7 +34,7 @@ export const QUESTIONS = {
       sub: '매일 드시는 약, 영양제, 한약 등\n전부 말씀해 주시면 좋아요',
       example: '"혈압약을 매일 아침에 먹어요."',
       question_type: 'current_medications',
-      processing: 'llm_only'  // Claude만 (벡터 매칭 없음)
+      processing: 'llm_only'
     },
     {
       id: 'Q4',
@@ -43,7 +43,7 @@ export const QUESTIONS = {
       sub: '복약 · 음식 · 검사 · 생활 무엇이든\n편하게 말씀해 주세요',
       example: '"양파즙도 같이 먹어도 되나요?"',
       question_type: 'patient_questions',
-      processing: 'llm_only'  // Claude Categorizer만
+      processing: 'llm_only'
     }
   ],
   followup: [
@@ -63,7 +63,7 @@ export const QUESTIONS = {
       sub: '빠뜨리고 못 드신 날, 부작용, 효과 등을\n편하게 말씀해 주세요',
       example: '"잘 먹었는데 한 번씩 깜빡했어요."',
       question_type: 'adherence',
-      processing: 'rule_based'
+      processing: 'llm_only'
     },
     {
       id: 'Q3',

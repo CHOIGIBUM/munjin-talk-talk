@@ -1,3 +1,4 @@
+/* 환자 태블릿 세션 진입/오류 상태 화면 스타일입니다. */
 .kiosk-missing {
   width: min(560px, calc(100vw - 32px));
   padding: 30px;
