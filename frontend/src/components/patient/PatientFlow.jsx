@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import TabletFrame from '../tablet/TabletFrame.jsx'
 import VisitTypeScreen from './VisitTypeScreen.jsx'
 import VoiceScreen from './VoiceScreen.jsx'
@@ -6,9 +6,15 @@ import ConfirmTranscriptScreen from './ConfirmTranscriptScreen.jsx'
 import SafetyAlertScreen from './SafetyAlertScreen.jsx'
 import StaffCallScreen from './StaffCallScreen.jsx'
 import DoneScreen from './DoneScreen.jsx'
+import PrivacyConsentModal, {
+  PRIVACY_CONSENT_VERSION,
+  PRIVACY_NOTICE_ITEMS,
+  RETENTION_NOTICE,
+  SENSITIVE_NOTICE_ITEMS,
+} from './PrivacyConsentModal.jsx'
 import { QUESTIONS } from '../../config/questions.js'
 import { detectSafetyKeyword } from '../../config/safetyKeywords.js'
-import { processTranscript } from '../../services/api.js'
+import { processTranscript, recordPatientConsent } from '../../services/api.js'
 
 const EMPTY_PATIENT = {
   name: '환자',
@@ -25,6 +31,10 @@ const STEPS = {
   SAFETY_ALERT: 'safety_alert',
   STAFF_CALL: 'staff_call',
   DONE: 'done',
+}
+
+function consentStorageKey(sessionId) {
+  return `munjin:privacy-consent:${sessionId || 'unknown'}`
 }
 
 // 환자 태블릿 문진의 상태 머신입니다.
@@ -51,11 +61,71 @@ export default function PatientFlow({
   const [pendingSafetyResult, setPendingSafetyResult] = useState(null)
   const [isEndingIntake, setIsEndingIntake] = useState(false)
   const [intakeStopped, setIntakeStopped] = useState(false)
+  const [consentAccepted, setConsentAccepted] = useState(false)
+  const [consentRejected, setConsentRejected] = useState(false)
+  const [consentSaving, setConsentSaving] = useState(false)
+  const [consentError, setConsentError] = useState('')
 
   const questions = visitType ? QUESTIONS[visitType] : []
   const currentQuestion = questions[questionIndex]
   const activeSessionId = sessionId || ''
   const displayPatient = patient || EMPTY_PATIENT
+
+  useEffect(() => {
+    if (!activeSessionId) {
+      setConsentAccepted(false)
+      return
+    }
+    setConsentAccepted(window.sessionStorage.getItem(consentStorageKey(activeSessionId)) === PRIVACY_CONSENT_VERSION)
+    setConsentRejected(false)
+    setConsentError('')
+  }, [activeSessionId])
+
+  const saveConsent = useCallback(async (accepted) => {
+    if (!activeSessionId) {
+      setConsentError('문진 세션을 찾을 수 없습니다. 접수 직원에게 말씀해 주세요.')
+      return
+    }
+    setConsentSaving(true)
+    setConsentError('')
+    try {
+      await recordPatientConsent(activeSessionId, {
+        accepted,
+        version: PRIVACY_CONSENT_VERSION,
+        privacy_items: PRIVACY_NOTICE_ITEMS,
+        sensitive_items: SENSITIVE_NOTICE_ITEMS,
+        retention_notice: RETENTION_NOTICE,
+      })
+      if (accepted) {
+        window.sessionStorage.setItem(consentStorageKey(activeSessionId), PRIVACY_CONSENT_VERSION)
+        setConsentAccepted(true)
+        setConsentRejected(false)
+      } else {
+        window.sessionStorage.removeItem(consentStorageKey(activeSessionId))
+        setConsentRejected(true)
+        onStaffCallRequest?.({
+          sessionId: activeSessionId,
+          questionId: currentQuestion?.id || null,
+          step: 'privacy_consent',
+          reason: 'consent_rejected',
+        })
+      }
+    } catch (error) {
+      console.error('privacy consent save failed:', error)
+      setConsentError('동의 이력을 저장하지 못했습니다. 네트워크 상태를 확인하거나 직원에게 말씀해 주세요.')
+    } finally {
+      setConsentSaving(false)
+    }
+  }, [activeSessionId, currentQuestion, onStaffCallRequest])
+
+  const handleConsentStaffHelp = useCallback(() => {
+    onStaffCallRequest?.({
+      sessionId: activeSessionId,
+      questionId: currentQuestion?.id || null,
+      step: 'privacy_consent',
+      reason: 'privacy_consent_help',
+    })
+  }, [activeSessionId, currentQuestion, onStaffCallRequest])
 
   const handleStaffCall = useCallback(() => {
     onStaffCallRequest?.({
@@ -340,7 +410,18 @@ export default function PatientFlow({
 
   return (
     <TabletFrame visitType={visitType} variant={frameVariant}>
-      {renderScreen()}
+      {consentAccepted && renderScreen()}
+      {!consentAccepted && (
+        <PrivacyConsentModal
+          patientName={`${displayPatient.name || '환자'} ${displayPatient.honorific || ''}`.trim()}
+          isSaving={consentSaving}
+          error={consentError}
+          rejected={consentRejected}
+          onAccept={() => saveConsent(true)}
+          onReject={() => saveConsent(false)}
+          onStaffHelp={handleConsentStaffHelp}
+        />
+      )}
     </TabletFrame>
   )
 }

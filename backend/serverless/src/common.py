@@ -13,7 +13,7 @@ from guide import get_guide, save_doctor_response
 from onepager import build_onepager, validate_and_save
 from orchestration import process_answer
 from retrieval import match_slots
-from sessions import create_session, get_session, list_sessions, public_session, update_session
+from sessions import create_session, get_session, list_sessions, public_session, save_patient_consent, update_session
 from utils import parse_body, response
 
 __all__ = [
@@ -30,6 +30,7 @@ __all__ = [
     "public_session",
     "response",
     "save_doctor_response",
+    "save_patient_consent",
     "update_session",
     "validate_and_save",
 ]

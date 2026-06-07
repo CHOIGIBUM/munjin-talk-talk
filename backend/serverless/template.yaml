@@ -91,6 +91,12 @@ Resources:
             ApiId: !Ref MunjinHttpApi
             Path: /sessions/{session_id}/staff-help
             Method: POST
+        SaveConsent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /sessions/{session_id}/consent
+            Method: POST
         TranscribeStreamUrl:
           Type: HttpApi
           Properties:

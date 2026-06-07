@@ -8,6 +8,7 @@ export {
   createIntakeSession,
   getDoctorQueue,
   getIntakeSession,
+  recordPatientConsent,
   requestStaffHelp,
 } from './api/sessions.js'
 

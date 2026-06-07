@@ -22,6 +22,7 @@ from common import (
     public_session,
     response,
     save_doctor_response,
+    save_patient_consent,
     update_session,
     validate_and_save,
 )
@@ -63,6 +64,14 @@ def route(method, path, event):
         if not get_session(session_id):
             return response(404, {"error": "session_not_found"})
         session = update_session(session_id, {"status": "staff_help"})
+        return response(200, public_session(session))
+
+    match = re.fullmatch(r"/sessions/([^/]+)/consent", path)
+    if method == "POST" and match:
+        session_id = unquote_plus(match.group(1))
+        session = save_patient_consent(session_id, body)
+        if not session:
+            return response(404, {"error": "session_not_found"})
         return response(200, public_session(session))
 
     if method == "POST" and path == "/transcribe-stream-url":

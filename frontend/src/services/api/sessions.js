@@ -57,3 +57,15 @@ export async function requestStaffHelp(sessionId) {
   if (!res.ok) return null
   return normalizeSession(await res.json())
 }
+
+export async function recordPatientConsent(sessionId, consent) {
+  ensureApiConfigured()
+
+  const res = await fetch(`${API_BASE_URL}/sessions/${encodeURIComponent(sessionId)}/consent`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(consent),
+  })
+  if (!res.ok) throw new Error('개인정보 동의 이력 저장 실패')
+  return normalizeSession(await res.json())
+}
