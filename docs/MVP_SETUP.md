@@ -83,7 +83,6 @@ Copy-Item .env.example .env.local
 
 ```text
 VITE_API_BASE_URL=https://<api-id>.execute-api.ap-northeast-2.amazonaws.com
-VITE_ENABLE_MOCKS=false
 ```
 
 실행:
@@ -100,30 +99,12 @@ http://127.0.0.1:5173/staff
 
 ---
 
-## 3. UI 목업 모드
-
-AWS 없이 화면만 보고 싶을 때:
-
-```text
-VITE_API_BASE_URL=
-VITE_ENABLE_MOCKS=true
-```
-
-주의:
-
-- 이 모드는 실제 Bedrock, Transcribe, DynamoDB를 쓰지 않습니다.
-- 성능 검증이나 LLM 파이프라인 검증으로 보면 안 됩니다.
-- 발표 전 화면 레이아웃 확인용입니다.
-
----
-
-## 4. 실제 MVP 모드
+## 3. 실제 MVP 모드
 
 실제 AWS backend endpoint를 넣습니다.
 
 ```text
 VITE_API_BASE_URL=https://<api-id>.execute-api.ap-northeast-2.amazonaws.com
-VITE_ENABLE_MOCKS=false
 ```
 
 이때 동작:
@@ -363,7 +344,7 @@ console.log(JSON.stringify({
 - CloudWatch에서 `/process-answer` 오류 확인
 - Bedrock model access 확인
 - Pydantic validation error 확인
-- `ALLOW_RULE_FALLBACK=false` 상태에서는 LLM 검증 실패 시 오류가 정상적으로 반환됨
+- LLM 검증 실패 시 rule-base 대체 없이 오류가 정상적으로 반환됨
 
 ### 원페이퍼에 증상이 안 보임
 

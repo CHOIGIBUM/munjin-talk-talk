@@ -45,7 +45,6 @@ backend/
         ├── extraction.py
         ├── extraction_prompts.py
         ├── extraction_schema.py
-        ├── extraction_fallback.py
         ├── langchain_prompting.py
         ├── llm.py
         ├── retrieval.py
@@ -150,16 +149,9 @@ serverless/src/llm.py
 
 ## LLM 사용 원칙
 
-운영 기본값:
-
-```text
-USE_BEDROCK_LLM=true
-ALLOW_RULE_FALLBACK=false
-```
-
 원칙:
 
-- LLM extraction이 우선입니다.
+- LLM extraction은 필수 경로입니다.
 - LLM JSON은 fixed schema를 통과해야 합니다.
 - `source_quote`와 `original_quote`는 환자 원문에 존재해야 합니다.
 - enum 값은 미리 정의된 값만 허용합니다.
@@ -167,19 +159,18 @@ ALLOW_RULE_FALLBACK=false
 - LLM이 생성한 `score`, `confidence`, `probability`, `risk percentage`는 허용하지 않습니다.
 - 검증 실패 시 bounded retry loop를 실행합니다.
 - retry 이후에도 실패하면 저장하지 않고 422 응답을 반환합니다.
-- 안전 플래그가 있는 경우에는 LLM extraction 실패 중에도 safety-only 저장 경로를 사용할 수 있습니다.
+- 안전 플래그가 있는 경우에는 LLM extraction 실패 중에도 safety-only 저장 경로로 위험 신호만 보존할 수 있습니다.
 
 ---
 
-## Rule-based 코드의 위치와 의미
+## Deterministic 코드의 위치와 의미
 
-`extraction_fallback.py`와 일부 helper는 존재하지만 기본 운영 경로가 아닙니다.
+환자 발화 의미 추출은 rule-base로 대체하지 않습니다. 다만 안전 감지와 IR 문서 구성처럼 LLM 판단을 보조·검증하는 deterministic 코드는 남아 있습니다.
 
 | 구분 | 사용 여부 | 설명 |
 | --- | --- | --- |
 | LLM extraction | 기본 사용 | 실제 문진 의미 추출 |
 | Pydantic validation | 항상 사용 | LLM JSON 저장 전 검증 |
-| rule fallback extraction | 기본 미사용 | `ALLOW_RULE_FALLBACK=true`일 때만 사용 |
 | safety flag rule | 사용 | 객혈, 호흡곤란 등 즉시 직원/의료진 확인이 필요한 표현 감지 |
 | IR document build rule | 사용 | 원천 JSON을 검색 문서로 접는 deterministic 변환. 환자 발화에서 증상을 추출하는 로직은 아님 |
 
@@ -245,7 +236,7 @@ serverless/src/data/symptom_embeddings_amazon.titan-embed-text-v2_0_512.json
 - 의사 답변은 Nova Lite를 통해 환자용 쉬운 문장으로 변환할 수 있습니다.
 - 의사 강조사항은 LLM이 변형하지 않고 그대로 별도 카드에 표시합니다.
 - guide LLM 출력은 `schemas/guide.py` 검증을 통과해야 합니다.
-- guide LLM이 실패하면 deterministic fallback으로 최소 안내문을 생성합니다.
+- guide LLM이 실패하면 빈 안내문과 실패 사유를 저장하고 validator 실패로 반환합니다.
 
 ---
 

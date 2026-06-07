@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
-import { getOnePager, isMockApiEnabled } from '../../services/api.js'
+import { getOnePager } from '../../services/api.js'
 import { normalizeOnePager } from '../../services/onepagerAdapter.js'
-import { MOCK_INITIAL, MOCK_FOLLOWUP } from './DoctorOnePager.mocks.js'
 import { CheckIcon, ClueChip, CopyIcon, clueKey, getCluesForSlot, getUnlinkedClues } from './DoctorOnePagerParts.jsx'
 import './DoctorOnePager.css'
 
@@ -14,12 +13,11 @@ import './DoctorOnePager.css'
 // - 재진의 변화 추적 카드를 "오늘 말한 불편함" 디자인으로 변경
 //   (EMR 연동 안 되므로 이전 진료 추적 불가, 환자가 새로 말한 증상 그대로 표시)
 // - 좌우 패널 길이 차이로 무너지지 않도록 균형 조정
-// - "위험 — 우선 평가 필요" amber 배지는 유지 (재진 객혈 시연용)
+// - "위험 — 우선 평가 필요" amber 배지는 실제 safety flag가 있을 때만 표시
 
 export default function DoctorOnePager({ sessionId, sessionData, sidePanel, renderAgenda = true }) {
   const [apiData, setApiData] = useState(null)
   const [copied, setCopied] = useState(false)
-  const [mockOverride, setMockOverride] = useState(null)
   const [checked, setChecked] = useState({})  // {0: true, 2: true} 형태
 
   // sessionData가 직접 내려오지 않으면 sessionId로 onepager를 조회합니다.
@@ -31,15 +29,14 @@ export default function DoctorOnePager({ sessionId, sessionData, sidePanel, rend
   // 화면은 항상 normalizeOnePager 결과만 사용합니다.
   // 백엔드 원본 구조 변화는 onepagerAdapter에서 흡수합니다.
   const data = useMemo(() => {
-    const fallback = isMockApiEnabled() ? (mockOverride === 'followup' ? MOCK_FOLLOWUP : MOCK_INITIAL) : null
-    const source = sessionData || apiData || fallback
-    return source ? normalizeOnePager(source, fallback) : null
-  }, [sessionData, apiData, mockOverride])
+    const source = sessionData || apiData
+    return source ? normalizeOnePager(source) : null
+  }, [sessionData, apiData])
 
-  // mock 변경 시 체크 초기화
+  // 세션이 바뀌면 이전 체크 상태가 섞이지 않게 초기화합니다.
   useEffect(() => {
     setChecked({})
-  }, [mockOverride])
+  }, [sessionId, sessionData])
 
   if (!data) {
     return (
@@ -73,20 +70,6 @@ export default function DoctorOnePager({ sessionId, sessionData, sidePanel, rend
 
   return (
     <div className={`onepaper-v4 ${themeClass}`}>
-
-      {/* 데모용 토글 (실시연 시 제거) */}
-      {isMockApiEnabled() && !sessionData && !apiData && (
-        <div className="onepaper-demo-toggle">
-          <button
-            className={!mockOverride || mockOverride === 'initial' ? 'active' : ''}
-            onClick={() => setMockOverride('initial')}
-          >Mock: 초진</button>
-          <button
-            className={mockOverride === 'followup' ? 'active' : ''}
-            onClick={() => setMockOverride('followup')}
-          >Mock: 재진 (위험 분기)</button>
-        </div>
-      )}
 
       {/* 위험 플래그 */}
       {data.safety_flag && data.safety_flag.severity === 'high' && (

@@ -94,7 +94,7 @@
           <mxGeometry x="1035" y="730" width="225" height="65" as="geometry" />
         </mxCell>
 
-        <mxCell id="guardrail" value="애플리케이션 검증 계층&#xa;rule fallback off / 환자 원문 quote 검증 / 진단·처방 출력 금지" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff1f2;strokeColor=#e11d48;fontSize=13;fontStyle=1;spacing=8;" vertex="1" parent="awsCloud">
+        <mxCell id="guardrail" value="애플리케이션 검증 계층&#xa;rule extraction 없음 / 환자 원문 quote 검증 / 진단·처방 출력 금지" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff1f2;strokeColor=#e11d48;fontSize=13;fontStyle=1;spacing=8;" vertex="1" parent="awsCloud">
           <mxGeometry x="520" y="510" width="245" height="70" as="geometry" />
         </mxCell>
 

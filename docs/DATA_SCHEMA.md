@@ -456,7 +456,7 @@ LLM span을 Hybrid IR로 표준 증상명에 매칭한 결과입니다.
 | `symptom_slots` | LLM span + Hybrid IR 결과 |
 | `clinical_clues` | LLM extraction 결과 중 검증 통과한 clue |
 | `agenda` | Q4 LLM extraction questions |
-| `doctor_brief` | 원페이퍼 review LLM 또는 fallback |
+| `doctor_brief` | 원페이퍼 review LLM |
 | `review_items` | Nova Pro review LLM |
 | `transfer_text` | 원페이퍼 JSON 기반 Nova Pro review LLM |
 | `safety_flags` | quick safety flag와 저장 결과 |
@@ -568,7 +568,7 @@ LangGraph 처리 경로입니다.
 - quote는 원문 substring이어야 합니다.
 - LLM 임의 score는 금지합니다.
 - 증상 score는 IR 계산 점수입니다.
-- rule-based fallback은 기본 운영 경로가 아닙니다.
+- LLM extraction 실패는 rule-based 결과로 대체하지 않습니다.
 - 환자 음성 파일은 S3에 저장하지 않습니다.
 - 의사 강조사항은 환자 안내문에서 원문 그대로 표시합니다.
 

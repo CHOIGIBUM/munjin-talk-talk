@@ -48,7 +48,6 @@ backend/serverless/
     ├── extraction.py
     ├── extraction_prompts.py
     ├── extraction_schema.py
-    ├── extraction_fallback.py
     ├── retrieval.py
     ├── retrieval_documents.py
     ├── retrieval_embeddings.py
@@ -230,10 +229,6 @@ amazon.titan-embed-text-v2:0
 | --- | --- | --- |
 | `SESSIONS_TABLE` | `MunjinSessions` | DynamoDB 세션 테이블 |
 | `CUSTOM_VOCABULARY` | 빈 값 | Transcribe custom vocabulary |
-| `USE_BEDROCK_LLM` | `true` | Bedrock LLM extraction 사용 |
-| `ALLOW_RULE_FALLBACK` | `false` | LLM 실패 시 rule fallback 허용 |
-| `ENABLE_BEDROCK_REVIEW` | `true` | 원페이퍼 review LLM 사용 |
-| `ENABLE_BEDROCK_GUIDE` | `true` | 환자 안내문 LLM 사용 |
 | `STRONG_MODEL_ID` | `apac.amazon.nova-pro-v1:0` | 고난도 extraction |
 | `LIGHT_MODEL_ID` | `apac.amazon.nova-lite-v1:0` | 저난도 extraction |
 | `REVIEWER_MODEL_ID` | `STRONG_MODEL_ID` | 원페이퍼 review |
@@ -243,7 +238,6 @@ amazon.titan-embed-text-v2:0
 | `GUIDE_MAX_TOKENS` | `900` | guide max token |
 | `EXTRACTION_RETRY_ATTEMPTS` | `3` | extraction retry 횟수 |
 | `REVIEW_RETRY_ATTEMPTS` | `2` | review retry 횟수 |
-| `USE_TITAN_EMBEDDING` | `true` | Titan Vector IR 사용 |
 | `EMBEDDING_MODEL_ID` | `amazon.titan-embed-text-v2:0` | embedding 모델 |
 | `EMBEDDING_DIMENSIONS` | `512` | embedding 차원 |
 | `HYBRID_BM25_WEIGHT` | `0.35` | 후보 정렬 시 BM25 비중 |

@@ -1,12 +1,11 @@
 """Question-level semantic parsing entrypoint.
 
 이 파일은 `/extract` 또는 `/process-answer`에서 호출되는 얇은 진입점입니다.
-실제 프롬프트, schema 검증, fallback 추출은 전용 파일로 분리했습니다.
+실제 프롬프트와 schema/source_quote 검증은 전용 파일로 분리했습니다.
 """
 
 import hashlib
 
-from extraction_fallback import extract_agenda, extract_rule_based
 from extraction_prompts import (
     build_extraction_prompt,
     build_extraction_repair_note,
@@ -15,34 +14,19 @@ from extraction_prompts import (
 from extraction_schema import normalize_extraction_output
 from llm import call_bedrock_json
 from settings import (
-    ALLOW_RULE_FALLBACK,
     EXTRACTION_RETRY_ATTEMPTS,
     MAX_LLM_TOKENS,
-    USE_BEDROCK_LLM,
 )
 from utils import normalize_visit_type
 
 
 def extract_question(body):
-    """Bedrock LLM을 우선 사용하고, 명시적으로 허용된 경우에만 fallback을 씁니다."""
-    question_type = body.get("question_type") or body.get("questionType")
+    """Bedrock LLM extraction을 수행하고 실패를 rule-base로 숨기지 않습니다."""
     transcript = (body.get("transcript") or "").strip()
-
-    if not USE_BEDROCK_LLM and not ALLOW_RULE_FALLBACK:
-        return extraction_error(
-            transcript,
-            "bedrock_disabled",
-            "Bedrock LLM extraction is required. Enable USE_BEDROCK_LLM or explicitly allow fallback.",
-        )
-
-    if USE_BEDROCK_LLM:
-        try:
-            return extract_question_bedrock(body)
-        except Exception as exc:
-            if not ALLOW_RULE_FALLBACK:
-                return extraction_error(transcript, "bedrock_error", str(exc))
-
-    return extract_rule_based(question_type, transcript)
+    try:
+        return extract_question_bedrock(body)
+    except Exception as exc:
+        return extraction_error(transcript, "bedrock_error", str(exc))
 
 
 def extract_question_bedrock(body):

@@ -97,9 +97,21 @@ export default function PatientGuideScreen() {
     speechSynthesis.speak(utter)
   }
 
-  const handleShareSMS = () => {
-    // 실제 구현 시 보호자 전화번호 입력 모달 → AWS SNS 호출
-    alert('보호자 휴대폰으로 안내문이 전송되었습니다. (시연 mock)')
+  const handleShareSMS = async () => {
+    const shareUrl = window.location.href
+    const shareTitle = guide?.patient_name_masked
+      ? `${guide.patient_name_masked} 어르신 안내문`
+      : '문진톡톡 환자 안내문'
+    if (navigator.share) {
+      await navigator.share({ title: shareTitle, url: shareUrl })
+      return
+    }
+    if (navigator.clipboard) {
+      await navigator.clipboard.writeText(shareUrl)
+      alert('안내문 링크를 복사했습니다. 보호자에게 붙여넣어 공유해 주세요.')
+      return
+    }
+    alert('이 브라우저에서는 공유 기능을 지원하지 않습니다. 종이 출력 기능을 이용해 주세요.')
   }
 
   // 인쇄 버튼은 별도 PDF 생성 없이 브라우저 print CSS를 사용합니다.

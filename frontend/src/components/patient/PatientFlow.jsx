@@ -8,15 +8,7 @@ import StaffCallScreen from './StaffCallScreen.jsx'
 import DoneScreen from './DoneScreen.jsx'
 import { QUESTIONS } from '../../config/questions.js'
 import { detectSafetyKeyword } from '../../config/safetyKeywords.js'
-import { processTranscript, createSession, isMockApiEnabled } from '../../services/api.js'
-
-const MOCK_PATIENT = {
-  name: '김*자',
-  honorific: '어르신',
-  age: 74,
-  gender: '여성',
-  receiptId: 'A-0427',
-}
+import { processTranscript } from '../../services/api.js'
 
 const EMPTY_PATIENT = {
   name: '환자',
@@ -54,7 +46,6 @@ export default function PatientFlow({
   const [transcript, setTranscript] = useState('')
   const [safetyKeyword, setSafetyKeyword] = useState(null)
   const [answers, setAnswers] = useState([])
-  const [session] = useState(() => sessionId ? { sessionId, startedAt: new Date().toISOString() } : createSession())
   const [prevStep, setPrevStep] = useState(null)
   const [isTranscribing, setIsTranscribing] = useState(false)
   const [pendingSafetyResult, setPendingSafetyResult] = useState(null)
@@ -63,17 +54,18 @@ export default function PatientFlow({
 
   const questions = visitType ? QUESTIONS[visitType] : []
   const currentQuestion = questions[questionIndex]
-  const displayPatient = patient || (isMockApiEnabled() ? MOCK_PATIENT : EMPTY_PATIENT)
+  const activeSessionId = sessionId || ''
+  const displayPatient = patient || EMPTY_PATIENT
 
   const handleStaffCall = useCallback(() => {
     onStaffCallRequest?.({
-      sessionId: session.sessionId,
+      sessionId: activeSessionId,
       questionId: currentQuestion?.id || null,
       step,
     })
     setPrevStep(step)
     setStep(STEPS.STAFF_CALL)
-  }, [currentQuestion, onStaffCallRequest, session.sessionId, step])
+  }, [activeSessionId, currentQuestion, onStaffCallRequest, step])
 
   const handleStaffCallReturn = useCallback(() => {
     setStep(prevStep || STEPS.VISIT_TYPE)
@@ -106,7 +98,7 @@ export default function PatientFlow({
 
     if (questionIndex >= questions.length - 1) {
       onComplete?.({
-        sessionId: session.sessionId,
+        sessionId: activeSessionId,
         visitType,
         answers: nextAnswers,
       })
@@ -123,20 +115,21 @@ export default function PatientFlow({
     onTranscriptConfirmed,
     questionIndex,
     questions.length,
-    session.sessionId,
+    activeSessionId,
     visitType,
   ])
 
   const runBackendPipeline = useCallback(async (answerText) => {
     if (!currentQuestion) throw new Error('missing_question')
+    if (!activeSessionId) throw new Error('missing_session')
     return processTranscript({
-      sessionId: session.sessionId,
+      sessionId: activeSessionId,
       questionId: currentQuestion.id,
       questionType: currentQuestion.question_type,
       visitType,
       transcript: answerText,
     })
-  }, [currentQuestion, session.sessionId, visitType])
+  }, [activeSessionId, currentQuestion, visitType])
 
   const handleVoiceFinish = useCallback((sttText) => {
     const answerText = String(sttText || '').trim()
@@ -167,7 +160,7 @@ export default function PatientFlow({
         setSafetyKeyword(safety)
         setPendingSafetyResult(null)
         onStaffCallRequest?.({
-          sessionId: session.sessionId,
+          sessionId: activeSessionId,
           questionId: currentQuestion?.id || null,
           step: STEPS.SAFETY_ALERT,
           reason: 'safety_keyword',
@@ -192,7 +185,7 @@ export default function PatientFlow({
     } finally {
       setIsTranscribing(false)
     }
-  }, [advanceWithConfirmedAnswer, currentQuestion, onStaffCallRequest, runBackendPipeline, session.sessionId, transcript])
+  }, [activeSessionId, advanceWithConfirmedAnswer, currentQuestion, onStaffCallRequest, runBackendPipeline, transcript])
 
   const handleSafetyContinue = useCallback(async () => {
     const answerText = transcript.trim()
@@ -242,7 +235,7 @@ export default function PatientFlow({
       console.error('Safety end failed:', err)
     } finally {
       onComplete?.({
-        sessionId: session.sessionId,
+        sessionId: activeSessionId,
         visitType,
         answers: nextAnswers,
         stopped: true,
@@ -261,7 +254,7 @@ export default function PatientFlow({
     onTranscriptConfirmed,
     pendingSafetyResult,
     runBackendPipeline,
-    session.sessionId,
+    activeSessionId,
     transcript,
     visitType,
   ])
@@ -281,7 +274,7 @@ export default function PatientFlow({
       case STEPS.Q_VOICE:
         return (
           <VoiceScreen
-            sessionId={session.sessionId}
+            sessionId={activeSessionId}
             patient={displayPatient}
             visitType={visitType}
             question={currentQuestion}

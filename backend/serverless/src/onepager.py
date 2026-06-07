@@ -15,7 +15,6 @@ from onepager_sections import (
     slot_to_symptom_slot,
 )
 from sessions import create_session, get_session, update_session
-from settings import ENABLE_BEDROCK_REVIEW, USE_BEDROCK_LLM
 from utils import format_hhmm, mask_name, normalize_visit_type, response
 
 
@@ -103,7 +102,7 @@ def build_onepager(session):
         " ".join([r.get("text", "") for r in responses.values() if isinstance(r, dict)]),
         q1.get("matched_slots", []) + q3.get("matched_slots", []),
     )
-    fallback_review_items = build_review_items(slots, agenda, safety, clinical)
+    heuristic_review_candidates = build_review_items(slots, agenda, safety, clinical)
 
     onepager = {
         "patient_summary": build_patient_summary(patient, session, visit_type),
@@ -118,15 +117,8 @@ def build_onepager(session):
     }
 
     should_run_final_review = bool(q4) or bool(safety)
-    if USE_BEDROCK_LLM and ENABLE_BEDROCK_REVIEW and responses and should_run_final_review:
-        onepager = apply_bedrock_onepager_review(session, onepager, fallback_review_items)
-
-    if not onepager.get("review_items"):
-        onepager["review_items"] = fallback_review_items
-        onepager["review_item_generation"] = {
-            "method": "rule_fallback",
-            "reason": (onepager.get("llm_review") or {}).get("error") or "llm_review_empty",
-        }
+    if responses and should_run_final_review:
+        onepager = apply_bedrock_onepager_review(session, onepager, heuristic_review_candidates)
     return onepager
 
 

@@ -1,5 +1,4 @@
-import { API_BASE_URL, ensureApiConfigured, sleep, useMockApi } from './client.js'
-import { mockProcessResponse } from './mockResponses.js'
+import { API_BASE_URL, ensureApiConfigured } from './client.js'
 
 // Submit the already-streamed transcript to the backend orchestration graph.
 // The backend runs Bedrock extraction, schema validation, symptom IR, session
@@ -11,10 +10,6 @@ export async function processTranscript({
   visitType,
   transcript,
 }) {
-  if (useMockApi()) {
-    await sleep(600)
-    return mockProcessResponse(questionType, visitType, transcript)
-  }
   ensureApiConfigured()
 
   const res = await fetch(`${API_BASE_URL}/process-answer`, {

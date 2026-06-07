@@ -35,13 +35,13 @@ LOW_VALUE_NEGATIVE_TASK_PATTERNS = [
 ]
 
 
-def apply_bedrock_onepager_review(session, onepager, fallback_review_items=None):
+def apply_bedrock_onepager_review(session, onepager, heuristic_review_candidates=None):
     """Nova Pro review를 수행하고, 비어 있거나 근거 없는 결과면 제한 횟수만큼 재시도합니다."""
     last_error = ""
     attempts = max(1, REVIEW_RETRY_ATTEMPTS)
     for attempt in range(1, attempts + 1):
         try:
-            prompt = build_onepager_review_prompt(session, onepager, fallback_review_items or [])
+            prompt = build_onepager_review_prompt(session, onepager, heuristic_review_candidates or [])
             if last_error:
                 prompt += (
                     "\n\nPrevious final-review output failed validation: "

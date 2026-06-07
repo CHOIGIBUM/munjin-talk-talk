@@ -55,28 +55,15 @@ http://127.0.0.1:5173/staff
 
 ```text
 VITE_API_BASE_URL=
-VITE_ENABLE_MOCKS=false
 ```
 
 ### AWS 백엔드 연결
 
 ```text
 VITE_API_BASE_URL=https://<api-id>.execute-api.<region>.amazonaws.com
-VITE_ENABLE_MOCKS=false
 ```
 
 이 설정에서는 접수, 문진 처리, 원페이퍼 조회, 의사 답변 저장, 안내문 조회가 실제 API Gateway + Lambda 백엔드로 연결됩니다.
-
-### 목업 모드
-
-```text
-VITE_API_BASE_URL=
-VITE_ENABLE_MOCKS=true
-```
-
-목업 모드는 UI 레이아웃 확인과 발표 화면 점검을 위한 모드입니다. 실제 MVP 성능 검증에는 사용하지 않습니다.
-
----
 
 ## 폴더 구조
 
@@ -159,7 +146,6 @@ frontend/
 | `components/doctor/DoctorOnePager.jsx` | 원페이퍼 본문 |
 | `components/doctor/DoctorOnePagerParts.jsx` | 원페이퍼 UI 조각 |
 | `components/doctor/DoctorAgendaPanel.jsx` | 환자 질문, 의사 답변, 환자 강조사항 입력 |
-| `components/doctor/DoctorOnePager.mocks.js` | 목업 데이터 |
 
 원페이퍼 화면에는 증상 매칭 숫자를 표시하지 않습니다. 백엔드 내부에는 `ir_trace`가 남지만, 의료진 UI에는 `매칭됨` 또는 `우선 확인` 상태만 표시합니다. 숫자형 점수가 진단 확률처럼 해석되는 것을 방지하기 위한 처리입니다.
 
@@ -180,26 +166,21 @@ src/services/
 ├── api.js
 ├── transcribeStreaming.js
 ├── onepagerAdapter.js
-├── onepagerBrief.js
-├── demoSessions.js
 └── api/
     ├── client.js
     ├── sessions.js
     ├── transcripts.js
-    ├── doctor.js
-    └── mockResponses.js
+    └── doctor.js
 ```
 
 | 파일 | 역할 |
 | --- | --- |
-| `services/api/client.js` | API base URL, 목업 여부, 공통 helper |
+| `services/api/client.js` | API base URL, 공통 helper |
 | `services/api/sessions.js` | 세션 생성·조회·대기열·직원 도움 요청 |
 | `services/api/transcripts.js` | `/process-answer` 호출 |
 | `services/api/doctor.js` | 원페이퍼 조회, 의사 답변 저장, 안내문 조회 |
 | `services/transcribeStreaming.js` | Amazon Transcribe Streaming WebSocket 통신 |
 | `services/onepagerAdapter.js` | 백엔드 onepaper JSON을 화면용 구조로 변환 |
-| `services/onepagerBrief.js` | 원페이퍼 brief fallback 생성 |
-| `services/demoSessions.js` | 목업 모드 세션 데이터 |
 
 ---
 
@@ -272,7 +253,6 @@ Build command: npm run build
 Build output directory: dist
 Environment variables:
   VITE_API_BASE_URL=https://<api-id>.execute-api.<region>.amazonaws.com
-  VITE_ENABLE_MOCKS=false
 ```
 
 SPA rewrite:

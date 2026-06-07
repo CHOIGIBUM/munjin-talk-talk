@@ -11,8 +11,6 @@ from settings import (
     EMBEDDING_CACHE_PATH,
     EMBEDDING_DIMENSIONS,
     EMBEDDING_MODEL_ID,
-    HYBRID_PRECOMPUTE_DOC_EMBEDDINGS,
-    USE_TITAN_EMBEDDING,
     bedrock_runtime,
 )
 from utils import load_json_file, normalize_text
@@ -48,7 +46,7 @@ def load_packaged_doc_embeddings(docs):
 def embed_text(text):
     """Titan embedding query 호출. 같은 Lambda instance 안에서는 text별로 캐시합니다."""
     text = normalize_text(text)
-    if not text or not USE_TITAN_EMBEDDING:
+    if not text:
         return None
     key = f"{EMBEDDING_MODEL_ID}|{EMBEDDING_DIMENSIONS}|{text}"
     if key in _EMBED_TEXT_CACHE:
@@ -76,9 +74,6 @@ def get_doc_embeddings(docs):
     packaged = load_packaged_doc_embeddings(docs)
     if packaged is not None:
         _IR_DOC_EMBEDDINGS = packaged
-        return _IR_DOC_EMBEDDINGS
-    if not HYBRID_PRECOMPUTE_DOC_EMBEDDINGS:
-        _IR_DOC_EMBEDDINGS = {}
         return _IR_DOC_EMBEDDINGS
     embeddings = {}
     for doc in docs:

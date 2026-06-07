@@ -15,10 +15,6 @@ from botocore.config import Config
 REGION = os.environ.get("AWS_REGION", "ap-northeast-2")
 TABLE_NAME = os.environ.get("SESSIONS_TABLE", "MunjinSessions")
 CUSTOM_VOCABULARY = os.environ.get("CUSTOM_VOCABULARY", "")
-USE_BEDROCK_LLM = os.environ.get("USE_BEDROCK_LLM", "true").lower() == "true"
-ALLOW_RULE_FALLBACK = os.environ.get("ALLOW_RULE_FALLBACK", "false").lower() == "true"
-ENABLE_BEDROCK_REVIEW = os.environ.get("ENABLE_BEDROCK_REVIEW", "true").lower() == "true"
-ENABLE_BEDROCK_GUIDE = os.environ.get("ENABLE_BEDROCK_GUIDE", "true").lower() == "true"
 STRONG_MODEL_ID = os.environ.get("STRONG_MODEL_ID", "apac.amazon.nova-pro-v1:0")
 LIGHT_MODEL_ID = os.environ.get("LIGHT_MODEL_ID", "apac.amazon.nova-lite-v1:0")
 REVIEWER_MODEL_ID = os.environ.get("REVIEWER_MODEL_ID", STRONG_MODEL_ID)
@@ -35,7 +31,6 @@ DISEASES_PATH = DATA_DIR / "diseases_cleaned.json"
 SYMPTOM_INDEX_PATH = DATA_DIR / "symptom_index.json"
 EMBEDDING_MODEL_ID = os.environ.get("EMBEDDING_MODEL_ID", "amazon.titan-embed-text-v2:0")
 EMBEDDING_DIMENSIONS = int(os.environ.get("EMBEDDING_DIMENSIONS", "512"))
-USE_TITAN_EMBEDDING = os.environ.get("USE_TITAN_EMBEDDING", "true").lower() == "true"
 HYBRID_TOP_K = int(os.environ.get("HYBRID_TOP_K", "5"))
 HYBRID_CANDIDATE_K = int(os.environ.get("HYBRID_CANDIDATE_K", "24"))
 HYBRID_ACCEPT_THRESHOLD = float(os.environ.get("HYBRID_ACCEPT_THRESHOLD", "0.18"))
@@ -44,7 +39,6 @@ HYBRID_VECTOR_WEIGHT = float(os.environ.get("HYBRID_VECTOR_WEIGHT", "0.65"))
 HYBRID_MIN_VECTOR_SCORE = float(os.environ.get("HYBRID_MIN_VECTOR_SCORE", "0.12"))
 HYBRID_MIN_BM25_SCORE = float(os.environ.get("HYBRID_MIN_BM25_SCORE", "0.04"))
 HYBRID_MIN_LABEL_SCORE = float(os.environ.get("HYBRID_MIN_LABEL_SCORE", "0.55"))
-HYBRID_PRECOMPUTE_DOC_EMBEDDINGS = os.environ.get("HYBRID_PRECOMPUTE_DOC_EMBEDDINGS", "false").lower() == "true"
 EMBEDDING_CACHE_PATH = DATA_DIR / f"symptom_embeddings_{EMBEDDING_MODEL_ID.replace(':', '_').replace('/', '_')}_{EMBEDDING_DIMENSIONS}.json"
 
 # boto3 client/resource는 모듈 전역에 두어 Lambda warm invocation에서 재사용합니다.

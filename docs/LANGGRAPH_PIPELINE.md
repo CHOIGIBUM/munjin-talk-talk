@@ -537,7 +537,7 @@ Extraction retry는 다음 경우에 발생합니다.
 - `source_quote`가 원문에 없음
 - 증상 문항인데 grounded span이 비어 있음
 
-Retry 후에도 실패하면 rule-based로 조용히 대체하지 않습니다. `ALLOW_RULE_FALLBACK=false`가 기본입니다.
+Retry 후에도 실패하면 rule-based로 조용히 대체하지 않습니다. 현재 운영 코드에는 LLM extraction fallback 경로가 없습니다.
 
 ---
 

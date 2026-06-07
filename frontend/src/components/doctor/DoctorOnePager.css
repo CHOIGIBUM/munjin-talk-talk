@@ -20,31 +20,6 @@
   --visit-accent-light: #ccfbf1;
 }
 
-/* 데모 토글 */
-.onepaper-demo-toggle {
-  display: flex;
-  gap: 8px;
-  padding: 8px;
-  background: #f1f5f9;
-  border-radius: 8px;
-  width: fit-content;
-}
-.onepaper-demo-toggle button {
-  padding: 6px 14px;
-  border: 1px solid #cbd5e1;
-  background: white;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #475569;
-  cursor: pointer;
-}
-.onepaper-demo-toggle button.active {
-  background: #0f2347;
-  color: white;
-  border-color: #0f2347;
-}
-
 /* 위험 플래그 */
 .op-safety-alert {
   display: flex;

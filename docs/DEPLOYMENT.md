@@ -239,7 +239,6 @@ AMPLIFY_DIFF_DEPLOY=false
 목업 모드를 명시적으로 끄고 싶으면:
 
 ```text
-VITE_ENABLE_MOCKS=false
 ```
 
 주의:

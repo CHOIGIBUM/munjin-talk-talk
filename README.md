@@ -186,7 +186,7 @@ flowchart LR
 - `source_quote`와 `original_quote`는 환자 원문에 실제 존재해야 합니다.
 - 예상하지 않은 JSON 필드는 Pydantic에서 거부됩니다.
 - 증상 매칭은 LLM 단독 판단이 아니라 원천 JSON 기반 Hybrid IR을 통과해야 합니다.
-- rule-based fallback은 기본 운영 경로가 아닙니다. 기본값은 `ALLOW_RULE_FALLBACK=false`입니다.
+- rule-based extraction fallback은 운영 코드에서 제거되어 LLM/validator 실패를 조용히 대체하지 않습니다.
 
 ---
 
@@ -297,14 +297,6 @@ AWS 백엔드 연결 시 `frontend/.env.local`:
 
 ```text
 VITE_API_BASE_URL=https://<api-id>.execute-api.<region>.amazonaws.com
-VITE_ENABLE_MOCKS=false
-```
-
-UI 목업 모드:
-
-```text
-VITE_API_BASE_URL=
-VITE_ENABLE_MOCKS=true
 ```
 
 ---
