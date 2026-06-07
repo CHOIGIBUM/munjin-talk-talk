@@ -536,7 +536,7 @@
     <h1>프론트, 백엔드, AI 처리, JSON 저장 구조를 한 번에 보는 문서</h1>
     <p class="hero-copy">
       이 문서는 현재 배포된 문진톡톡 MVP가 실제로 어떻게 동작하는지 설명합니다.
-      환자 음성 문진이 Amazon Transcribe, Bedrock Nova, Titan embedding, Lambda, DynamoDB를 거쳐
+      환자 음성 문진이 Amazon Transcribe, Bedrock Nova, Titan embedding, Lambda, DynamoDB, S3 artifact bucket을 거쳐
       의사용 원페이퍼와 환자 안내문으로 바뀌는 전체 흐름을 기준으로 정리했습니다.
     </p>
     <div class="hero-grid">
@@ -546,7 +546,7 @@
       </div>
       <div class="hero-card">
         <strong>Serverless Backend</strong>
-        <span>API Gateway, Lambda, DynamoDB 기반 세션 처리</span>
+        <span>API Gateway, Lambda, DynamoDB 상태 관리, S3 artifact 저장</span>
       </div>
       <div class="hero-card">
         <strong>AWS AI</strong>
@@ -558,7 +558,7 @@
       </div>
     </div>
     <p class="caption">
-      핵심 문장: 환자 한 명의 문진은 DynamoDB의 session JSON 하나로 누적되고, 프론트는 그 JSON을 읽어 직원, 환자, 의사 화면에 맞게 보여줍니다.
+      핵심 문장: DynamoDB에는 세션 상태와 S3 key만 남기고, 문진 답변·원페이퍼·안내문·trace는 가명처리 후 S3 artifact로 분리 저장합니다.
     </p>
   </header>
 
@@ -906,7 +906,7 @@
           <h3>Data & AI Services</h3>
           <div class="arch-box">
             <strong>DynamoDB MunjinSessions</strong>
-            session JSON 저장
+            대기열, 상태, S3 key 저장
           </div>
           <div class="arch-box">
             <strong>S3 artifact bucket</strong>
@@ -926,7 +926,7 @@
       <div class="data-row">
         <div class="data-pill">API Gateway: <code>&lt;api-id&gt;.execute-api.&lt;region&gt;.amazonaws.com</code></div>
         <div class="data-pill">DynamoDB: <code>MunjinSessions</code></div>
-        <div class="data-pill">Lambda: <code>munjin-mvp-backend-MunjinApiFunction-6SCgLyXDQVAk</code></div>
+        <div class="data-pill">Lambda: <code>&lt;sam-stack&gt;-MunjinApiFunction-&lt;suffix&gt;</code></div>
       </div>
     </section>
 
@@ -1122,8 +1122,9 @@
           <h2>8. 증상 매칭과 점수 계산</h2>
         </div>
         <p>
-          원페이퍼의 증상 이름과 오른쪽 점수는 LLM이 그냥 찍는 값이 아니라,
-          <code>/match</code>에서 검색 후보를 점수화한 결과입니다.
+          원페이퍼의 증상 매칭은 LLM이 임의로 찍는 값이 아니라,
+          <code>/match</code>에서 BM25, Titan vector, 표준명/alias bridge를 함께 계산한 결과입니다.
+          의료진 UI에는 숫자 confidence 대신 “매칭됨” 또는 “우선 확인” 같은 상태로 표시합니다.
         </p>
       </div>
 
@@ -1185,8 +1186,8 @@ symptom_embeddings_...json
           </tr>
           <tr>
             <td><code>score</code></td>
-            <td>원페이퍼에 보이는 신뢰도 점수</td>
-            <td>보통 0.85~1.00처럼 표시됨</td>
+            <td>내부 호환용 매칭 강도 값. LLM confidence가 아니며 의료진 UI에는 숫자로 표시하지 않음</td>
+            <td>S3 trace와 디버깅용 JSON에서만 확인</td>
           </tr>
         </tbody>
       </table>
@@ -1194,7 +1195,9 @@ symptom_embeddings_...json
       <div class="note">
         LLM이 “이건 기침이다”라고 말하면 끝나는 구조가 아닙니다.
         LLM의 <code>slot_ref</code>는 검색 질의의 힌트이고, 최종 표준 증상명은 BM25 + Titan 검색 후보 중에서 선택됩니다.
-        다만 <code>preferred_alias</code>가 강하게 맞으면 점수가 높게 보일 수 있으므로, 이상하면 DynamoDB의 <code>ir_trace.top_candidates</code>를 확인해야 합니다.
+        다만 <code>preferred_alias</code>가 강하게 맞으면 후보 정렬이 크게 영향을 받을 수 있으므로,
+        이상하면 S3 <code>answers.redacted.json</code> 또는 <code>llm_trace.redacted.json</code>의
+        <code>ir_trace.top_candidates</code>를 확인해야 합니다.
       </div>
 
       <h3 class="schema-title">8-3. matched_slots 예시</h3>
@@ -1238,8 +1241,8 @@ symptom_embeddings_...json
           <h2>9. 내부 JSON 스키마</h2>
         </div>
         <p>
-          DynamoDB에는 아래 구조가 한 세션 item으로 저장됩니다.
-          원페이퍼와 안내문이 이상하면 이 JSON을 먼저 확인하면 됩니다.
+          DynamoDB에는 아래처럼 최소 세션 상태와 artifact pointer만 저장됩니다.
+          원페이퍼와 안내문이 이상하면 DynamoDB의 S3 key를 확인한 뒤 S3 redacted JSON을 열어봐야 합니다.
         </p>
       </div>
 

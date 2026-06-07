@@ -84,7 +84,7 @@ session_id (String)
     "honorific": "어르신"
   },
   "artifact": {
-    "bucket": "munjin-mvp-artifacts",
+    "bucket": "<artifact-bucket-name>",
     "prefix": "sessions/2026-06-08/s_1780379760_45542aeb/",
     "answers_key": "sessions/2026-06-08/s_1780379760_45542aeb/answers.redacted.json",
     "onepaper_key": "sessions/2026-06-08/s_1780379760_45542aeb/onepaper.redacted.json",

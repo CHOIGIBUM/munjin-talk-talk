@@ -59,7 +59,7 @@
 - LLM extraction, schema validation, Hybrid IR, onepaper refresh 연결
 - safety flag 분기
 - LangChain과 LangGraph 역할 차이
-- DynamoDB trace 확인 위치
+- S3 trace와 DynamoDB artifact pointer 확인 위치
 
 ### DATA_SCHEMA.md
 
@@ -95,7 +95,7 @@ DynamoDB/S3 하이브리드 보안 구조의 기준 문서입니다.
 포함 내용:
 
 - 프론트 로컬 실행
-- 목업 모드와 AWS 연결 모드
+- 로컬 프론트 실행과 AWS 백엔드 연결 모드
 - SAM backend build
 - test 환경 스모크 테스트
 - 자주 발생하는 오류와 원인

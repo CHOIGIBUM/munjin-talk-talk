@@ -55,14 +55,14 @@
         <mxCell id="iamIcon" value="IAM" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ef4444;strokeColor=#b91c1c;fontColor=#ffffff;fontSize=18;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="awsCloud">
           <mxGeometry x="560" y="580" width="95" height="95" as="geometry" />
         </mxCell>
-        <mxCell id="iamLabel" value="Lambda 실행 역할&#xa;DynamoDB / Transcribe Streaming / Bedrock 권한" style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
+        <mxCell id="iamLabel" value="Lambda 실행 역할&#xa;DynamoDB / S3 artifact / Transcribe / Bedrock 권한" style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
           <mxGeometry x="500" y="684" width="220" height="52" as="geometry" />
         </mxCell>
 
         <mxCell id="s3Icon" value="S3" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#16a34a;strokeColor=#15803d;fontColor=#ffffff;fontSize=24;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="awsCloud">
           <mxGeometry x="850" y="145" width="105" height="105" as="geometry" />
         </mxCell>
-        <mxCell id="s3Label" value="Amazon S3&#xa;배포/임시 산출물 저장&#xa;환자 음성 미저장" style="text;html=1;strokeColor=none;fillColor=none;fontSize=13;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
+        <mxCell id="s3Label" value="Amazon S3 Artifact Bucket&#xa;가명처리 문진 JSON 저장&#xa;환자 음성 원본 미저장" style="text;html=1;strokeColor=none;fillColor=none;fontSize=13;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
           <mxGeometry x="785" y="260" width="235" height="65" as="geometry" />
         </mxCell>
 
@@ -83,7 +83,7 @@
         <mxCell id="ddbIcon" value="DB" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#2563eb;strokeColor=#1d4ed8;fontColor=#ffffff;fontSize=24;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="awsCloud">
           <mxGeometry x="850" y="615" width="105" height="105" as="geometry" />
         </mxCell>
-        <mxCell id="ddbLabel" value="DynamoDB&#xa;MunjinSessions&#xa;세션 상태 / 대기 순번 / 원페이퍼 / 답변 저장" style="text;html=1;strokeColor=none;fillColor=none;fontSize=13;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
+        <mxCell id="ddbLabel" value="DynamoDB&#xa;MunjinSessions&#xa;세션 상태 / 대기 순번 / S3 key 저장" style="text;html=1;strokeColor=none;fillColor=none;fontSize=13;fontColor=#111827;align=center;" vertex="1" parent="awsCloud">
           <mxGeometry x="785" y="730" width="245" height="65" as="geometry" />
         </mxCell>
 
@@ -122,13 +122,13 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="eLambdaS3" value="배포 산출물만" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;fontSize=12;" edge="1" parent="1" source="lambdaIcon" target="s3Icon">
+        <mxCell id="eLambdaS3" value="redacted artifacts" style="endArrow=block;html=1;rounded=0;strokeColor=#16a34a;fontSize=12;" edge="1" parent="1" source="lambdaIcon" target="s3Icon">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="eLambdaTranscribe" value="WebSocket URL 서명" style="endArrow=block;html=1;rounded=0;strokeColor=#0891b2;fontSize=12;" edge="1" parent="1" source="lambdaIcon" target="transcribeIcon">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="eTranscribeS3" value="텍스트 이벤트 반환" style="endArrow=block;html=1;rounded=0;strokeColor=#0891b2;fontSize=12;dashed=1;" edge="1" parent="1" source="transcribeIcon" target="s3Icon">
+        <mxCell id="eTranscribeS3" value="음성 파일 저장 없음" style="endArrow=block;html=1;rounded=0;strokeColor=#0891b2;fontSize=12;dashed=1;" edge="1" parent="1" source="transcribeIcon" target="s3Icon">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="eLambdaBedrock" value="모델 호출" style="endArrow=block;html=1;rounded=0;strokeColor=#db2777;fontSize=12;strokeWidth=2;" edge="1" parent="1" source="lambdaIcon" target="bedrockIcon">

@@ -162,7 +162,7 @@ sessions/YYYY-MM-DD/{session_id}/
     "accepted_at": "2026-06-08T10:20:30+09:00"
   },
   "artifact": {
-    "bucket": "munjin-mvp-artifacts",
+    "bucket": "<artifact-bucket-name>",
     "prefix": "sessions/2026-06-08/s_1781000000000_ab12cd/",
     "onepaper_key": "sessions/2026-06-08/s_1781000000000_ab12cd/onepaper.redacted.json",
     "guide_key": "sessions/2026-06-08/s_1781000000000_ab12cd/patient_guide.redacted.json"

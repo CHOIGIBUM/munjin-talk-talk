@@ -1,133 +1,214 @@
 # 문진톡톡 AWS 배포 가이드
 
-이 문서는 문진톡톡 MVP를 AWS에 배포하는 절차를 설명합니다.
+이 문서는 문진톡톡 MVP를 AWS에 배포하는 절차를 설명합니다. 대상 독자는 배포 담당자, 팀 개발자, 평가 환경을 검토하는 사람입니다.
 
-프론트엔드는 AWS Amplify Hosting을 사용하고, 백엔드는 AWS SAM으로 API Gateway + Lambda를 배포합니다.
-
----
-
-## 전체 배포 구조
+현재 구조는 프론트엔드와 백엔드를 분리해서 배포합니다.
 
 ```text
-GitHub repository
-  -> Amplify Hosting
-  -> React/Vite frontend
-  -> API Gateway HTTP API
-  -> Lambda Python backend
-  -> DynamoDB
-  -> S3 redacted artifact bucket
-  -> Amazon Transcribe Streaming
-  -> Amazon Bedrock
+Frontend: AWS Amplify Hosting
+Backend: AWS SAM + API Gateway + Lambda
+Storage: DynamoDB minimal state + S3 redacted artifact bucket
+AI: Amazon Transcribe Streaming + Amazon Bedrock + Amazon Titan Embeddings
 ```
 
 ---
 
-## 배포 전에 결정할 것
+## 1. 배포 전 확인 사항
 
-| 항목 | 예시 | 설명 |
-| --- | --- | --- |
-| AWS Region | `ap-northeast-2` | 서울 리전 |
-| 프론트 브랜치 | `test` 또는 `main` | Amplify가 자동 배포할 브랜치 |
-| 백엔드 stack name | `munjin-mvp-backend-test` | CloudFormation stack 이름 |
-| DynamoDB table | `MunjinSessionsTest` | 세션 저장 테이블 |
-| Lambda role | `munjin-lambda-role` | Lambda 실행 role |
-| S3 artifact bucket | `<artifact-bucket-name>` | 가명처리 문진 산출물 저장 bucket |
-| SAM deploy bucket | 자동 생성 또는 별도 bucket | SAM/CloudFormation 배포 산출물 저장 |
+필수 준비:
+
+- AWS 계정과 콘솔 접근 권한
+- GitHub repository 접근 권한
+- AWS CLI 또는 SAM CLI 로그인
+- Bedrock model access 승인
+- DynamoDB table
+- S3 artifact bucket
+- Lambda execution role
+- Amplify app
+
+권장 region:
+
+```text
+ap-northeast-2
+```
+
+프로젝트 문서에서는 서울 리전을 기준으로 설명합니다.
 
 ---
 
-## 1. AWS 리소스 준비
+## 2. 전체 배포 순서
+
+```text
+1. S3 artifact bucket 생성
+2. DynamoDB table 생성
+3. Lambda execution role 준비
+4. Bedrock model access 확인
+5. SAM backend 배포
+6. API Gateway endpoint 확인
+7. Amplify frontend 앱 연결
+8. Amplify 환경 변수 VITE_API_BASE_URL 설정
+9. SPA rewrite 설정
+10. Smoke Test
+```
+
+---
+
+## 3. S3 artifact bucket
+
+S3 bucket은 환자 문진 산출물을 보관합니다. 음성 원본 파일을 저장하는 bucket이 아닙니다.
+
+저장되는 파일 예시:
+
+```text
+sessions/YYYY-MM-DD/{session_id}/
+  consent.json
+  answers.redacted.json
+  onepaper.redacted.json
+  doctor_review.redacted.json
+  patient_guide.redacted.json
+  llm_trace.redacted.json
+  validation_trace.redacted.json
+```
+
+필수 설정:
+
+- Block Public Access 활성화
+- 기본 암호화 활성화
+- Lifecycle 3일 삭제 규칙 설정
+- bucket policy 또는 IAM으로 Lambda role만 접근 허용
+
+권장 설정:
+
+- SSE-KMS
+- Macie 민감정보 탐지
+- CloudTrail data event 검토
+
+주의:
+
+- 이 bucket은 Amplify 배포 산출물 bucket이 아닙니다.
+- SAM CLI가 내부적으로 쓰는 deployment bucket과도 다릅니다.
+- 문진 산출물을 저장하는 별도 application artifact bucket입니다.
+
+---
+
+## 4. DynamoDB table
+
+권장 table name:
+
+```text
+MunjinSessionsTest
+```
+
+Primary key:
+
+```text
+partition key: session_id (String)
+```
+
+권장 설정:
+
+- On-demand capacity
+- TTL 활성화
+- TTL attribute: `expires_at`
+
+DynamoDB에는 다음 값만 저장해야 합니다.
+
+- `session_id`
+- `queue_number`
+- `status`
+- `visit_type`
+- `patient.name` 마스킹 표시명
+- `patient.age`, `patient.age_band`
+- `patient.gender`
+- `patient.department`
+- `patient.doctor`
+- `risk`
+- `privacy_consent` 요약
+- `artifact` S3 key 정보
+- `question_status`
+- `onepager_ready`
+- `guide_ready`
+
+DynamoDB에 저장하면 안 되는 값:
+
+- `patient.full_name`
+- `patient.birth_date`
+- `patient.phone`
+- `responses`
+- `question_results`
+- `onepager`
+- `doctor_review`
+- `patient_guide`
+
+---
+
+## 5. Lambda execution role
+
+Lambda role에는 다음 권한이 필요합니다.
 
 ### DynamoDB
 
-콘솔 경로:
-
 ```text
-DynamoDB
-  -> Tables
-  -> Create table
+dynamodb:GetItem
+dynamodb:PutItem
+dynamodb:UpdateItem
+dynamodb:Scan
 ```
 
-설정:
-
-```text
-Table name: MunjinSessionsTest
-Partition key: session_id
-Partition key type: String
-Billing mode: On-demand
-```
-
-운영 전 권장:
-
-- TTL 필드 추가 검토
-- 테스트 데이터 삭제 정책
-- 실제 환자 데이터 보존 기간 정의
+대상 resource는 문진 세션 table ARN으로 제한합니다.
 
 ### S3 artifact bucket
 
-콘솔 경로:
-
 ```text
-S3
-  -> Create bucket
+s3:GetObject
+s3:PutObject
 ```
 
-용도:
+대상 resource는 artifact bucket의 `sessions/*` prefix로 제한하는 것을 권장합니다.
 
-- 가명처리된 문진 답변 JSON
-- 원페이퍼 JSON
-- 의사 답변 JSON
-- 환자 안내문 JSON
-- LLM/검증 trace JSON
-
-중요:
+### Bedrock
 
 ```text
-이 bucket은 환자 음성 저장소가 아닙니다.
-현재 MVP는 환자 음성을 S3에 업로드하지 않습니다.
+bedrock:InvokeModel
+bedrock:InvokeModelWithResponseStream
 ```
 
-수명 주기 규칙:
+사용 모델 ARN 또는 region 범위로 제한합니다.
 
-- 테스트 artifact는 3일 또는 짧은 기간 후 삭제 권장
+### Transcribe
 
-### IAM Role
+Transcribe Streaming presigned URL 발급에 필요한 권한을 부여합니다.
 
-Lambda execution role에 필요한 권한:
-
-- CloudWatch Logs
-- DynamoDB read/write
-- Bedrock `InvokeModel`
-- Transcribe Streaming
-- S3 artifact bucket `GetObject`, `PutObject`
-
-개발 편의상 넓은 권한으로 시작했더라도, 공개 테스트 전에는 resource ARN을 좁히는 것이 좋습니다.
-
-### Bedrock model access
-
-콘솔 경로:
+### CloudWatch Logs
 
 ```text
-Amazon Bedrock
-  -> Model access
+logs:CreateLogGroup
+logs:CreateLogStream
+logs:PutLogEvents
 ```
 
-확인할 모델:
-
-```text
-apac.amazon.nova-pro-v1:0
-apac.amazon.nova-lite-v1:0
-amazon.titan-embed-text-v2:0
-```
+운영 환경에서는 CloudWatch Logs 보존 기간을 짧게 설정하고, 원문 발화와 LLM payload를 로그에 남기지 않는 원칙을 지켜야 합니다.
 
 ---
 
-## 2. 백엔드 배포
+## 6. Bedrock model access
 
-PowerShell:
+AWS Console에서 Bedrock model access를 확인합니다.
+
+필요 모델:
+
+- Amazon Nova Pro
+- Amazon Nova Lite
+- Amazon Titan Text Embeddings
+
+환경 변수에서 model id를 바꿀 수 있지만, 코드 기본값은 현재 MVP 기준으로 설정되어 있습니다.
+
+---
+
+## 7. SAM backend 배포
 
 ```powershell
-cd backend/serverless
+cd C:\Users\CGB\munjin-talk-talk-mvp\backend\serverless
 sam build
 sam deploy --guided
 ```
@@ -139,102 +220,55 @@ Stack Name: munjin-mvp-backend-test
 AWS Region: ap-northeast-2
 Parameter SessionsTableName: MunjinSessionsTest
 Parameter ArtifactsBucketName: <s3-artifact-bucket-name>
-Parameter LambdaRoleArn: arn:aws:iam::<account-id>:role/<lambda-role-name>
+Parameter LambdaRoleArn: <lambda-role-arn>
 Parameter CustomVocabularyName:
 Confirm changes before deploy: y
 Allow SAM CLI IAM role creation: n
-Capabilities: CAPABILITY_IAM
 MunjinApiFunction has no authentication. Is this okay?: y
 ```
 
 배포 완료 후 output:
 
 ```text
-ApiEndpoint
-https://<api-id>.execute-api.ap-northeast-2.amazonaws.com
+ApiEndpoint = https://<api-id>.execute-api.ap-northeast-2.amazonaws.com
 ```
 
-이 값을 프론트 환경 변수에 넣어야 합니다.
+이 값을 Amplify 환경 변수 `VITE_API_BASE_URL`에 넣습니다.
+
+주의:
+
+- `samconfig.toml`에는 계정 ID, role ARN, bucket 이름이 들어갈 수 있으므로 Git에 올리지 않습니다.
+- `.aws-sam/`도 build 산출물이므로 Git에 올리지 않습니다.
 
 ---
 
-## 3. Amplify 앱 생성
+## 8. Amplify frontend 배포
 
-콘솔 경로:
+Amplify Console에서 앱을 생성합니다.
 
-```text
-AWS Amplify
-  -> Create new app
-  -> Host web app
-  -> GitHub 선택
-```
-
-GitHub 권한:
-
-- 개인 repo이면 본인 GitHub 계정 repo 선택
-- 팀 repo이면 GitHub App 권한이 repo에 부여되어 있어야 함
-- repo가 목록에 안 보이면 GitHub 권한 업데이트 필요
-
-Repository/branch:
+### Repository 선택
 
 ```text
-Repository: CHOIGIBUM/munjin-talk-talk-mvp 또는 팀 repo
+Repository: CHOIGIBUM/munjin-talk-talk-mvp
 Branch: test 또는 main
 ```
 
-Monorepo 설정:
+### Monorepo 설정
 
 ```text
-My app is a monorepo: checked
-Monorepo root directory: frontend
+Monorepo app root: frontend
 ```
 
-Build settings:
+### Build 설정
 
 ```text
-Frontend build command: npm run build
+Build command: npm run build
 Build output directory: dist
 ```
 
-현재 저장소에는 root의 `amplify.yml`이 있습니다.
+루트에 `amplify.yml`이 있으면 자동으로 해당 설정을 사용할 수 있습니다.
 
-```yaml
-version: 1
-applications:
-  - appRoot: frontend
-    frontend:
-      phases:
-        preBuild:
-          commands:
-            - nvm install 22
-            - nvm use 22
-            - npm install
-        build:
-          commands:
-            - npm run build
-      artifacts:
-        baseDirectory: dist
-        files:
-          - '**/*'
-      cache:
-        paths:
-          - node_modules/**/*
-```
-
----
-
-## 4. Amplify 환경 변수 설정
-
-콘솔 경로:
-
-```text
-Amplify
-  -> App 선택
-  -> Hosting
-  -> Environment variables
-```
-
-설정:
+### 환경 변수
 
 ```text
 VITE_API_BASE_URL=https://<api-id>.execute-api.ap-northeast-2.amazonaws.com
@@ -242,32 +276,22 @@ AMPLIFY_MONOREPO_APP_ROOT=frontend
 AMPLIFY_DIFF_DEPLOY=false
 ```
 
-목업 모드를 명시적으로 끄고 싶으면:
-
-```text
-```
-
-주의:
-
-- Amplify 환경 변수는 빌드 시점에 Vite bundle에 들어갑니다.
-- 값을 바꾼 뒤에는 반드시 재배포해야 합니다.
-- branch별 환경 변수를 따로 설정할 수 있으면 test/main을 분리하는 것이 좋습니다.
+test와 main이 서로 다른 백엔드를 바라보게 하려면 브랜치별 환경 변수가 필요합니다. Amplify UI에서 브랜치별 재정의가 불편하면 test용 Amplify 앱을 별도로 만드는 것이 안전합니다.
 
 ---
 
-## 5. SPA rewrite 설정
+## 9. SPA rewrite 설정
 
-React single-page app은 직접 URL 접속 시 `/index.html`로 rewrite되어야 합니다.
+React Router를 사용하므로 직접 URL 접근 시 404가 나지 않게 rewrite를 설정합니다.
 
-콘솔 경로:
+Amplify Console:
 
 ```text
-Amplify
-  -> Hosting
+Hosting
   -> Rewrites and redirects
 ```
 
-권장 규칙:
+설정:
 
 ```json
 [
@@ -279,127 +303,151 @@ Amplify
 ]
 ```
 
-이 규칙이 없으면 아래 경로를 새로고침할 때 404가 날 수 있습니다.
+---
+
+## 10. 배포 후 확인
+
+### 프론트 접속
 
 ```text
-/staff
-/patient/{sessionId}
-/doctor/queue
-/doctor/{sessionId}
-/guide/{sessionId}
+https://<branch>.<amplify-app-id>.amplifyapp.com/staff
 ```
+
+확인:
+
+- 직원 접수 화면이 열리는가
+- 상단 메뉴가 표시되는가
+- 세션이 없을 때 환자 태블릿, 원페이퍼, 안내문 메뉴가 비활성화되는가
+
+### 세션 생성
+
+1. 환자 정보를 입력합니다.
+2. 문진 세션을 생성합니다.
+3. 오늘 접수 목록에 표시되는지 확인합니다.
+
+AWS 확인:
+
+- DynamoDB item 생성
+- 실명, 생년월일, 연락처 원문 미저장
+- artifact key 생성
+
+### 환자 문진
+
+1. 환자 태블릿으로 이동합니다.
+2. 서비스 이용 동의 모달을 확인합니다.
+3. 마이크 권한을 허용합니다.
+4. Q1 답변을 말합니다.
+5. STT 결과 확인 후 다음으로 이동합니다.
+
+AWS 확인:
+
+- S3 `consent.json`
+- S3 `answers.redacted.json`
+- S3 `llm_trace.redacted.json`
+- S3 `onepaper.redacted.json`
+- DynamoDB에는 `responses`, `onepager` 직접 저장 없음
+
+### 원페이퍼와 안내문
+
+1. 원페이퍼에서 증상, quote, 문진 맥락을 확인합니다.
+2. 의사 답변을 입력합니다.
+3. 환자 안내 강조사항을 입력합니다.
+4. 환자에게 전송합니다.
+5. 안내문 화면에서 결과를 확인합니다.
+
+AWS 확인:
+
+- S3 `doctor_review.redacted.json`
+- S3 `patient_guide.redacted.json`
+- DynamoDB `guide_ready = true`
 
 ---
 
-## 6. Amplify 배포 확인
+## 11. 운영 보안 체크리스트
 
-배포 성공 후 Amplify domain이 생성됩니다.
-
-예:
-
-```text
-https://test.<app-id>.amplifyapp.com
-```
-
-확인 순서:
-
-1. `/staff` 접속
-2. 세션 생성
-3. `/patient/{sessionId}` 이동
-4. 마이크 권한 허용
-5. 음성 인식 확인
-6. `/doctor/{sessionId}` 원페이퍼 확인
-7. `/guide/{sessionId}` 안내문 확인
+| 항목 | 상태 확인 위치 |
+| --- | --- |
+| S3 Block Public Access | S3 bucket permissions |
+| S3 Lifecycle 3일 삭제 | S3 lifecycle rules |
+| S3 기본 암호화 또는 KMS | S3 default encryption |
+| Macie 민감정보 탐지 | Amazon Macie |
+| DynamoDB TTL | DynamoDB table settings |
+| Lambda role 최소 권한 | IAM role policy |
+| CloudWatch Logs 보존 기간 | CloudWatch log group retention |
+| API Gateway throttling | API Gateway stage settings |
+| Amplify 환경 변수 | Amplify hosting environment variables |
+| Bedrock model access | Bedrock model access |
 
 ---
 
-## 7. 백엔드 스모크 테스트
+## 12. 비용 주의
 
-API endpoint만 먼저 확인하고 싶을 때:
+MVP 테스트에서 큰 비용을 만들 수 있는 항목:
+
+- Bedrock LLM 호출
+- Titan embedding 호출
+- Transcribe Streaming
+- CloudWatch Logs 누적
+- S3 object 누적
+- DynamoDB scan 반복
+
+비용을 줄이는 방법:
+
+- S3 Lifecycle 3일 삭제
+- CloudWatch Logs 보존 기간 단축
+- test 데이터 삭제
+- 불필요한 반복 문진 테스트 제한
+- Bedrock 호출 실패 retry 횟수 제한 유지
+
+---
+
+## 13. 배포 문제 해결
+
+| 문제 | 원인 | 해결 |
+| --- | --- | --- |
+| Amplify build 실패 | `package-lock.json` 불일치 | 로컬에서 `npm install` 후 lockfile 갱신 |
+| Amplify에서 API 호출 실패 | `VITE_API_BASE_URL` 누락 | 환경 변수 저장 후 redeploy |
+| 라우트 직접 접속 404 | SPA rewrite 없음 | `/<*> -> /index.html` 404-200 추가 |
+| SAM deploy parameter 오류 | 빈 문자열 parameter 형식 문제 | `CustomVocabularyName`은 guided 입력에서 Enter |
+| S3 AccessDenied | Lambda role 권한 부족 | artifact bucket ARN에 `GetObject`, `PutObject` 추가 |
+| Bedrock AccessDenied | 모델 access 미승인 | Bedrock console에서 모델 사용 승인 |
+| Transcribe 안 됨 | HTTPS/마이크/URL 문제 | Amplify HTTPS URL, browser permission, API 응답 확인 |
+
+---
+
+## 14. GitHub 반영 기준
+
+배포 브랜치:
+
+- `main`: 안정 배포 또는 발표용
+- `test`: 기능 검증과 실험용
+
+커밋 전 확인:
 
 ```powershell
-@'
-const API = 'https://<api-id>.execute-api.ap-northeast-2.amazonaws.com';
-const res = await fetch(`${API}/doctor/queue`);
-console.log(res.status);
-console.log(await res.text());
-'@ | node --input-type=module -
+git status --short
+git diff --check
+npm.cmd run build
+python -m compileall backend/serverless/src
 ```
 
-문항 처리까지 확인하려면 [MVP 실행 가이드](MVP_SETUP.md)의 스모크 테스트를 사용합니다.
+Git에 올리지 않을 것:
+
+- `backend/serverless/samconfig.toml`
+- `backend/serverless/.aws-sam/`
+- `frontend/dist/`
+- `frontend/node_modules/`
+- `.env`
+- `.env.local`
+- 실제 환자 데이터
+- 실제 AWS access key
 
 ---
 
-## 8. CloudWatch 로그 확인
+## 15. 관련 문서
 
-콘솔 경로:
-
-```text
-CloudWatch
-  -> Log groups
-  -> /aws/lambda/<stack-name>-MunjinApiFunction-...
-```
-
-확인할 오류:
-
-| 오류 | 가능 원인 |
-| --- | --- |
-| `AccessDeniedException` | IAM role 권한 부족 |
-| `ResourceNotFoundException` | DynamoDB table 이름 불일치 |
-| Bedrock model access error | Bedrock 모델 권한 미활성화 |
-| Transcribe stream error | Transcribe 권한 또는 WebSocket URL 문제 |
-| `semantic_extraction_failed` | LLM output schema/quote 검증 실패 |
-| Lambda timeout | Bedrock 응답 지연 또는 cold start |
-
----
-
-## 9. 비용 관리
-
-테스트 중 비용이 발생할 수 있는 서비스:
-
-- Amplify Hosting
-- API Gateway
-- Lambda
-- DynamoDB
-- CloudWatch Logs
-- Amazon Transcribe Streaming
-- Amazon Bedrock Nova
-- Amazon Titan Embeddings
-- S3 artifact storage
-
-비용 줄이는 방법:
-
-- 테스트 후 DynamoDB item 삭제
-- CloudWatch Logs retention 3일 또는 7일 설정
-- S3 artifact lifecycle 3일 설정
-- 불필요한 Amplify preview branch 삭제
-- 대량 음성 테스트 자제
-- Bedrock 호출 로그와 횟수 확인
-
----
-
-## 10. 공개 테스트 전 필수 보완
-
-현재 MVP는 기능 검증용이며, 인증이 완성되어 있지 않습니다.
-
-공개 테스트 전 필요한 것:
-
-- 직원/의사 화면 인증
-- API Gateway authorizer 또는 Cognito
-- 역할별 접근 제어
-- 환자 개인정보 동의 화면
-- DynamoDB TTL/삭제 정책
-- CloudWatch Logs 보존 기간
-- 실제 환자 데이터 마스킹 정책
-- HTTPS 배포 확인
-- WAF 또는 접근 제한
-- 병원 내부망 또는 제한된 테스트 URL 정책
-
----
-
-## 관련 문서
-
-- [MVP 실행 가이드](MVP_SETUP.md)
-- [서버리스 백엔드 README](../backend/serverless/README.md)
-- [프론트엔드 README](../frontend/README.md)
-- [프로젝트 구조](PROJECT_STRUCTURE.md)
+- [../README.md](../README.md)
+- [../backend/serverless/README.md](../backend/serverless/README.md)
+- [DATA_SCHEMA.md](DATA_SCHEMA.md)
+- [SECURITY_DATA_INVENTORY.md](SECURITY_DATA_INVENTORY.md)
+- [LANGGRAPH_PIPELINE.md](LANGGRAPH_PIPELINE.md)

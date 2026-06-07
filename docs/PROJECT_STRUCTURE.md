@@ -194,11 +194,11 @@ backend/
 └── serverless/
     ├── README.md
     ├── template.yaml
-    ├── samconfig.toml
     └── src/
 ```
 
 현재 백엔드는 `serverless/`만 배포 대상입니다.
+`samconfig.toml`과 `.aws-sam/`은 SAM CLI가 로컬에서 만드는 배포 설정과 build 산출물이므로 Git에 포함하지 않습니다.
 
 ---
 

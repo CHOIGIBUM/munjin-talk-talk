@@ -576,7 +576,7 @@ Retry 후에도 실패하면 rule-based로 조용히 대체하지 않습니다. 
 | 추가 안전 flag | `clinical_terms.py`, `quick_safety_flag_node` |
 | 의사 review node 분리 | `onepaper_review.py`, 새 LangGraph node |
 | RAG retriever | `langchain_prompting.py` 또는 별도 retriever 모듈 |
-| tracing dashboard | `pipeline_trace.py`, DynamoDB trace 필드 |
+| tracing dashboard | `pipeline_trace.py`, S3 `llm_trace.redacted.json` artifact |
 | 인증/권한 분기 | `handler.py`, API Gateway authorizer |
 
 ---
