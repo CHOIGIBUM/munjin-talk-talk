@@ -1,16 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import PatientFlow from './PatientFlow.jsx'
-import { getIntakeSession, isRemoteApiEnabled, requestStaffHelp } from '../../services/api.js'
-import {
-  markSessionCompleted,
-  markStaffRequested,
-  saveTranscriptAnswer,
-} from '../../services/demoSessions.js'
+import { getIntakeSession, requestStaffHelp } from '../../services/api.js'
 import './PatientKioskView.css'
 
 // 접수처에서 만든 sessionId를 받아 실제 환자 태블릿 문진을 시작하는 화면입니다.
-// 운영 모드에서는 백엔드 세션을, 목업 모드에서는 localStorage 세션을 사용합니다.
+// 모든 답변 저장과 상태 변경은 백엔드 API를 통해 DynamoDB 세션에 반영됩니다.
 export default function PatientKioskView() {
   const { sessionId } = useParams()
   const [session, setSession] = useState(null)
@@ -56,17 +51,8 @@ export default function PatientKioskView() {
       initialVisitType={session.visitType}
       frameVariant="device"
       skipVisitTypeWhenPreset={false}
-      onTranscriptConfirmed={(answer) => {
-        // 운영 모드에서는 processTranscript가 이미 백엔드 저장까지 수행합니다.
-        // 목업 모드에서만 localStorage에 답변을 저장합니다.
-        if (!isRemoteApiEnabled()) saveTranscriptAnswer(session.sessionId, answer)
-      }}
       onStaffCallRequest={() => {
-        if (isRemoteApiEnabled()) requestStaffHelp(session.sessionId)
-        else markStaffRequested(session.sessionId)
-      }}
-      onComplete={() => {
-        if (!isRemoteApiEnabled()) markSessionCompleted(session.sessionId)
+        requestStaffHelp(session.sessionId)
       }}
     />
   )

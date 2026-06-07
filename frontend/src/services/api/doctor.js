@@ -1,17 +1,10 @@
-import {
-  getDemoGuide,
-  getDemoOnePager,
-  saveDoctorResponse,
-} from '../demoSessions.js'
-import { API_BASE_URL, ensureApiConfigured, useMockApi } from './client.js'
-import { mockPatientGuide } from './mockResponses.js'
+import { API_BASE_URL, ensureApiConfigured } from './client.js'
 
 // 원페이퍼 JSON을 조회합니다.
 // 백엔드는 validate 단계마다 onepager를 갱신하므로, 이 화면은 저장된 최신 결과를 읽습니다.
 export async function getOnePager(sessionId) {
   if (!sessionId) return null
-  if (useMockApi()) return getDemoOnePager(sessionId)
-  if (!API_BASE_URL) return null
+  ensureApiConfigured()
 
   const res = await fetch(`${API_BASE_URL}/onepager/${sessionId}`)
   if (!res.ok) return null
@@ -26,21 +19,6 @@ export async function submitDoctorResponse({
   answers,
   additionalNotes,
 }) {
-  if (useMockApi()) {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    saveDoctorResponse(sessionId, {
-      reviewerId,
-      answers,
-      additionalNotes,
-      savedAt: new Date().toISOString(),
-    })
-    return {
-      doctor_review_saved: true,
-      patient_guide_generated: true,
-      validator_passed: true,
-      patient_guide: mockPatientGuide(answers),
-    }
-  }
   ensureApiConfigured()
 
   const res = await fetch(`${API_BASE_URL}/doctor-response`, {
@@ -61,8 +39,7 @@ export async function submitDoctorResponse({
 // 진료 후 환자에게 보여줄 안내문 JSON을 조회합니다.
 export async function getPatientGuide(sessionId) {
   if (!sessionId) return null
-  if (useMockApi()) return getDemoGuide(sessionId)
-  if (!API_BASE_URL) return null
+  ensureApiConfigured()
 
   const res = await fetch(`${API_BASE_URL}/guide/${sessionId}`)
   if (!res.ok) return null

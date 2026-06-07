@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import TabletFrame from '../tablet/TabletFrame.jsx'
 import VisitTypeScreen from './VisitTypeScreen.jsx'
 import VoiceScreen from './VoiceScreen.jsx'
@@ -6,17 +6,16 @@ import ConfirmTranscriptScreen from './ConfirmTranscriptScreen.jsx'
 import SafetyAlertScreen from './SafetyAlertScreen.jsx'
 import StaffCallScreen from './StaffCallScreen.jsx'
 import DoneScreen from './DoneScreen.jsx'
+import ManualIntakeScreen from './ManualIntakeScreen.jsx'
+import PrivacyConsentModal, {
+  PRIVACY_CONSENT_VERSION,
+  PRIVACY_NOTICE_ITEMS,
+  RETENTION_NOTICE,
+  SENSITIVE_NOTICE_ITEMS,
+} from './PrivacyConsentModal.jsx'
 import { QUESTIONS } from '../../config/questions.js'
 import { detectSafetyKeyword } from '../../config/safetyKeywords.js'
-import { processTranscript, createSession, isMockApiEnabled } from '../../services/api.js'
-
-const MOCK_PATIENT = {
-  name: '김*자',
-  honorific: '어르신',
-  age: 74,
-  gender: '여성',
-  receiptId: 'A-0427',
-}
+import { processTranscript, recordPatientConsent } from '../../services/api.js'
 
 const EMPTY_PATIENT = {
   name: '환자',
@@ -33,6 +32,10 @@ const STEPS = {
   SAFETY_ALERT: 'safety_alert',
   STAFF_CALL: 'staff_call',
   DONE: 'done',
+}
+
+function consentStorageKey(sessionId) {
+  return `munjin:privacy-consent:${sessionId || 'unknown'}`
 }
 
 // 환자 태블릿 문진의 상태 머신입니다.
@@ -54,26 +57,88 @@ export default function PatientFlow({
   const [transcript, setTranscript] = useState('')
   const [safetyKeyword, setSafetyKeyword] = useState(null)
   const [answers, setAnswers] = useState([])
-  const [session] = useState(() => sessionId ? { sessionId, startedAt: new Date().toISOString() } : createSession())
   const [prevStep, setPrevStep] = useState(null)
   const [isTranscribing, setIsTranscribing] = useState(false)
   const [pendingSafetyResult, setPendingSafetyResult] = useState(null)
   const [isEndingIntake, setIsEndingIntake] = useState(false)
   const [intakeStopped, setIntakeStopped] = useState(false)
+  const [consentAccepted, setConsentAccepted] = useState(false)
+  const [consentRejected, setConsentRejected] = useState(false)
+  const [consentSaving, setConsentSaving] = useState(false)
+  const [consentError, setConsentError] = useState('')
 
   const questions = visitType ? QUESTIONS[visitType] : []
   const currentQuestion = questions[questionIndex]
-  const displayPatient = patient || (isMockApiEnabled() ? MOCK_PATIENT : EMPTY_PATIENT)
+  const activeSessionId = sessionId || ''
+  const displayPatient = patient || EMPTY_PATIENT
+
+  useEffect(() => {
+    if (!activeSessionId) {
+      setConsentAccepted(false)
+      return
+    }
+    setConsentAccepted(window.sessionStorage.getItem(consentStorageKey(activeSessionId)) === PRIVACY_CONSENT_VERSION)
+    setConsentRejected(false)
+    setConsentError('')
+  }, [activeSessionId])
+
+  const saveConsent = useCallback(async (accepted) => {
+    if (!activeSessionId) {
+      setConsentError('문진 세션을 찾을 수 없습니다. 접수 직원에게 말씀해 주세요.')
+      return
+    }
+    setConsentSaving(true)
+    setConsentError('')
+    try {
+      await recordPatientConsent(activeSessionId, {
+        accepted,
+        version: PRIVACY_CONSENT_VERSION,
+        privacy_items: PRIVACY_NOTICE_ITEMS,
+        sensitive_items: SENSITIVE_NOTICE_ITEMS,
+        retention_notice: RETENTION_NOTICE,
+      })
+      if (accepted) {
+        window.sessionStorage.setItem(consentStorageKey(activeSessionId), PRIVACY_CONSENT_VERSION)
+        setConsentAccepted(true)
+        setConsentRejected(false)
+      } else {
+        window.sessionStorage.removeItem(consentStorageKey(activeSessionId))
+        setConsentRejected(true)
+        setIntakeStopped(true)
+      }
+    } catch (error) {
+      console.error('privacy consent save failed:', error)
+      setConsentError('동의 이력을 저장하지 못했습니다. 네트워크 상태를 확인하거나 직원에게 말씀해 주세요.')
+    } finally {
+      setConsentSaving(false)
+    }
+  }, [activeSessionId, currentQuestion, onStaffCallRequest])
+
+  const handleConsentStaffHelp = useCallback(() => {
+    onStaffCallRequest?.({
+      sessionId: activeSessionId,
+      questionId: currentQuestion?.id || null,
+      step: 'privacy_consent',
+      reason: 'privacy_consent_help',
+    })
+    setPrevStep('privacy_consent')
+    setStep(STEPS.STAFF_CALL)
+  }, [activeSessionId, currentQuestion, onStaffCallRequest])
+
+  const handleConsentStaffCallReturn = useCallback(() => {
+    setPrevStep(null)
+    setStep(initialVisitType && skipVisitTypeWhenPreset ? STEPS.Q_VOICE : STEPS.VISIT_TYPE)
+  }, [initialVisitType, skipVisitTypeWhenPreset])
 
   const handleStaffCall = useCallback(() => {
     onStaffCallRequest?.({
-      sessionId: session.sessionId,
+      sessionId: activeSessionId,
       questionId: currentQuestion?.id || null,
       step,
     })
     setPrevStep(step)
     setStep(STEPS.STAFF_CALL)
-  }, [currentQuestion, onStaffCallRequest, session.sessionId, step])
+  }, [activeSessionId, currentQuestion, onStaffCallRequest, step])
 
   const handleStaffCallReturn = useCallback(() => {
     setStep(prevStep || STEPS.VISIT_TYPE)
@@ -106,7 +171,7 @@ export default function PatientFlow({
 
     if (questionIndex >= questions.length - 1) {
       onComplete?.({
-        sessionId: session.sessionId,
+        sessionId: activeSessionId,
         visitType,
         answers: nextAnswers,
       })
@@ -123,20 +188,21 @@ export default function PatientFlow({
     onTranscriptConfirmed,
     questionIndex,
     questions.length,
-    session.sessionId,
+    activeSessionId,
     visitType,
   ])
 
   const runBackendPipeline = useCallback(async (answerText) => {
     if (!currentQuestion) throw new Error('missing_question')
+    if (!activeSessionId) throw new Error('missing_session')
     return processTranscript({
-      sessionId: session.sessionId,
+      sessionId: activeSessionId,
       questionId: currentQuestion.id,
       questionType: currentQuestion.question_type,
       visitType,
       transcript: answerText,
     })
-  }, [currentQuestion, session.sessionId, visitType])
+  }, [activeSessionId, currentQuestion, visitType])
 
   const handleVoiceFinish = useCallback((sttText) => {
     const answerText = String(sttText || '').trim()
@@ -167,7 +233,7 @@ export default function PatientFlow({
         setSafetyKeyword(safety)
         setPendingSafetyResult(null)
         onStaffCallRequest?.({
-          sessionId: session.sessionId,
+          sessionId: activeSessionId,
           questionId: currentQuestion?.id || null,
           step: STEPS.SAFETY_ALERT,
           reason: 'safety_keyword',
@@ -192,7 +258,7 @@ export default function PatientFlow({
     } finally {
       setIsTranscribing(false)
     }
-  }, [advanceWithConfirmedAnswer, currentQuestion, onStaffCallRequest, runBackendPipeline, session.sessionId, transcript])
+  }, [activeSessionId, advanceWithConfirmedAnswer, currentQuestion, onStaffCallRequest, runBackendPipeline, transcript])
 
   const handleSafetyContinue = useCallback(async () => {
     const answerText = transcript.trim()
@@ -242,7 +308,7 @@ export default function PatientFlow({
       console.error('Safety end failed:', err)
     } finally {
       onComplete?.({
-        sessionId: session.sessionId,
+        sessionId: activeSessionId,
         visitType,
         answers: nextAnswers,
         stopped: true,
@@ -261,7 +327,7 @@ export default function PatientFlow({
     onTranscriptConfirmed,
     pendingSafetyResult,
     runBackendPipeline,
-    session.sessionId,
+    activeSessionId,
     transcript,
     visitType,
   ])
@@ -281,7 +347,7 @@ export default function PatientFlow({
       case STEPS.Q_VOICE:
         return (
           <VoiceScreen
-            sessionId={session.sessionId}
+            sessionId={activeSessionId}
             patient={displayPatient}
             visitType={visitType}
             question={currentQuestion}
@@ -345,9 +411,43 @@ export default function PatientFlow({
     }
   }
 
+  const renderConsentGate = () => {
+    if (step === STEPS.STAFF_CALL) {
+      return (
+        <StaffCallScreen
+          patient={displayPatient}
+          onReturn={handleConsentStaffCallReturn}
+          returnLabel="동의 화면으로 돌아가기"
+        />
+      )
+    }
+
+    if (consentRejected) {
+      return (
+        <ManualIntakeScreen
+          patient={displayPatient}
+          visitType={visitType}
+        />
+      )
+    }
+
+    return (
+      <PrivacyConsentModal
+        patientName={`${displayPatient.name || '환자'} ${displayPatient.honorific || ''}`.trim()}
+        isSaving={consentSaving}
+        error={consentError}
+        rejected={consentRejected}
+        onAccept={() => saveConsent(true)}
+        onReject={() => saveConsent(false)}
+        onStaffHelp={handleConsentStaffHelp}
+      />
+    )
+  }
+
   return (
     <TabletFrame visitType={visitType} variant={frameVariant}>
-      {renderScreen()}
+      {consentAccepted && renderScreen()}
+      {!consentAccepted && renderConsentGate()}
     </TabletFrame>
   )
 }

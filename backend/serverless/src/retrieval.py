@@ -21,7 +21,6 @@ from settings import (
     HYBRID_MIN_VECTOR_SCORE,
     HYBRID_TOP_K,
     HYBRID_VECTOR_WEIGHT,
-    USE_TITAN_EMBEDDING,
 )
 from retrieval_documents import get_ir_index, get_symptom_name_by_id, preferred_canonical_name
 from retrieval_embeddings import embed_text, get_doc_embeddings
@@ -45,11 +44,10 @@ def retrieve_symptom_docs(source_quote, normalized_text, span_name="", preferred
     q_emb = None
     vector_raw = [0.0] * len(docs)
     vector_error = ""
-    if USE_TITAN_EMBEDDING:
-        try:
-            q_emb = embed_text(query)
-        except Exception as exc:
-            vector_error = str(exc)
+    try:
+        q_emb = embed_text(query)
+    except Exception as exc:
+        vector_error = str(exc)
 
     doc_embeddings = get_doc_embeddings(docs) if q_emb is not None else {}
     if q_emb is not None and doc_embeddings:
@@ -131,25 +129,16 @@ def retrieve_symptom_docs(source_quote, normalized_text, span_name="", preferred
 
 
 def is_hybrid_candidate_accepted(candidate):
-    """Require vector-centered hybrid evidence before a symptom becomes confirmed.
-
-    Alias/label text can boost ranking, but it cannot confirm a symptom by itself.
-    With Titan enabled, at least one semantic signal plus one lexical/label signal
-    must be present. Without Titan, BM25 and label evidence must both be present.
-    """
+    """표준 증상 확정에는 Titan 의미 신호와 lexical/label 근거가 함께 필요합니다."""
     bm25 = float(candidate.get("bm25_score") or 0)
     vector = float(candidate.get("vector_score") or 0)
     label = float(candidate.get("label_score") or 0)
-    if USE_TITAN_EMBEDDING:
-        if vector >= HYBRID_MIN_VECTOR_SCORE and (bm25 >= HYBRID_MIN_BM25_SCORE or label >= HYBRID_MIN_LABEL_SCORE):
-            return True, "vector_plus_lexical_or_label"
-        return False, (
-            "hybrid_gate_failed:"
-            f" vector={vector}, bm25={bm25}, label={label}"
-        )
-    if bm25 >= HYBRID_MIN_BM25_SCORE and label >= HYBRID_MIN_LABEL_SCORE:
-        return True, "bm25_plus_label_without_vector"
-    return False, f"bm25_gate_failed: bm25={bm25}, label={label}"
+    if vector >= HYBRID_MIN_VECTOR_SCORE and (bm25 >= HYBRID_MIN_BM25_SCORE or label >= HYBRID_MIN_LABEL_SCORE):
+        return True, "vector_plus_lexical_or_label"
+    return False, (
+        "hybrid_gate_failed:"
+        f" vector={vector}, bm25={bm25}, label={label}"
+    )
 
 def match_slots(body):
     """`POST /match` 진입점. LLM span을 원페이퍼에 표시할 matched_slots로 변환합니다."""
@@ -200,7 +189,7 @@ def match_slots(body):
             "normalized_text": span.get("normalized_text") or span.get("name") or name,
             "status": status,
             "explain": make_symptom_match_explain(span, top),
-            "ir_method": "bm25_titan_hybrid" if USE_TITAN_EMBEDDING else "bm25_only",
+            "ir_method": "bm25_titan_hybrid",
             "ir_trace": {
                 "query": normalize_text(" ".join([
                     span.get("source_quote", ""),

@@ -6,7 +6,6 @@ PCM audio directly to Amazon Transcribe and sends only confirmed text into the
 LLM/IR pipeline.
 """
 
-import re
 import uuid
 from urllib.parse import urlencode
 
@@ -25,24 +24,6 @@ def configured_custom_vocabulary():
     if value.lower() in ("", "unused", "none", "null", "-"):
         return ""
     return value
-
-
-def make_audio_key(session_id, question_id, content_type):
-    """Legacy helper retained only for old imports; audio keys are not used."""
-    ext = "webm"
-    if "/" in str(content_type or ""):
-        ext = content_type.split("/")[-1].split(";")[0] or "webm"
-    if ext == "mpeg":
-        ext = "mp3"
-    return f"sessions/{session_id}/{question_id}.{ext}"
-
-
-def generate_upload_url(body):
-    """Deprecated endpoint: storing patient audio in S3 is disabled."""
-    return None, response(410, {
-        "error": "audio_storage_disabled",
-        "message": "Use /transcribe-stream-url for real-time Transcribe Streaming.",
-    })
 
 
 def generate_streaming_transcribe_url(body):
@@ -109,41 +90,3 @@ def generate_streaming_transcribe_url(body):
         "audio_stored": False,
         "expires_in": 300,
     }, None
-
-
-def parse_job_name(job_name):
-    """Legacy batch job parser retained for compatibility tests."""
-    m = re.match(r"^(.*)-(Q[1-4])(?:-[0-9A-Za-z]+)?$", str(job_name or ""))
-    if not m:
-        return None, None
-    return m.group(1), m.group(2)
-
-
-def safe_job_name(job_name):
-    """Transcribe session/job names allow only a restricted character set."""
-    return re.sub(r"[^0-9A-Za-z._-]", "-", str(job_name))[:180]
-
-
-def get_or_start_transcript(job_name):
-    """Deprecated endpoint: S3 batch transcription is disabled."""
-    return response(410, {
-        "error": "batch_transcribe_disabled",
-        "message": "Use real-time Transcribe Streaming. Patient audio is not persisted.",
-    })
-
-
-def extract_confidence(payload):
-    """Legacy helper retained for old tests; streaming UI no longer uses it."""
-    try:
-        items = payload.get("results", {}).get("items", [])
-        vals = [
-            float(alt.get("confidence"))
-            for item in items
-            for alt in item.get("alternatives", [])
-            if alt.get("confidence") is not None
-        ]
-        if vals:
-            return round(sum(vals) / len(vals), 3)
-    except Exception:
-        return None
-    return None

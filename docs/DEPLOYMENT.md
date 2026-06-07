@@ -133,7 +133,6 @@ sam deploy --guided
 Stack Name: munjin-mvp-backend-test
 AWS Region: ap-northeast-2
 Parameter SessionsTableName: MunjinSessionsTest
-Parameter ArtifactsBucketName: <artifact-bucket-name>
 Parameter LambdaRoleArn: arn:aws:iam::<account-id>:role/<lambda-role-name>
 Parameter CustomVocabularyName:
 Confirm changes before deploy: y
@@ -240,7 +239,6 @@ AMPLIFY_DIFF_DEPLOY=false
 목업 모드를 명시적으로 끄고 싶으면:
 
 ```text
-VITE_ENABLE_MOCKS=false
 ```
 
 주의:

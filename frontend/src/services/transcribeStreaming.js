@@ -1,5 +1,4 @@
-import { getMockTranscript } from './api/mockResponses.js'
-import { API_BASE_URL, ensureApiConfigured, sleep, useMockApi } from './api/client.js'
+import { API_BASE_URL, ensureApiConfigured, sleep } from './api/client.js'
 
 const encoder = new TextEncoder()
 const decoder = new TextDecoder()
@@ -13,9 +12,6 @@ export async function openTranscribeStream({
   onStatus,
   onError,
 }) {
-  if (useMockApi()) {
-    return openMockTranscribeStream({ questionId, visitType, onTranscript, onStatus })
-  }
   ensureApiConfigured()
 
   const AudioContextClass = window.AudioContext || window.webkitAudioContext
@@ -177,36 +173,6 @@ async function getTranscribeStreamUrl({ sessionId, questionId, visitType, sample
   })
   if (!res.ok) throw new Error('transcribe_stream_url_failed')
   return res.json()
-}
-
-function openMockTranscribeStream({ questionId, visitType, onTranscript, onStatus }) {
-  let currentText = ''
-  let stopped = false
-  let timer = null
-  const jobName = `mock-${questionId}_${visitType || 'initial'}`
-  onStatus?.('recording')
-  getMockTranscript(jobName).then(({ transcript }) => {
-    if (stopped) return
-    const words = String(transcript || '').split(/\s+/)
-    let index = 0
-    timer = setInterval(() => {
-      index += 2
-      currentText = words.slice(0, index).join(' ')
-      onTranscript?.(currentText, { partial: index < words.length })
-      if (index >= words.length) clearInterval(timer)
-    }, 250)
-  })
-  return {
-    get transcript() {
-      return currentText
-    },
-    async stop() {
-      stopped = true
-      if (timer) clearInterval(timer)
-      onStatus?.('stopped')
-      return currentText
-    },
-  }
 }
 
 function encodeAudioEvent(payload) {

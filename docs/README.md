@@ -116,7 +116,7 @@ AWS 배포 담당자를 위한 절차 문서입니다.
 - 의료 판단처럼 해석될 수 있는 표현을 피합니다.
 - LLM extraction, Hybrid IR, final review, guide generation의 책임을 분리해서 설명합니다.
 - 환자 음성은 S3에 저장하지 않는다는 원칙을 명시합니다.
-- rule-based fallback은 기본 운영 경로가 아님을 명시합니다.
+- LLM extraction fallback이 제거되어 실패가 조용히 대체되지 않음을 명시합니다.
 - 실제 계정 ID, 실제 API endpoint, 실제 bucket 이름, access key는 문서에 고정하지 않습니다.
 
 ---

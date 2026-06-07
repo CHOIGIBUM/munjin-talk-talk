@@ -32,7 +32,6 @@ React/Vite frontend
 backend/serverless/
 ├── README.md
 ├── template.yaml
-├── s3-cors.json
 └── src/
     ├── handler.py
     ├── common.py
@@ -49,7 +48,6 @@ backend/serverless/
     ├── extraction.py
     ├── extraction_prompts.py
     ├── extraction_schema.py
-    ├── extraction_fallback.py
     ├── retrieval.py
     ├── retrieval_documents.py
     ├── retrieval_embeddings.py
@@ -87,12 +85,7 @@ backend/serverless/
 | `POST` | `/doctor-response` | 의사 답변과 환자 강조사항 저장 |
 | `GET` | `/guide/{session_id}` | 환자 안내문 조회 |
 
-과거 배치형 STT 호환 endpoint:
-
-| Method | Path | 현재 상태 |
-| --- | --- | --- |
-| `POST` | `/upload-url` | 환자 음성 저장 금지 원칙에 따라 실제 문진 경로에서는 사용하지 않음 |
-| `GET` | `/transcribe-result` | 과거 호환용. 실제 문진 경로에서는 사용하지 않음 |
+저장형 음성 업로드와 배치 Transcribe 조회 endpoint는 제거했습니다. 현재 문진 음성은 `/transcribe-stream-url`로 발급받은 Transcribe Streaming WebSocket에서만 처리합니다.
 
 ---
 
@@ -216,10 +209,6 @@ Lambda execution role에는 최소한 다음 권한이 필요합니다.
 
 공개 운영 전에는 resource ARN을 환경별로 좁혀야 합니다.
 
-### S3
-
-`ArtifactsBucketName`은 환자 음성 저장소가 아닙니다. SAM/CloudFormation 배포 artifact 또는 제한적 임시 산출물 용도입니다.
-
 ### Bedrock model access
 
 배포 region에서 다음 모델 권한을 확인합니다.
@@ -239,12 +228,7 @@ amazon.titan-embed-text-v2:0
 | 변수 | 기본값 | 설명 |
 | --- | --- | --- |
 | `SESSIONS_TABLE` | `MunjinSessions` | DynamoDB 세션 테이블 |
-| `ARTIFACT_BUCKET` | 배포 parameter | SAM artifact bucket |
 | `CUSTOM_VOCABULARY` | 빈 값 | Transcribe custom vocabulary |
-| `USE_BEDROCK_LLM` | `true` | Bedrock LLM extraction 사용 |
-| `ALLOW_RULE_FALLBACK` | `false` | LLM 실패 시 rule fallback 허용 |
-| `ENABLE_BEDROCK_REVIEW` | `true` | 원페이퍼 review LLM 사용 |
-| `ENABLE_BEDROCK_GUIDE` | `true` | 환자 안내문 LLM 사용 |
 | `STRONG_MODEL_ID` | `apac.amazon.nova-pro-v1:0` | 고난도 extraction |
 | `LIGHT_MODEL_ID` | `apac.amazon.nova-lite-v1:0` | 저난도 extraction |
 | `REVIEWER_MODEL_ID` | `STRONG_MODEL_ID` | 원페이퍼 review |
@@ -254,7 +238,6 @@ amazon.titan-embed-text-v2:0
 | `GUIDE_MAX_TOKENS` | `900` | guide max token |
 | `EXTRACTION_RETRY_ATTEMPTS` | `3` | extraction retry 횟수 |
 | `REVIEW_RETRY_ATTEMPTS` | `2` | review retry 횟수 |
-| `USE_TITAN_EMBEDDING` | `true` | Titan Vector IR 사용 |
 | `EMBEDDING_MODEL_ID` | `amazon.titan-embed-text-v2:0` | embedding 모델 |
 | `EMBEDDING_DIMENSIONS` | `512` | embedding 차원 |
 | `HYBRID_BM25_WEIGHT` | `0.35` | 후보 정렬 시 BM25 비중 |
@@ -313,7 +296,6 @@ sam deploy --guided
 Stack Name: munjin-mvp-backend-test
 AWS Region: ap-northeast-2
 Parameter SessionsTableName: MunjinSessionsTest
-Parameter ArtifactsBucketName: <artifact-bucket-name>
 Parameter LambdaRoleArn: arn:aws:iam::<account-id>:role/<lambda-role-name>
 Parameter CustomVocabularyName:
 Confirm changes before deploy: y

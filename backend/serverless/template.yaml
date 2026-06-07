@@ -9,9 +9,6 @@ Parameters:
     Type: String
     Default: MunjinSessions
     Description: Existing DynamoDB table name. Partition key must be session_id.
-  ArtifactsBucketName:
-    Type: String
-    Description: Existing S3 bucket for deployment/transient artifacts. Patient audio is not uploaded.
   LambdaRoleArn:
     Type: String
     Description: Existing IAM role ARN for the Lambda function.
@@ -31,12 +28,7 @@ Globals:
       Variables:
         # 세션/STT/LLM/IR 설정은 Lambda 코드가 settings.py에서 읽습니다.
         SESSIONS_TABLE: !Ref SessionsTableName
-        ARTIFACT_BUCKET: !Ref ArtifactsBucketName
         CUSTOM_VOCABULARY: !Ref CustomVocabularyName
-        USE_BEDROCK_LLM: 'true'
-        ALLOW_RULE_FALLBACK: 'false'
-        ENABLE_BEDROCK_REVIEW: 'true'
-        ENABLE_BEDROCK_GUIDE: 'true'
         STRONG_MODEL_ID: apac.amazon.nova-pro-v1:0
         LIGHT_MODEL_ID: apac.amazon.nova-lite-v1:0
         REVIEWER_MODEL_ID: apac.amazon.nova-pro-v1:0
@@ -46,7 +38,6 @@ Globals:
         GUIDE_MAX_TOKENS: '900'
         EXTRACTION_RETRY_ATTEMPTS: '3'
         REVIEW_RETRY_ATTEMPTS: '2'
-        USE_TITAN_EMBEDDING: 'true'
         EMBEDDING_MODEL_ID: amazon.titan-embed-text-v2:0
         EMBEDDING_DIMENSIONS: '512'
         HYBRID_TOP_K: '5'
@@ -57,7 +48,6 @@ Globals:
         HYBRID_MIN_VECTOR_SCORE: '0.12'
         HYBRID_MIN_BM25_SCORE: '0.04'
         HYBRID_MIN_LABEL_SCORE: '0.55'
-        HYBRID_PRECOMPUTE_DOC_EMBEDDINGS: 'false'
 
 Resources:
   # 프론트엔드가 호출하는 HTTP API Gateway입니다.
@@ -101,18 +91,12 @@ Resources:
             ApiId: !Ref MunjinHttpApi
             Path: /sessions/{session_id}/staff-help
             Method: POST
-        UploadUrl:
+        SaveConsent:
           Type: HttpApi
           Properties:
             ApiId: !Ref MunjinHttpApi
-            Path: /upload-url
+            Path: /sessions/{session_id}/consent
             Method: POST
-        TranscribeResult:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref MunjinHttpApi
-            Path: /transcribe-result
-            Method: GET
         TranscribeStreamUrl:
           Type: HttpApi
           Properties:

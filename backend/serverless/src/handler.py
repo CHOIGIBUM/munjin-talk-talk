@@ -13,9 +13,7 @@ from common import (
     create_session,
     extract_question,
     generate_streaming_transcribe_url,
-    generate_upload_url,
     get_guide,
-    get_or_start_transcript,
     get_session,
     list_sessions,
     match_slots,
@@ -24,6 +22,7 @@ from common import (
     public_session,
     response,
     save_doctor_response,
+    save_patient_consent,
     update_session,
     validate_and_save,
 )
@@ -47,7 +46,6 @@ def handler(event, context):
 def route(method, path, event):
     """문진톡톡 MVP의 공개 API 라우팅 테이블입니다."""
     body = parse_body(event)
-    query = event.get("queryStringParameters") or {}
 
     if method == "POST" and path == "/sessions":
         session = create_session(body)
@@ -68,16 +66,17 @@ def route(method, path, event):
         session = update_session(session_id, {"status": "staff_help"})
         return response(200, public_session(session))
 
-    if method == "POST" and path == "/upload-url":
-        payload, err = generate_upload_url(body)
-        return err or response(200, payload)
+    match = re.fullmatch(r"/sessions/([^/]+)/consent", path)
+    if method == "POST" and match:
+        session_id = unquote_plus(match.group(1))
+        session = save_patient_consent(session_id, body)
+        if not session:
+            return response(404, {"error": "session_not_found"})
+        return response(200, public_session(session))
 
     if method == "POST" and path == "/transcribe-stream-url":
         payload, err = generate_streaming_transcribe_url(body)
         return err or response(200, payload)
-
-    if method == "GET" and path == "/transcribe-result":
-        return get_or_start_transcript(query.get("jobName") or query.get("job_name"))
 
     if method == "POST" and path == "/extract":
         return response(200, extract_question(body))

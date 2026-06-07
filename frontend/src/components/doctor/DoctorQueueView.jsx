@@ -19,16 +19,17 @@ export default function DoctorQueueView() {
 
   // 접수/문진 진행 상태가 바뀌는 동안 대기열을 주기적으로 갱신합니다.
   useEffect(() => {
-    const refresh = async () => setSessions(await getDoctorQueue())
-    refresh()
-    window.addEventListener('storage', refresh)
-    window.addEventListener('munjin-demo-sessions', refresh)
-    const timer = setInterval(refresh, 4000)
-    return () => {
-      window.removeEventListener('storage', refresh)
-      window.removeEventListener('munjin-demo-sessions', refresh)
-      clearInterval(timer)
+    const refresh = async () => {
+      try {
+        setSessions(await getDoctorQueue())
+      } catch (error) {
+        console.error('doctor queue refresh failed:', error)
+        setSessions([])
+      }
     }
+    refresh()
+    const timer = setInterval(refresh, 4000)
+    return () => clearInterval(timer)
   }, [])
 
   // 위험 플래그, 완료 상태, 접수 순번 순서로 진료 확인 우선순위를 정합니다.

@@ -1,7 +1,5 @@
 // 백엔드 onepager JSON을 의사 UI가 기대하는 형태로 정규화하는 어댑터입니다.
 // 백엔드 스키마가 조금 바뀌어도 화면 컴포넌트 수정 범위를 이 파일에 가두기 위한 층입니다.
-import { buildFallbackBrief, buildHeadline } from './onepagerBrief.js'
-
 const DEFAULT_PATIENT = {
   name: '환자',
   age: 0,
@@ -12,24 +10,21 @@ const DEFAULT_PATIENT = {
   audioDuration: 0,
 }
 
-export function normalizeOnePager(raw, fallback = null) {
-  if (!raw) return fallback
+export function normalizeOnePager(raw) {
+  if (!raw) return null
 
   const current = normalizeCurrentBackend(raw)
   if (current) return current
 
-  const legacy = normalizeLegacyBackend(raw)
-  if (legacy) return legacy
-
-  return fallback || raw
+  return null
 }
 
 // DoctorAgendaPanel은 Q4 환자 질문과 안내문 입력에 필요한 부분만 읽습니다.
 // 전체 onepager를 몰라도 agenda 관련 필드만 안정적으로 꺼내기 위한 helper입니다.
-export function normalizeAgendaSource(raw, fallbackAgenda = []) {
-  const normalized = normalizeOnePager(raw, null)
+export function normalizeAgendaSource(raw) {
+  const normalized = normalizeOnePager(raw)
   return {
-    agenda: normalized ? (normalized.agenda || []) : fallbackAgenda,
+    agenda: normalized ? (normalized.agenda || []) : [],
     full_q4_transcript: normalized?.full_q4_transcript || '',
     uncategorized_remnant: normalized?.uncategorized_remnant || '',
   }
@@ -48,13 +43,7 @@ function normalizeCurrentBackend(raw) {
   const safetyFlags = onepager.safety_flags || []
   const safetyFlag = normalizeSafetyFlag(safetyFlags[0])
   const clinicalClues = onepager.clinical_clues || []
-  const doctorBrief = normalizeDoctorBrief(onepager.doctor_brief, {
-    visitType,
-    symptomSlots,
-    clinicalClues,
-    agenda,
-    safetyFlag,
-  })
+  const doctorBrief = normalizeDoctorBrief(onepager.doctor_brief)
 
   return {
     patient,
@@ -69,49 +58,6 @@ function normalizeCurrentBackend(raw) {
     safety_flag: safetyFlag,
     safety_flags: safetyFlags,
     unresolvedItems: onepager.unresolved_items || [],
-  }
-}
-
-// 예전 로컬 목업/초기 MVP 구조도 아직 읽을 수 있게 남겨둔 호환 변환기입니다.
-function normalizeLegacyBackend(raw) {
-  if (!raw.patient && !raw.symptom_card && !raw.transfer_text && !raw.symptomSlots) return null
-
-  const visitType = normalizeVisitType(raw.visit_type || raw.patient?.visit_type)
-  const patient = {
-    name: raw.patient?.name_masked || raw.patient?.name || DEFAULT_PATIENT.name,
-    age: raw.patient?.age || DEFAULT_PATIENT.age,
-    gender: raw.patient?.gender || DEFAULT_PATIENT.gender,
-    department: raw.patient?.department || DEFAULT_PATIENT.department,
-    visit_type: visitType,
-    receivedAt: raw.patient?.received_at || raw.patient?.receivedAt || DEFAULT_PATIENT.receivedAt,
-    audioDuration: raw.patient?.audio_duration || raw.patient?.audioDuration || DEFAULT_PATIENT.audioDuration,
-  }
-
-  const agenda = normalizeAgenda(raw.agenda || [])
-  const symptomSlots = raw.symptomSlots || normalizeLegacySymptomCard(raw.symptom_card)
-  const safetyFlag = raw.safety_flag || null
-  const clinicalClues = raw.clinical_clues || raw.clinicalClues || []
-  const doctorBrief = normalizeDoctorBrief(raw.doctor_brief, {
-    visitType,
-    symptomSlots,
-    clinicalClues,
-    agenda,
-    safetyFlag,
-  })
-
-  return {
-    patient,
-    agenda,
-    full_q4_transcript: raw.full_q4_transcript || '',
-    uncategorized_remnant: raw.uncategorized_remnant || '',
-    symptomSlots,
-    clinicalClues,
-    doctorBrief,
-    reviewItems: normalizeReviewItems(raw.review_items || raw.reviewItems || []),
-    transferText: raw.transfer_text || raw.transferText || '',
-    safety_flag: safetyFlag,
-    safety_flags: safetyFlag ? [safetyFlag] : [],
-    unresolvedItems: raw.unresolved_items || [],
   }
 }
 
@@ -156,29 +102,6 @@ function normalizeSymptomSlots(slots) {
   }))
 }
 
-function normalizeLegacySymptomCard(card) {
-  if (!card) return []
-  if (card.type === 'symptom_list') {
-    return (card.slots || []).map(slot => ({
-      name: slot.name,
-      sub: slot.slot_id,
-      sourceQuote: slot.source_quote,
-      score: Number(slot.score ?? 0),
-      alert: Boolean(slot.alert),
-    }))
-  }
-  if (card.type === 'progress_tracking') {
-    return (card.spans || []).map(span => ({
-      name: slotIdToKorean(span.slot_ref),
-      sub: span.slot_ref,
-      sourceQuote: span.source_quote,
-      score: Number(span.score ?? 1),
-      alert: span.type === 'new_symptom' || span.slot_ref === 'hemoptysis',
-    }))
-  }
-  return []
-}
-
 function normalizeReviewItems(items) {
   return (items || []).map(item => {
     if (typeof item === 'string') return item
@@ -188,16 +111,16 @@ function normalizeReviewItems(items) {
   }).filter(Boolean)
 }
 
-function normalizeDoctorBrief(brief, context) {
+function normalizeDoctorBrief(brief) {
   if (brief?.sections?.length || brief?.headline) {
     return {
-      headline: brief.headline || buildHeadline(context),
-      priority: brief.priority || (context.safetyFlag ? '우선' : '일반'),
+      headline: brief.headline || '',
+      priority: brief.priority || '일반',
       sections: (brief.sections || []).map(normalizeBriefSection).filter(Boolean),
     }
   }
 
-  return buildFallbackBrief(context)
+  return { headline: '', priority: '일반', sections: [] }
 }
 
 function normalizeBriefSection(section) {
@@ -257,24 +180,4 @@ function categoryToKorean(cat) {
     other: '기타',
   }
   return m[cat] || '환자 질문'
-}
-
-function slotIdToKorean(id) {
-  const m = {
-    cough: '기침',
-    throat_irritation: '목 불편감',
-    nasal_obstruction: '코막힘',
-    rhinorrhea: '콧물',
-    fever: '열',
-    sputum: '가래',
-    dyspnea: '호흡곤란',
-    hemoptysis: '객혈',
-    chest_pain: '흉통',
-    wheezing: '천명음',
-    headache: '두통',
-    sneezing: '재채기',
-    voice_change: '음성 변화',
-    sore_throat: '인후통',
-  }
-  return m[id] || id || '-'
 }

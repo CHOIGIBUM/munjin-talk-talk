@@ -1,17 +1,6 @@
 // API 공통 설정과 응답 정규화 유틸입니다.
-// 배포 환경에서는 VITE_API_BASE_URL이 Lambda/API Gateway 주소를 가리키고,
-// 로컬 목업 시연에서는 VITE_ENABLE_MOCKS=true일 때 demoSessions를 사용합니다.
+// 운영 배포에서는 VITE_API_BASE_URL이 API Gateway 주소를 반드시 가리켜야 합니다.
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
-export const ENABLE_MOCKS = import.meta.env.VITE_ENABLE_MOCKS === 'true'
-
-// 백엔드 주소가 비어 있고 명시적으로 목업을 켠 경우에만 목업 API를 사용합니다.
-export function useMockApi() {
-  return !API_BASE_URL && ENABLE_MOCKS
-}
-
-export function isMockApiEnabled() {
-  return useMockApi()
-}
 
 export function isRemoteApiEnabled() {
   return Boolean(API_BASE_URL)
@@ -23,8 +12,7 @@ export function ensureApiConfigured() {
   }
 }
 
-// Lambda 응답과 로컬 목업 응답의 key 이름이 조금 달라도
-// UI 컴포넌트가 항상 같은 shape으로 읽도록 맞춰줍니다.
+// Lambda 응답의 snake_case 필드를 화면이 쓰는 camelCase 필드와 함께 읽을 수 있게 맞춥니다.
 export function normalizeSession(session) {
   if (!session) return null
   const patient = session.patient || {}

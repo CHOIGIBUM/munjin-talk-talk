@@ -22,7 +22,7 @@ import './DoctorView.css'
 //   - 환자 발화 원문 카드 상시 표시 (Q4 누락 방지 4중 묘수 ④)
 //
 // 상단 가로 띠 (전체 폭):
-//   - 위험 플래그 amber 배지 (재진 객혈 시연)
+//   - 위험 플래그 amber 배지 (실제 safety flag)
 //   - 환자 정보 (이름·나이·진료과·visit_type)
 
 export default function DoctorView() {
@@ -50,14 +50,14 @@ export default function DoctorView() {
     try {
       const result = await submitDoctorResponse({
         sessionId,
-        reviewerId: 'DR-DEMO',
+        reviewerId: 'doctor-web',
         answers,
         additionalNotes
       })
       if (result.validator_passed !== false) {
         setSubmitStatus('success')
       } else {
-        setSubmitStatus('partial_fallback')
+        setSubmitStatus('invalid')
       }
     } catch (err) {
       console.error('의사 답변 전송 실패:', err)

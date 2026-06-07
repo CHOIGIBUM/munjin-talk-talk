@@ -64,6 +64,32 @@ def update_session(session_id, updates):
     return res.get("Attributes")
 
 
+def save_patient_consent(session_id, body):
+    """환자 태블릿에서 받은 개인정보/민감정보 처리 동의 이력을 세션에 저장합니다."""
+    session = get_session(session_id)
+    if not session:
+        return None
+
+    accepted = bool(body.get("accepted"))
+    now = now_iso()
+    consent = {
+        "accepted": accepted,
+        "version": body.get("version") or "munjin-privacy-consent-v1",
+        "method": "patient_tablet_modal",
+        "recorded_at": now,
+        "accepted_at": now if accepted else None,
+        "rejected_at": now if not accepted else None,
+        "privacy_items": body.get("privacy_items") or [],
+        "sensitive_items": body.get("sensitive_items") or [],
+        "retention_notice": body.get("retention_notice") or "MVP session data is retained temporarily and should be deleted by policy.",
+    }
+
+    updates = {"privacy_consent": consent}
+    if not accepted:
+        updates["status"] = "consent_rejected"
+    return update_session(session_id, updates)
+
+
 def create_session(body):
     """접수처 입력값으로 새 문진 세션을 만들고 초기 onepager 뼈대를 저장합니다."""
     patient_input = body.get("patient") or body
@@ -89,6 +115,7 @@ def create_session(body):
         "queue_number": body.get("queue_number") or body.get("queueNumber") or next_queue_number(),
         "created_at": now_iso(),
         "updated_at": now_iso(),
+        "expires_at": int(time.time()) + 3 * 24 * 60 * 60,
         "status": "waiting_tablet",
         "visit_type": visit_type,
         "risk": "none",
@@ -132,6 +159,8 @@ def public_session(session):
             "honorific": "어르신",
         },
         "responses": session.get("responses", {}),
+        "privacyConsent": session.get("privacy_consent", {}),
+        "privacy_consent": session.get("privacy_consent", {}),
         "createdAt": session.get("created_at"),
         "updatedAt": session.get("updated_at"),
     }

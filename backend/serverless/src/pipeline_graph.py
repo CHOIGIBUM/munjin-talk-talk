@@ -31,11 +31,6 @@ def run_answer_pipeline(body: dict[str, Any]):
     return final_state.get("result_payload") or {}, None
 
 
-def pipeline_graph_description() -> dict[str, Any]:
-    """프론트/문서/응답에서 재사용할 수 있는 그래프 설명입니다."""
-    return dict(PIPELINE_GRAPH)
-
-
 def route_after_required_input(state: AnswerPipelineState) -> str:
     """필수 입력이 없으면 즉시 종료하고, 정상 입력이면 안전 감지로 진행합니다."""
     return "stop" if state.get("error_response") else "continue"

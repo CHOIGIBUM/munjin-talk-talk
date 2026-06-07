@@ -130,7 +130,6 @@ components/doctor/
 ├── DoctorOnePager.jsx
 ├── DoctorOnePagerParts.jsx
 ├── DoctorAgendaPanel.jsx
-├── DoctorOnePager.mocks.js
 ├── DoctorQueueView.css
 ├── DoctorView.css
 ├── DoctorOnePager.css
@@ -144,7 +143,6 @@ components/doctor/
 | `DoctorOnePager.jsx` | 원페이퍼 본문 |
 | `DoctorOnePagerParts.jsx` | 증상 카드, chip, 보조 UI |
 | `DoctorAgendaPanel.jsx` | 환자 질문, 의사 답변, 안내 강조사항 입력 |
-| `DoctorOnePager.mocks.js` | UI 목업 데이터 |
 
 ### `hooks/`
 
@@ -167,29 +165,24 @@ Transcribe Streaming 상태를 React hook으로 감싼 파일입니다.
 ```text
 services/
 ├── api.js
-├── demoSessions.js
 ├── transcribeStreaming.js
 ├── onepagerAdapter.js
-├── onepagerBrief.js
 └── api/
     ├── client.js
     ├── sessions.js
     ├── transcripts.js
-    ├── doctor.js
-    └── mockResponses.js
+    └── doctor.js
 ```
 
 | 파일 | 역할 |
 | --- | --- |
 | `api.js` | 서비스 API re-export |
-| `api/client.js` | API base URL, mock mode, 공통 session normalize |
+| `api/client.js` | API base URL, 공통 session normalize |
 | `api/sessions.js` | 세션 생성, 조회, 대기열 |
 | `api/transcripts.js` | `/process-answer` 호출 |
 | `api/doctor.js` | 원페이퍼, doctor response, guide API |
 | `transcribeStreaming.js` | WebSocket STT streaming 구현 |
 | `onepagerAdapter.js` | 백엔드 onepaper JSON을 UI용 shape으로 변환 |
-| `onepagerBrief.js` | brief fallback helper |
-| `demoSessions.js` | UI 목업용 localStorage 세션 |
 
 ---
 
@@ -202,7 +195,6 @@ backend/
     ├── README.md
     ├── template.yaml
     ├── samconfig.toml
-    ├── s3-cors.json
     └── src/
 ```
 
@@ -229,7 +221,6 @@ backend/serverless/src/
 ├── extraction.py
 ├── extraction_prompts.py
 ├── extraction_schema.py
-├── extraction_fallback.py
 ├── retrieval.py
 ├── retrieval_documents.py
 ├── retrieval_embeddings.py
@@ -298,7 +289,6 @@ backend/serverless/src/
 | --- | --- |
 | `extraction.py` | Bedrock extraction 실행과 retry loop |
 | `extraction_schema.py` | runtime 보강, quote grounding, 문항 단위 검증 |
-| `extraction_fallback.py` | 명시적으로 허용된 경우에만 쓰는 fallback |
 | `schemas/extraction.py` | Pydantic fixed schema |
 
 ### Hybrid IR

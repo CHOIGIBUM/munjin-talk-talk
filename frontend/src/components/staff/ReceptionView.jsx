@@ -23,19 +23,18 @@ export default function ReceptionView() {
   const [manualSubmitting, setManualSubmitting] = useState(false)
 
   const loadSessions = useCallback(async () => {
-    setSessions(await getDoctorQueue())
+    try {
+      setSessions(await getDoctorQueue())
+    } catch (error) {
+      console.error('reception queue refresh failed:', error)
+      setSessions([])
+    }
   }, [])
 
   useEffect(() => {
     loadSessions()
-    window.addEventListener('storage', loadSessions)
-    window.addEventListener('munjin-demo-sessions', loadSessions)
     const timer = setInterval(loadSessions, 5000)
-    return () => {
-      window.removeEventListener('storage', loadSessions)
-      window.removeEventListener('munjin-demo-sessions', loadSessions)
-      clearInterval(timer)
-    }
+    return () => clearInterval(timer)
   }, [loadSessions])
 
   const waitingCount = useMemo(
