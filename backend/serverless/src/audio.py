@@ -1,9 +1,8 @@
-"""Amazon Transcribe integration without storing patient audio.
+"""환자 음성 원본을 저장하지 않는 Amazon Transcribe Streaming 연동 모듈.
 
-The runtime flow no longer uploads patient voice to S3. Lambda only creates a
-short-lived presigned Transcribe Streaming WebSocket URL. The browser streams
-PCM audio directly to Amazon Transcribe and sends only confirmed text into the
-LLM/IR pipeline.
+Lambda는 짧게 살아 있는 Transcribe Streaming presigned WebSocket URL만
+발급합니다. 브라우저가 PCM 음성을 Transcribe로 직접 스트리밍하고, 환자가
+확인한 텍스트만 LLM/IR 파이프라인으로 들어갑니다.
 """
 
 import uuid
@@ -27,10 +26,10 @@ def configured_custom_vocabulary():
 
 
 def generate_streaming_transcribe_url(body):
-    """Return a presigned WebSocket URL for Amazon Transcribe Streaming.
+    """Transcribe Streaming용 presigned WebSocket URL을 발급합니다.
 
-    This function does not receive or persist audio. It only signs a URL with
-    the selected language, PCM encoding, and sample rate.
+    이 함수는 음성 데이터를 받거나 저장하지 않습니다. 언어, PCM 인코딩,
+    sample rate가 포함된 서명 URL만 만들어 프론트엔드에 반환합니다.
     """
     session_id = body.get("session_id") or body.get("sessionId")
     question_id = body.get("question_id") or body.get("questionId")

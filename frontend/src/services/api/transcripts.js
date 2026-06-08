@@ -1,8 +1,8 @@
 import { API_BASE_URL, ensureApiConfigured } from './client.js'
 
-// Submit the already-streamed transcript to the backend orchestration graph.
-// The backend runs Bedrock extraction, schema validation, symptom IR, session
-// save, and onepaper refresh in a single server-side pipeline.
+// 이미 스트리밍으로 확보한 전사 텍스트를 백엔드 orchestration graph에 전달합니다.
+// 백엔드는 Bedrock extraction, schema validation, 증상 IR, 세션 저장,
+// 원페이퍼 갱신을 하나의 서버 측 파이프라인에서 처리합니다.
 export async function processTranscript({
   sessionId,
   questionId,

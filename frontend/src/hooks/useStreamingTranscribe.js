@@ -8,8 +8,8 @@ const MIN_RECORDING_MS = 2500
 const SPEECH_RMS_THRESHOLD = 0.018
 const SPEECH_FRAME_CONFIRM_COUNT = 3
 
-// Real-time STT hook. Audio is streamed directly to Amazon Transcribe and is
-// never uploaded to the application S3 bucket.
+// 실시간 STT 상태를 관리하는 hook입니다.
+// 음성은 애플리케이션 S3 bucket에 업로드하지 않고 Amazon Transcribe로 직접 스트리밍합니다.
 export function useStreamingTranscribe({
   sessionId,
   questionId,

@@ -160,8 +160,8 @@ async function resumeAudioContext(audioContext) {
   try {
     await audioContext.resume()
   } catch {
-    // Chrome may require a direct user gesture. The UI surfaces this as an
-    // empty-audio error so the patient can tap the microphone again.
+    // Chrome은 직접 사용자 제스처가 있어야 AudioContext가 재개되는 경우가 있습니다.
+    // 이때는 빈 오디오 오류로 UI에 알려 환자가 마이크 버튼을 다시 누르게 합니다.
   }
 }
 

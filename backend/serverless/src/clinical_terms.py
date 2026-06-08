@@ -102,8 +102,8 @@ IR_TEXT_ALIASES = [
 ]
 IR_RED_FLAG_NAMES = {"객혈", "호흡곤란", "흉통", "청색증", "의식 변화"}
 
-# Quick safety flag rules are intentionally deterministic. They are not used for
-# diagnosis; they only pause intake and ask staff/clinicians to review urgently.
+# 안전 플래그는 의도적으로 deterministic 규칙으로 둡니다.
+# 진단 목적이 아니라 문진을 잠시 멈추고 직원/의료진 확인으로 넘기기 위한 장치입니다.
 SAFETY_FLAG_RULES = [
     ("hemoptysis", "객혈 의심", "high", r"객혈|피(?:가)?\s*(섞인|섞여|나온|나와)|피가래|가래.*피|피.*가래|피를\s*토|피\s*토"),
     ("dyspnea", "호흡곤란", "high", r"숨이\s*(안|너무|많이)\s*(차|막|막혀)|숨\s*못\s*쉬|호흡\s*곤란|말을\s*못\s*할"),

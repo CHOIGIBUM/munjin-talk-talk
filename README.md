@@ -97,7 +97,7 @@
 - EMR 복사용 문장
 - 환자 안내 강조사항
 
-증상 카드에는 의료진이 오해할 수 있는 숫자 confidence나 내부 IR 점수를 표시하지 않습니다. 운영용 onepaper JSON에도 점수와 후보 목록을 저장하지 않고, UI에는 “매칭됨” 또는 “우선 확인”처럼 확인 중심 상태만 표시합니다.
+증상 카드에는 의료진이 진단 확률처럼 오해할 수 있는 숫자 점수를 표시하지 않습니다. 운영용 onepaper JSON에도 점수와 후보 목록을 저장하지 않고, UI에는 “매칭됨” 또는 “우선 확인”처럼 확인 중심 상태만 표시합니다.
 
 ### 환자 안내문
 
@@ -193,7 +193,7 @@ flowchart LR
 
 ### LangChain과 LangGraph 적용 상태
 
-현재 `test` 브랜치의 백엔드는 LangChain과 LangGraph를 문서상 용어로만 쓰지 않고 실제 코드 경로에 포함합니다.
+현재 백엔드는 LangChain과 LangGraph를 문서상 용어로만 쓰지 않고 실제 코드 경로에 포함합니다.
 
 - `backend/serverless/src/langchain_prompting.py`는 `ChatPromptTemplate -> RunnableLambda(Bedrock converse) -> JsonOutputParser` 구조로 LLM 호출 chain을 구성합니다.
 - `backend/serverless/src/pipeline_graph.py`는 LangGraph `StateGraph`로 문항 처리 노드와 retry edge를 정의합니다.

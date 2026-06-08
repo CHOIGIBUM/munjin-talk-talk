@@ -12,7 +12,7 @@
 | [LANGGRAPH_PIPELINE.md](LANGGRAPH_PIPELINE.md) | 개발자, 평가자 | 환자 답변 1개가 LangGraph 노드에서 처리되는 과정 |
 | [DATA_SCHEMA.md](DATA_SCHEMA.md) | 백엔드 개발자, 데이터 검토자 | DynamoDB item, LLM extraction, matched_slots, onepaper, guide JSON 구조 |
 | [SECURITY_DATA_INVENTORY.md](SECURITY_DATA_INVENTORY.md) | 개발자, 보안 검토자 | DynamoDB/S3 하이브리드 저장 구조와 필드별 보안 처리 기준 |
-| [MVP_SETUP.md](MVP_SETUP.md) | 개발자, 시연 준비자 | 로컬 실행, AWS 백엔드 연결, test 환경 점검 |
+| [MVP_SETUP.md](MVP_SETUP.md) | 개발자, 시연 준비자 | 로컬 실행, AWS 백엔드 연결, 배포 환경 점검 |
 | [DEPLOYMENT.md](DEPLOYMENT.md) | 배포 담당자 | Amplify, SAM, DynamoDB, IAM, Bedrock, Transcribe 배포 절차 |
 | [technical-guide.html](technical-guide.html) | 발표자, 평가자 | 브라우저에서 볼 수 있는 시각적 기술 설명 페이지 |
 | [architecture.drawio](architecture.drawio) | 발표자, 설계 검토자 | draw.io 아키텍처 다이어그램 |
@@ -151,6 +151,6 @@ AWS 배포 담당자를 위한 절차 문서입니다.
 
 ---
 
-## 기준 브랜치
+## 기준 구현
 
-이 문서들은 `test` 브랜치의 MVP 구조를 기준으로 작성되었습니다. `main` 브랜치 또는 팀 저장소에 반영할 때는 Amplify 배포 대상 브랜치, API Gateway endpoint, DynamoDB table name, SAM stack name을 다시 확인해야 합니다.
+이 문서들은 현재 저장소의 서버리스 MVP 구조를 기준으로 작성되었습니다. 다른 AWS 계정, 다른 Amplify 앱, 별도 스테이징 환경으로 배포할 때는 배포 대상 브랜치, API Gateway endpoint, DynamoDB table name, SAM stack name, artifact bucket 이름을 환경에 맞게 다시 확인해야 합니다.

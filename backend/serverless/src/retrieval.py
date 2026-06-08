@@ -66,7 +66,8 @@ def retrieve_symptom_docs(source_quote, normalized_text, span_name="", preferred
     }
     candidate_ids = bm25_top | vector_top | label_top
     if q_emb is not None and not doc_embeddings:
-        # Packaged vector index is absent: still use Titan for the BM25/label candidates.
+        # 배포 패키지에 사전 계산 vector index가 없으면 BM25/label 후보만 대상으로
+        # Titan embedding을 즉시 계산해 semantic 비교를 이어갑니다.
         for idx in list(candidate_ids):
             try:
                 emb = embed_text(docs[idx].get("embedding_text", ""))

@@ -124,23 +124,23 @@ MunjinApiFunction has no authentication. Is this okay?: y
 
 ---
 
-## 7. Amplify test 브랜치 점검
+## 7. Amplify 브랜치/환경 점검
 
-Amplify에서 test 브랜치를 사용할 때 확인할 값:
+Amplify에서 `main`, `test`, 별도 스테이징 앱 중 어떤 환경을 사용하더라도 다음 값은 반드시 확인합니다.
 
 ```text
-Branch: test
+Branch: main 또는 test
 Monorepo app root: frontend
 Build command: npm run build
 Build output directory: dist
 Environment variable:
-  VITE_API_BASE_URL=https://<test-api-id>.execute-api.ap-northeast-2.amazonaws.com
+  VITE_API_BASE_URL=https://<api-id>.execute-api.ap-northeast-2.amazonaws.com
 ```
 
 주의:
 
-- main과 test가 다른 백엔드를 바라보려면 브랜치별 환경 변수를 별도로 설정해야 합니다.
-- Amplify UI에서 브랜치별 환경 변수 선택이 어려우면 test 앱을 별도로 생성하는 방식이 더 안전합니다.
+- `main`과 `test`가 다른 백엔드를 바라보려면 브랜치별 환경 변수를 별도로 설정해야 합니다.
+- Amplify UI에서 브랜치별 환경 변수 선택이 어려우면 운영 앱과 검증 앱을 별도로 생성하는 방식이 더 안전합니다.
 
 ---
 
@@ -182,7 +182,7 @@ Environment variable:
 
 확인할 점:
 
-- 음성 파일이 S3에 생성되지 않아야 합니다.
+- 음성 원본 파일이 S3에 생성되지 않아야 합니다.
 - S3 `answers.redacted.json`이 생성되어야 합니다.
 - S3 `llm_trace.redacted.json`이 생성되어야 합니다.
 - DynamoDB에는 `responses`, `question_results`가 없어야 합니다.
@@ -196,12 +196,12 @@ Environment variable:
 5. 의료진 확인 항목 확인
 6. 환자 질문에 답변 입력
 7. 환자 안내 강조사항 입력
-8. 환자에게 전송
+8. 환자 안내문 생성 버튼 클릭
 
 확인할 점:
 
 - S3 `onepaper.redacted.json`이 생성되어야 합니다.
-- 증상 카드에 숫자 confidence가 표시되지 않아야 합니다.
+- 증상 카드에 숫자 점수가 표시되지 않아야 합니다.
 - 환자 질문이 Q4 agenda로 분리되어야 합니다.
 
 ### 8-5. 안내문

@@ -16,7 +16,7 @@
 
 ## 1-1. 2026-06-08 코드 반영 상태
 
-이 문서를 기준으로 다음 변경이 `test` 브랜치 코드에 반영되었습니다.
+이 문서를 기준으로 다음 변경이 현재 코드에 반영되었습니다.
 
 | 항목 | 반영 상태 | 관련 코드 |
 | --- | --- | --- |
@@ -60,7 +60,7 @@
 | 환자 동의 기록 | `backend/serverless/src/sessions.py` `save_patient_consent` | 동의 여부, 동의 버전, 동의 항목, 민감정보 동의 항목, 동의 시각 | DynamoDB | 개인정보 처리 기록 | 상세 동의 문구와 항목이 세션 레코드에 그대로 누적됨 | DynamoDB 요약 + S3 `consent.json` | DynamoDB에는 accepted, version, accepted_at만 유지. 상세 내용은 S3에 보관 |
 | 음성 인식 준비 | `backend/serverless/src/audio.py` | Transcribe Streaming URL, audio_policy 요약 | DynamoDB | 낮음 | 문항별 STT 세부 상태를 누적하면 불필요한 상태가 늘어남 | DynamoDB | provider, mode, audio_storage=not_stored, last_question_id만 유지 |
 | 음성 원본 | 현재 스트리밍 구조에서는 저장하지 않음 | 환자 음성 파일 | 저장하지 않음 | 고위험 건강정보 | S3 업로드 방식으로 되돌아가면 위험 | 저장 금지 | 실시간 스트리밍 유지. 음성 파일 S3 저장 금지 |
-| STT 결과 텍스트 | `frontend/src/hooks/useSpeechCapture.js`, `backend/serverless/src/onepager.py` | 환자 발화 원문 텍스트 | DynamoDB `responses.Qx.text` | 건강정보 | 문진 원문이 DynamoDB에 누적됨 | 메모리 처리 후 S3 `answers.redacted.json` | 저장 전 가명처리. DynamoDB에는 완료 여부와 S3 key만 저장 |
+| STT 결과 텍스트 | `frontend/src/hooks/useStreamingTranscribe.js`, `backend/serverless/src/pipeline_nodes.py` | 환자 발화 원문 텍스트 | DynamoDB `responses.Qx.text` | 건강정보 | 문진 원문이 DynamoDB에 누적됨 | 메모리 처리 후 S3 `answers.redacted.json` | 저장 전 가명처리. DynamoDB에는 완료 여부와 S3 key만 저장 |
 | Q별 의미 추출 | `backend/serverless/src/onepager.py`, `pipeline_graph.py`, `pipeline_nodes.py` | spans, source_quote, normalized_text, structured, clinical_clues, patient_questions | DynamoDB `question_results` | 건강정보 | LLM 추출 산출물이 DynamoDB에 직접 저장됨 | S3 `answers.redacted.json`, `llm_trace.redacted.json` | 운영 답변은 S3로 이동. trace는 최소 node event만 유지 |
 | 증상 IR 매칭 | `backend/serverless/src/retrieval.py` | matched_slots, symptom label, alias, rank_score, 근거 문구 | DynamoDB `onepager.symptom_slots` | 건강정보 | 매칭 근거와 quote가 DynamoDB에 저장됨 | S3 `onepaper.redacted.json`, `llm_trace.redacted.json` | 운영 onepaper에는 점수 제거. 확정 IR 근거 요약은 최소 trace에만 저장 |
 | Safety Flag | `backend/serverless/src/clinical_terms.py`, `onepager.py`, `pipeline_nodes.py` | 객혈, 피 표현 등 위험 플래그, risk | DynamoDB | 건강정보 요약 | 상세 원문이 함께 묶일 수 있음 | DynamoDB 요약 + S3 상세 | DynamoDB에는 risk level, flag code만 유지. 상세 근거는 S3 |
@@ -205,7 +205,7 @@ Macie는 DynamoDB 내부 필드를 직접 가명처리하는 도구가 아닙니
 
 ## 9. 현재 구현 기준 점검
 
-2026-06-08 기준 `test` 브랜치 코드는 이 전수조사 표의 핵심 저장 경계를 반영한 상태입니다. 즉, 이전 MVP처럼 DynamoDB 한 item에 환자 식별정보, 문항별 원문, LLM 추출 결과, 원페이퍼, 환자 안내문을 모두 직접 저장하는 구조가 아닙니다.
+2026-06-08 기준 현재 코드는 이 전수조사 표의 핵심 저장 경계를 반영한 상태입니다. 즉, 이전 MVP처럼 DynamoDB 한 item에 환자 식별정보, 문항별 원문, LLM 추출 결과, 원페이퍼, 환자 안내문을 모두 직접 저장하는 구조가 아닙니다.
 
 현재 코드에서 적용된 기준은 다음과 같습니다.
 
@@ -227,4 +227,4 @@ Macie는 DynamoDB 내부 필드를 직접 가명처리하는 도구가 아닙니
 | CloudWatch 로그 | 코드에서 원문 로그를 남기지 않는 방향으로 정리 | 로그 그룹 보존 기간 3~7일 설정 |
 | Bedrock/Transcribe 데이터 정책 | 코드상 음성 원본 저장 없음 | AWS Organizations AI services opt-out 정책 확인 |
 
-따라서 이 문서는 "앞으로 해야 할 목표"만 적은 문서가 아니라, 현재 `test` 브랜치 코드가 어떤 저장 경계를 지키도록 정리되었는지와 AWS 콘솔에서 어떤 운영 설정을 추가해야 하는지를 함께 확인하는 기준 문서입니다.
+따라서 이 문서는 "앞으로 해야 할 목표"만 적은 문서가 아니라, 현재 코드가 어떤 저장 경계를 지키도록 정리되었는지와 AWS 콘솔에서 어떤 운영 설정을 추가해야 하는지를 함께 확인하는 기준 문서입니다.
