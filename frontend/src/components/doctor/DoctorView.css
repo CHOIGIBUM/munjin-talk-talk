@@ -1,5 +1,7 @@
 /* 의사 PC 화면 v3 — 좌우 분할 레이아웃 */
 
+/* 의사 PC 화면의 좌우 분할 레이아웃입니다. */
+/* DoctorOnePager와 DoctorAgendaPanel을 나란히 배치하는 외곽 컨테이너만 담당합니다. */
 .doctor-view-v3 {
   display: block;
   padding: 16px;

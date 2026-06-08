@@ -1,6 +1,9 @@
 // 위험 키워드 - 클라이언트 측 1차 감지 (백엔드에서 정밀 판별 별도)
 // 감지되면 일반 검증 화면 대신 SafetyAlertScreen으로 분기
 
+// 클라이언트 1차 안전 감지 키워드입니다.
+// 최종 안전 판정은 백엔드 validate/onepager에서도 다시 수행하지만,
+// 환자 태블릿은 위험 표현을 들으면 즉시 직원 호출 화면으로 보냅니다.
 export const SAFETY_KEYWORDS = [
   // 객혈 관련
   { keyword: '객혈', category: 'hemoptysis', severity: 'high' },
@@ -13,6 +16,8 @@ export const SAFETY_KEYWORDS = [
   // 심한 호흡곤란
   { keyword: '숨을 못 쉬', category: 'dyspnea', severity: 'high' },
   { keyword: '숨이 막', category: 'dyspnea', severity: 'high' },
+  { keyword: '숨이 너무 차', category: 'dyspnea', severity: 'high' },
+  { keyword: '숨이 많이 차', category: 'dyspnea', severity: 'high' },
   { keyword: '말을 못 하', category: 'dyspnea', severity: 'high' },
   { keyword: '숨이 차서', category: 'dyspnea', severity: 'medium' },
 
@@ -23,6 +28,8 @@ export const SAFETY_KEYWORDS = [
 
   // 흉통 (심혈관)
   { keyword: '가슴이 너무 아', category: 'chest_pain', severity: 'high' },
+  { keyword: '가슴이 아', category: 'chest_pain', severity: 'high' },
+  { keyword: '가슴이 답답', category: 'chest_pain', severity: 'high' },
   { keyword: '심장이 조여', category: 'chest_pain', severity: 'high' }
 ]
 

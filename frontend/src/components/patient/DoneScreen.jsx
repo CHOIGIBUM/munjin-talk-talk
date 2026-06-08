@@ -1,5 +1,8 @@
 import ScreenHeader from '../tablet/ScreenHeader.jsx'
 
+// 문진 종료 화면입니다.
+// 일반 완료와 직원 인계 종료를 구분하고, 접수 순번을 크게 보여줍니다.
+
 // v4 변경:
 // - 모든 글자 크기 키움
 // - 대기 순번: 접수 시 백엔드가 발급한 실제 queueNumber 사용

@@ -1,14 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import ScreenHeader from '../tablet/ScreenHeader.jsx'
-import { useAudioRecorder } from '../../hooks/useAudioRecorder.js'
-
-// Q1~Q4 공통 음성 입력 화면
-// 같은 컴포넌트에 props만 다르게 들어와서 4번 재사용됨
+import { useStreamingTranscribe } from '../../hooks/useStreamingTranscribe.js'
 
 const MicIcon = () => (
   <svg viewBox="0 0 24 24" fill="none">
-    <rect x="9" y="3" width="6" height="14" rx="3" fill="currentColor"/>
-    <path d="M5 11a7 7 0 0 0 14 0M12 18v4M9 22h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <rect x="9" y="3" width="6" height="14" rx="3" fill="currentColor" />
+    <path d="M5 11a7 7 0 0 0 14 0M12 18v4M9 22h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
   </svg>
 )
 
@@ -18,41 +15,59 @@ function formatTime(seconds) {
   return `${m}:${s}`
 }
 
+// Q1~Q4 공통 음성 입력 화면.
+// 환자가 화면에 들어오면 녹음을 자동으로 시작하고, 실패하거나 다시 말해야 할 때는
+// 중앙 마이크 버튼으로만 재시도한다. 하단 버튼은 녹음 종료 역할만 맡긴다.
 export default function VoiceScreen({
+  sessionId,
   patient,
   visitType,
   question,
   stepIndex,
-  partialText,
+  partialText = '',
   isProcessing = false,
   onFinish,
-  onStaffCall
+  onStaffCall,
 }) {
-  const { isRecording, audioBlob, elapsed, start, stop } = useAudioRecorder()
+  const [notice, setNotice] = useState(null)
+  const { isRecording, transcript, error, elapsed, start, stop } = useStreamingTranscribe({
+    sessionId,
+    questionId: question.id,
+    visitType,
+  })
 
-  // v4: 화면 진입 시 자동 녹음 시작
   useEffect(() => {
-    const t = setTimeout(() => start(), 300)
-    return () => clearTimeout(t)
+    setNotice(null)
+    const timer = setTimeout(() => start(), 450)
+    return () => clearTimeout(timer)
+    // 질문이 바뀔 때마다 새 Transcribe Streaming 세션을 준비한다.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [question.id])
 
-  // 녹음 완료되면 부모에게 Blob 전달
-  useEffect(() => {
-    if (audioBlob && !isRecording) {
-      onFinish(audioBlob)
+  const handleEnd = async () => {
+    const finalText = (await stop()).trim()
+    if (!finalText) {
+      setNotice('음성 인식 결과가 비어 있습니다. 마이크 버튼을 눌러 다시 말씀해 주세요.')
+      return
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [audioBlob, isRecording])
+    setNotice(null)
+    onFinish(finalText)
+  }
 
   const handleMicClick = () => {
-    if (isRecording) stop()
-    else start()
+    if (isRecording) {
+      handleEnd()
+      return
+    }
+    setNotice(null)
+    start()
   }
 
-  const handleEnd = () => {
-    if (isRecording) stop()
-  }
+  const displayTranscript = notice
+    || (error ? '마이크 버튼을 다시 눌러 말씀해 주세요.' : null)
+    || transcript
+    || partialText
+    || '말씀하신 내용이 여기에 바로 표시됩니다.'
 
   return (
     <>
@@ -75,12 +90,18 @@ export default function VoiceScreen({
           <b>예시</b>{question.example}
         </div>
 
+        <div className="transcript-box transcript-box-v4 voice-live-box">
+          <div className="transcript-text transcript-text-large voice-live-line">
+            {displayTranscript}
+          </div>
+        </div>
+
         <div className="voice-mic-wrap">
           <button
             className={`voice-mic ${isRecording ? 'recording' : ''}`}
             onClick={handleMicClick}
             disabled={isProcessing}
-            aria-label={isRecording ? '녹음 중지' : '녹음 시작'}
+            aria-label={isRecording ? '발화 마치기' : '다시 말하기'}
           >
             <MicIcon />
           </button>
@@ -96,21 +117,14 @@ export default function VoiceScreen({
 
         {isProcessing && (
           <div className="voice-processing">
-            음성을 텍스트로 바꾸는 중입니다. 보통 5~15초 정도 걸립니다.
-          </div>
-        )}
-
-        {partialText && (
-          <div className="voice-partial">
-            <div className="voice-partial-label">실시간 자막</div>
-            <div className="voice-partial-text">"{partialText}…"</div>
+            말씀하신 내용을 문진 결과로 정리하는 중입니다. 보통 5~15초 정도 걸립니다.
           </div>
         )}
       </div>
 
       <div className="screen-footer">
         <button className="btn-help staff-button-wide" onClick={onStaffCall} disabled={isProcessing}>직원 도움</button>
-        <button className="btn-primary" onClick={handleEnd} disabled={isProcessing}>
+        <button className="btn-primary" onClick={handleEnd} disabled={isProcessing || !isRecording}>
           {isProcessing ? '분석 중...' : '발화 마치기'}
         </button>
       </div>

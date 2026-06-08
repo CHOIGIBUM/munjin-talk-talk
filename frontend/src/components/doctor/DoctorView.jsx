@@ -7,6 +7,9 @@ import DoctorOnePager from './DoctorOnePager.jsx'
 import DoctorAgendaPanel from './DoctorAgendaPanel.jsx'
 import './DoctorView.css'
 
+// 의사용 원페이퍼 화면의 컨테이너입니다.
+// 좌측 원페이퍼 요약과 우측 환자 질문/답변 패널을 같은 sessionId로 묶어 보여줍니다.
+
 // UI 개선안 2 적용
 // ────────────────────────────────────────
 // 좌측 (visit_type 분기):
@@ -19,7 +22,7 @@ import './DoctorView.css'
 //   - 환자 발화 원문 카드 상시 표시 (Q4 누락 방지 4중 묘수 ④)
 //
 // 상단 가로 띠 (전체 폭):
-//   - 위험 플래그 amber 배지 (재진 객혈 시연)
+//   - 위험 플래그 amber 배지 (실제 safety flag)
 //   - 환자 정보 (이름·나이·진료과·visit_type)
 
 export default function DoctorView() {
@@ -28,6 +31,7 @@ export default function DoctorView() {
   const [loading, setLoading] = useState(true)
   const [submitStatus, setSubmitStatus] = useState(null)
 
+  // 화면 진입 시 백엔드에 저장된 최신 onepager JSON을 조회합니다.
   useEffect(() => {
     setLoading(true)
     getOnePager(sessionId).then(data => {
@@ -36,6 +40,7 @@ export default function DoctorView() {
     })
   }, [sessionId])
 
+  // 의사가 작성한 답변과 강조사항을 저장하고 환자 안내문 생성 결과 상태를 표시합니다.
   const handleSubmitResponse = async ({ answers, additionalNotes }) => {
     if (!sessionId) {
       setSubmitStatus('error')
@@ -45,14 +50,14 @@ export default function DoctorView() {
     try {
       const result = await submitDoctorResponse({
         sessionId,
-        reviewerId: 'DR-DEMO',
+        reviewerId: 'doctor-web',
         answers,
         additionalNotes
       })
       if (result.validator_passed !== false) {
         setSubmitStatus('success')
       } else {
-        setSubmitStatus('partial_fallback')
+        setSubmitStatus('invalid')
       }
     } catch (err) {
       console.error('의사 답변 전송 실패:', err)

@@ -1,5 +1,7 @@
 /* Phase B - 환자 안내 화면 (큰 글자, 큰 버튼, 어르신 친화) */
 
+/* 환자 안내문 화면과 인쇄용 레이아웃 스타일입니다. */
+/* 화면 보기, TTS 버튼, 가족 공유/출력 버튼, print media 규칙을 포함합니다. */
 .guide-print-page {
   width: min(860px, calc(100vw - 40px));
   margin: 0 auto;

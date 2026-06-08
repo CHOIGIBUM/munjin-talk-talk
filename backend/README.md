@@ -1,18 +1,330 @@
-# Backend
+# 문진톡톡 백엔드
 
-The MVP backend lives in `backend/serverless`.
+문진톡톡 백엔드는 환자 음성 문진 텍스트를 구조화하고, 의료진 원페이퍼와 환자 안내문으로 이어지는 서버 측 처리를 담당합니다. 현재 배포 대상은 `backend/serverless`이며, AWS API Gateway, Lambda, DynamoDB, Amazon Transcribe Streaming, Amazon Bedrock, Amazon Titan Text Embeddings를 사용합니다.
+
+이 백엔드는 LLM 결과를 그대로 저장하지 않습니다. 모든 LLM 출력은 fixed schema, enum, 원문 quote 검증을 통과해야 하며, 증상 매칭은 원천 JSON 기반 Hybrid IR을 통과해야 합니다.
+
+---
+
+## 백엔드 책임 범위
+
+| 영역 | 책임 |
+| --- | --- |
+| 세션 관리 | 접수처에서 생성한 문진 세션을 DynamoDB에 저장하고 조회 |
+| 음성 인식 연결 | 환자 음성 저장 없이 Transcribe Streaming presigned URL 발급 |
+| LLM extraction | Bedrock Nova로 환자 발화의 의미 단위, 표준화, 질문, 단서 추출 |
+| Schema validation | Pydantic으로 JSON 구조, enum, quote grounding 검증 |
+| Hybrid IR | LLM 증상 후보를 BM25 + Titan Vector로 표준 증상명에 매칭 |
+| 원페이퍼 생성 | 증상, 문맥, 환자 질문, 확인 항목, EMR 초안 조립 |
+| 환자 안내문 | 의사 답변을 환자용 안내문 JSON으로 구성 |
+| Trace 저장 | active_path, pipeline_trace, ir_trace를 세션에 저장 |
+
+백엔드는 진단명 추천, 처방 결정, 질병 예측을 수행하지 않습니다.
+
+---
+
+## 폴더 구조
 
 ```text
 backend/
+├── README.md
 └── serverless/
-    ├── src/
-    │   ├── common.py
-    │   └── handler.py
+    ├── README.md
     ├── template.yaml
-    ├── s3-cors.json
-    └── README.md
+    └── src/
+        ├── handler.py
+        ├── common.py
+        ├── settings.py
+        ├── sessions.py
+        ├── audio.py
+        ├── orchestration.py
+        ├── pipeline_graph.py
+        ├── pipeline_nodes.py
+        ├── pipeline_state.py
+        ├── pipeline_trace.py
+        ├── extraction.py
+        ├── extraction_prompts.py
+        ├── extraction_schema.py
+        ├── langchain_prompting.py
+        ├── llm.py
+        ├── retrieval.py
+        ├── retrieval_documents.py
+        ├── retrieval_embeddings.py
+        ├── retrieval_scoring.py
+        ├── clinical_terms.py
+        ├── onepager.py
+        ├── onepager_sections.py
+        ├── onepager_review.py
+        ├── guide.py
+        ├── schemas/
+        └── data/
 ```
 
-Local IR experiments, evaluation data, and prototype scripts are not part of the deployment repository.
+`backend/serverless/.aws-sam/`과 `samconfig.toml`은 로컬 배포 산출물이므로 저장소에 포함하지 않습니다.
 
-See [serverless/README.md](serverless/README.md) for deployment details.
+---
+
+## 답변 1개 처리 흐름
+
+```text
+POST /process-answer
+  -> handler.py
+  -> orchestration.py
+  -> pipeline_graph.py
+  -> pipeline_nodes.py
+  -> extraction.py
+  -> schemas/extraction.py
+  -> retrieval.py
+  -> onepager.py
+  -> sessions.py
+  -> API response
+```
+
+상세 단계:
+
+1. `handler.py`가 API Gateway 요청을 받습니다.
+2. `/process-answer` 요청은 `orchestration.process_answer()`로 전달됩니다.
+3. `orchestration.py`는 LangGraph 파이프라인을 실행합니다.
+4. `pipeline_graph.py`는 노드 순서와 조건 분기를 정의합니다.
+5. `pipeline_nodes.py`는 각 노드의 실제 처리 함수를 실행합니다.
+6. `semantic_extraction_node`가 `extraction.py`를 호출합니다.
+7. `extraction.py`가 질문 난이도에 따라 Nova Pro 또는 Nova Lite를 선택합니다.
+8. `schemas/extraction.py`가 LLM JSON을 Pydantic으로 검증합니다.
+9. 증상 문항이면 `retrieval.py`가 Hybrid IR 매칭을 수행합니다.
+10. `onepager.py`가 세션 상태에 맞게 원페이퍼 JSON을 갱신합니다.
+11. `sessions.py`가 DynamoDB에 저장합니다.
+
+---
+
+## LangGraph 사용 목적
+
+문진 파이프라인은 단순 함수 호출보다 처리 경로와 분기 기록이 중요합니다. LangGraph는 다음을 명시합니다.
+
+- 노드 실행 순서
+- 검증 실패 시 중단 또는 safety branch 분기
+- 위험 표현 감지 후 저장 경로
+- 각 노드의 trace
+- 프론트와 DynamoDB에서 확인 가능한 active path
+
+현재 노드:
+
+```text
+input_transcript
+quick_safety_flag
+semantic_extraction
+schema_quote_validation
+hybrid_ir_match
+session_validation_save
+safety_guardrail_save
+onepaper_refresh
+response_payload
+```
+
+관련 파일:
+
+- `serverless/src/pipeline_graph.py`
+- `serverless/src/pipeline_nodes.py`
+- `serverless/src/pipeline_trace.py`
+
+---
+
+## LangChain 사용 위치
+
+현재 LangChain은 agent framework로 사용하지 않습니다. Bedrock에 전달할 메시지 계층을 구성하는 경량 wrapper로 사용합니다.
+
+관련 파일:
+
+```text
+serverless/src/langchain_prompting.py
+serverless/src/llm.py
+```
+
+역할:
+
+- Bedrock `converse` API에 맞는 message 구성
+- prompt 문자열과 LLM 호출부 분리
+- 향후 dialect RAG, retriever, output parser 확장을 위한 연결 지점 제공
+
+---
+
+## LLM 사용 원칙
+
+원칙:
+
+- LLM extraction은 필수 경로입니다.
+- LLM JSON은 fixed schema를 통과해야 합니다.
+- `source_quote`와 `original_quote`는 환자 원문에 존재해야 합니다.
+- enum 값은 미리 정의된 값만 허용합니다.
+- schema에 없는 필드는 거부합니다.
+- LLM이 생성한 `score`, `confidence`, `probability`, `risk percentage`는 허용하지 않습니다.
+- 검증 실패 시 bounded retry loop를 실행합니다.
+- retry 이후에도 실패하면 저장하지 않고 422 응답을 반환합니다.
+- 안전 플래그가 있는 경우에는 LLM extraction 실패 중에도 safety-only 저장 경로로 위험 신호만 보존할 수 있습니다.
+
+---
+
+## Deterministic 코드의 위치와 의미
+
+환자 발화 의미 추출은 rule-base로 대체하지 않습니다. 다만 안전 감지와 IR 문서 구성처럼 LLM 판단을 보조·검증하는 deterministic 코드는 남아 있습니다.
+
+| 구분 | 사용 여부 | 설명 |
+| --- | --- | --- |
+| LLM extraction | 기본 사용 | 실제 문진 의미 추출 |
+| Pydantic validation | 항상 사용 | LLM JSON 저장 전 검증 |
+| safety flag rule | 사용 | 객혈, 호흡곤란 등 즉시 직원/의료진 확인이 필요한 표현 감지 |
+| IR document build rule | 사용 | 원천 JSON을 검색 문서로 접는 deterministic 변환. 환자 발화에서 증상을 추출하는 로직은 아님 |
+
+위험 표현 감지는 진단 목적이 아니라 문진을 멈추고 직원 또는 의료진 확인을 유도하기 위한 guardrail입니다.
+
+---
+
+## Hybrid IR
+
+증상 매칭은 LLM이 만든 증상 후보를 표준 증상 인덱스와 다시 비교하는 단계입니다.
+
+원천 데이터:
+
+```text
+serverless/src/data/diseases_cleaned.json
+serverless/src/data/symptom_index.json
+```
+
+사전 계산 embedding cache:
+
+```text
+serverless/src/data/symptom_embeddings_amazon.titan-embed-text-v2_0_512.json
+```
+
+처리:
+
+1. LLM span의 `source_quote`, `normalized_text`, `name`, `slot_ref`를 query로 구성합니다.
+2. `symptom_index.json`과 `diseases_cleaned.json`에서 검색 문서를 만듭니다.
+3. BM25 lexical score를 계산합니다.
+4. Titan embedding cosine similarity를 계산합니다.
+5. 표준 증상명과 제한적 alias bridge를 label score로 반영합니다.
+6. vector 중심 threshold를 통과한 후보만 `matched_slots`로 저장합니다.
+7. 내부 검토용 `ir_trace`에 각 점수를 저장합니다.
+
+의료진 UI에는 숫자 점수를 표시하지 않습니다. 숫자형 score는 내부 디버깅과 trace 분석을 위한 값입니다.
+
+---
+
+## 원페이퍼 생성
+
+`onepager.py`는 현재까지 저장된 `responses`를 읽어 원페이퍼 JSON을 구성합니다.
+
+주요 섹션:
+
+- `patient_summary`
+- `symptom_slots`
+- `clinical_clues`
+- `agenda`
+- `review_items`
+- `transfer_text`
+- `safety_flags`
+
+`onepager_review.py`는 Q4까지 저장되었거나 safety flag가 있을 때 Nova Pro를 호출해 의료진 확인 항목과 EMR 초안을 다듬습니다. 출력은 `schemas/review.py` 검증을 통과해야 반영됩니다.
+
+---
+
+## 환자 안내문 생성
+
+`guide.py`는 의사 답변과 강조사항을 저장합니다.
+
+처리 원칙:
+
+- 의사 답변은 Nova Lite를 통해 환자용 쉬운 문장으로 변환할 수 있습니다.
+- 의사 강조사항은 LLM이 변형하지 않고 그대로 별도 카드에 표시합니다.
+- guide LLM 출력은 `schemas/guide.py` 검증을 통과해야 합니다.
+- guide LLM이 실패하면 빈 안내문과 실패 사유를 저장하고 validator 실패로 반환합니다.
+
+---
+
+## 데이터 저장
+
+DynamoDB 세션 item 주요 필드:
+
+```text
+session_id
+patient
+visit_type
+status
+queue_number
+responses
+question_results
+onepager
+doctor_review
+patient_guide
+safety_flag
+```
+
+환자 음성 파일은 저장하지 않습니다. 문진 텍스트와 onepaper JSON은 DynamoDB에 저장되므로 실제 개인정보를 입력하려면 보존 기간과 접근 제어가 필요합니다.
+
+---
+
+## 개발자가 먼저 확인할 파일
+
+| 목적 | 파일 |
+| --- | --- |
+| API endpoint | `serverless/src/handler.py` |
+| 환경 변수와 모델 ID | `serverless/src/settings.py` |
+| 전체 파이프라인 | `serverless/src/pipeline_graph.py` |
+| 노드별 처리 | `serverless/src/pipeline_nodes.py` |
+| trace 구조 | `serverless/src/pipeline_trace.py` |
+| Bedrock extraction | `serverless/src/extraction.py` |
+| extraction prompt | `serverless/src/extraction_prompts.py` |
+| extraction schema | `serverless/src/schemas/extraction.py` |
+| Hybrid IR | `serverless/src/retrieval.py` |
+| IR 문서 생성 | `serverless/src/retrieval_documents.py` |
+| IR score 계산 | `serverless/src/retrieval_scoring.py` |
+| 원페이퍼 조립 | `serverless/src/onepager.py` |
+| 원페이퍼 리뷰 | `serverless/src/onepager_review.py` |
+| 환자 안내문 | `serverless/src/guide.py` |
+| DynamoDB 저장 | `serverless/src/sessions.py` |
+
+---
+
+## 검증
+
+Python syntax:
+
+```powershell
+py -3.12 -m compileall backend/serverless/src
+```
+
+SAM build:
+
+```powershell
+cd backend/serverless
+sam build
+```
+
+SAM CLI가 Windows에서 Python runtime을 찾지 못하면 Python 3.12 설치 경로를 `PATH`에 추가해야 합니다.
+
+---
+
+## 관련 문서
+
+- [serverless README](serverless/README.md)
+- [프로젝트 구조](../docs/PROJECT_STRUCTURE.md)
+- [LangGraph 파이프라인](../docs/LANGGRAPH_PIPELINE.md)
+- [내부 JSON 스키마](../docs/DATA_SCHEMA.md)
+- [MVP 실행 가이드](../docs/MVP_SETUP.md)
+- [AWS 배포 가이드](../docs/DEPLOYMENT.md)
+
+---
+
+## 보안 주의
+
+현재 MVP 백엔드는 인증과 권한 분리가 없는 상태입니다. 공개 URL에 실제 환자 정보를 입력하면 안 됩니다.
+
+공개 테스트 전 필요 항목:
+
+- Cognito 또는 병원 내부 인증
+- 직원/의사 권한 분리
+- DynamoDB TTL 또는 삭제 정책
+- CloudWatch Logs 보존 기간
+- API Gateway throttling
+- WAF 또는 IP 제한
+- 환자 동의 절차
+- 의료정보 처리 기준 검토

@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import ScreenHeader from '../tablet/ScreenHeader.jsx'
 
+// 직원 호출 요청 후 환자가 보는 대기 화면입니다.
+// 이전 문진 단계로 돌아갈 수 있도록 PatientFlow가 returnLabel과 onReturn을 내려줍니다.
+
 // 직원 도움 호출 후 표시되는 안내 화면
 // 모든 문진 화면에서 "직원 도움" 버튼 클릭 시 이 화면으로 전환
 //
@@ -9,6 +12,7 @@ import ScreenHeader from '../tablet/ScreenHeader.jsx'
 export default function StaffCallScreen({ patient, onReturn, returnLabel = '문진으로 돌아가기' }) {
   const [elapsed, setElapsed] = useState(0)
 
+  // 환자가 직원 호출이 접수된 상태임을 알 수 있도록 경과 시간을 표시합니다.
   useEffect(() => {
     const id = setInterval(() => setElapsed(s => s + 1), 1000)
     return () => clearInterval(id)

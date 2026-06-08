@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
-import { isMockApiEnabled } from '../../services/api.js'
 import { normalizeAgendaSource } from '../../services/onepagerAdapter.js'
 import './DoctorAgendaPanel.css'
+
+// 원페이퍼 우측 패널입니다.
+// Q4 환자 질문을 의사가 확인하고 답변/강조사항을 작성하면 submitDoctorResponse로 저장됩니다.
 
 // 우측 통합 패널 — UI 개선안 2의 핵심
 // ────────────────────────────────────────
@@ -11,21 +13,6 @@ import './DoctorAgendaPanel.css'
 //   3. 답변 입력 textarea (각 질문 인라인)
 //   4. 잔여 텍스트 경고 (uncategorized_remnant)
 //   5. 환자 안내 강조사항 + 전송 버튼
-
-const MOCK_AGENDA = [
-  {
-    category: 'drug_drug_interaction',
-    type_label: '복약 상호작용',
-    summary: '혈압약-감기약 병용 가능 여부 문의',
-    original_quote: '혈압약이랑 감기약을 같이 먹어도 되는지 궁금해요'
-  },
-  {
-    category: 'food_drug_interaction',
-    type_label: '음식-약 상호작용',
-    summary: '양파즙 병용 가능 여부 문의',
-    original_quote: '양파즙도 같이 먹어도 되나요'
-  }
-]
 
 const CATEGORY_LABEL = {
   drug_drug_interaction: '복약 상호작용',
@@ -37,23 +24,15 @@ const CATEGORY_LABEL = {
   other:                 '기타'
 }
 
-function buildManualAgendaFallback(fullTranscript) {
-  const text = String(fullTranscript || '').trim()
-  if (!text || /^(없어요|없습니다|없다|따로 없|아니요)[.!?\s]*$/i.test(text)) return []
-  return [{
-    category: 'manual_question',
-    type_label: '직접 입력',
-    summary: text,
-    original_quote: text,
-    source_question: 'Q4',
-  }]
-}
-
 export default function DoctorAgendaPanel({ sessionData, submitStatus, onSubmit }) {
-  const normalized = normalizeAgendaSource(sessionData, !sessionData && isMockApiEnabled() ? MOCK_AGENDA : [])
+  // 백엔드 onepager에서 validator를 통과한 Q4 agenda만 사용합니다.
+  // 프론트에서 질문을 임의 생성하지 않아야 저장된 JSON과 화면이 어긋나지 않습니다.
+  const normalized = normalizeAgendaSource(sessionData, [])
   const fullTranscript = normalized.full_q4_transcript || ''
-  const agenda = (normalized.agenda?.length ? normalized.agenda : buildManualAgendaFallback(fullTranscript))
+  const agenda = normalized.agenda || []
   const uncategorizedRemnant = normalized.uncategorized_remnant || ''
+
+  // agenda 항목 수만큼 의사 답변 textarea 상태를 생성합니다.
 
   // 각 질문에 대한 답변
   const [answers, setAnswers] = useState(() =>
@@ -65,6 +44,7 @@ export default function DoctorAgendaPanel({ sessionData, submitStatus, onSubmit 
   )
   const [patientInstruction, setPatientInstruction] = useState('')
 
+  // 새 세션을 열거나 Q4 분류 결과가 갱신되면 이전 답변 상태가 섞이지 않게 초기화합니다.
   useEffect(() => {
     setAnswers(agenda.map(item => ({
       question_summary: item.summary,
@@ -83,6 +63,7 @@ export default function DoctorAgendaPanel({ sessionData, submitStatus, onSubmit 
   const handleSubmit = () => {
     if (!canSubmit) return
     // 빈 답변은 제외하고 전송
+    // 비어 있는 답변은 제외하고, 의사가 실제 작성한 답변과 강조사항만 백엔드로 보냅니다.
     const filled = answers.filter(a => a.answer_text.trim().length > 0)
     onSubmit({ answers: filled, additionalNotes: patientInstruction })
   }
@@ -186,7 +167,7 @@ export default function DoctorAgendaPanel({ sessionData, submitStatus, onSubmit 
         <div className="dap-status">
           {submitStatus === 'submitting' && '전송 중... (LLM 변환 + Validator 2차)'}
           {submitStatus === 'success' && '✓ 전송 완료. 환자 안내 화면 확인 가능'}
-          {submitStatus === 'partial_fallback' && '⚠ 일부 답변은 원문 그대로 전달됨 (Validator 차단)'}
+          {submitStatus === 'invalid' && '⚠ 안내문 생성 검증 실패. 답변 내용을 확인해 주세요'}
           {submitStatus === 'error' && '⚠ 전송 실패. 다시 시도해 주세요'}
           {!submitStatus && `${filledCount}/${answers.length} 답변 입력됨`}
         </div>

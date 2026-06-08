@@ -1,167 +1,407 @@
-# 문진톡톡 (MoonjinTalkTalk)
+# 문진톡톡 (MunjinTalkTalk)
 
-> 지역 어르신의 말이 의사의 1장 리포트가 되기까지
-> 고령 환자의 사투리·구어체 증상과 진료 질문을, 의료진이 바로 읽을 수 있는 **진료 전 리포트**로 정리해주는 AI 문진 서비스
+문진톡톡은 고령 환자의 음성 문진을 진료 전 의료진 원페이퍼와 진료 후 환자 안내문으로 연결하는 AI 문진 MVP입니다. 접수처에서 환자 세션을 만들고, 환자는 태블릿에서 음성으로 문진을 진행하며, 의료진은 구조화된 증상·문맥·질문·확인 항목을 한 화면에서 검토합니다.
 
-```
-어르신 음성  →   AI 정리   →   의사용 리포트
-말로 증상·걱정 입력  →  증상·질문 구조화  →  진료 전 1장 전달
-```
+이 저장소는 화면 목업만 포함한 저장소가 아닙니다. React/Vite 프론트엔드와 AWS 서버리스 백엔드, Bedrock 기반 LLM 파이프라인, Pydantic 검증, BM25 + Titan Embedding 기반 Hybrid IR, DynamoDB 세션 저장 구조를 포함합니다.
+
+문진톡톡은 진단, 처방, 질병 예측 서비스를 제공하지 않습니다. 환자 발화를 의료진이 확인하기 쉬운 자료로 정리하는 진료 보조 도구이며, 최종 판단은 의료진에게 있습니다.
 
 ---
 
-## 프로젝트 개요
+## 프로젝트 상태
 
-**문진톡톡**은 고령 환자가 음성으로 남긴 증상·걱정·진료 질문을 AI가 정리하여 의료진에게 전달하는 **진료 전 문진 서비스**입니다.
-
-환자는 평소 사투리 말투로 말하면 되고, 의료진은 진료 전에 1장 리포트로 환자 상태와 확인할 질문을 빠르게 파악할 수 있습니다.
-
-> 문진톡톡은 진단·처방을 제공하지 않습니다. 의료진 확인을 위한 문진 정보를 정리하는 **인수인계 도구**입니다.
-
----
-
-## 해결하려는 문제
-
-고령 환자의 진료 현장에는 세 가지 구조적 문제가 있습니다.
-
-| 문제 | 설명 |
-|------|------|
-| **증상 전달 실패** | 사투리·구어체 표현, 시작 시점·동반 증상 누락으로 의료진이 다시 묻는 과정이 발생 |
-| **질문 누락** | 어르신은 진료실에서 복약 걱정, 건강식품, 지인에게 들은 말을 잊고 넘어가기 쉬움 |
-| **쓰레기 정보 노출** | 유튜브·인터넷 건강정보가 근거 없이 확산되지만, 환자는 이를 구분하기 어려움 |
-
-배경 데이터:
-
-- **40.3%** — 65세 이상 적절한 건강정보 이해 능력 (성인 전체 60.4% 대비 낮음)
-- **62.5%** — 암·당뇨 유튜브 영상 중 근거 없는 비율 (309개 영상 분석)
-- **25.7%** — 강원 65세 이상 인구 비중 (전국 20.3%보다 높은 고령화 지역)
+| 항목 | 상태 |
+| --- | --- |
+| 접수처 세션 생성 | 구현됨 |
+| 환자 태블릿 음성 문진 | 구현됨 |
+| Amazon Transcribe Streaming | 구현됨. 환자 음성 파일 S3 저장 없음 |
+| Bedrock 기반 의미 추출 | 구현됨 |
+| Pydantic fixed schema 검증 | 구현됨 |
+| source_quote 원문 근거 검증 | 구현됨 |
+| LangGraph 파이프라인 | 구현됨 |
+| BM25 + Titan Vector Hybrid IR | 구현됨 |
+| 의료진 원페이퍼 | 구현됨 |
+| 의사 답변 기반 환자 안내문 | 구현됨 |
+| 인증·권한 분리 | MVP 범위 밖. 공개 테스트 전 필요 |
+| 실제 EMR 연동 | MVP 범위 밖 |
+| 강원 방언 RAG | 계획 단계 |
 
 ---
 
-## 타겟 사용자와 가치
+## 문제 정의
 
-| 사용자 | Pain Point | 문진톡톡의 가치 |
-|--------|-----------|----------------|
-| **고령 환자 (강원 사투리)** | 증상과 질문을 진료실에서 빠짐없이 말하기 어려움 | 평소 말투로 말하면 핵심 내용이 정리됨 |
-| **지역 의료진 (공보의)** | 짧은 진료 시간 안에 환자 상태와 질문을 파악해야 함 | 진료 전 1장 리포트로 증상과 질문 확인 |
-| **보호자 / 간호사** | 환자의 걱정과 질문을 문진 시 대신 정리해 전달해야 함 | 문진/질문 내용을 자동으로 손실 없이 정리 |
+고령 환자의 진료 전 문진에서는 다음 문제가 반복적으로 발생합니다.
 
----
-
-## 핵심 기능 (5가지)
-
-1. **음성 입력** — 어르신이 버튼 하나로 증상과 질문을 입력
-2. **증상 정리** — 사투리·구어체 표현을 표준 증상 표현으로 변환
-3. **짧은 후속 질문** — 시작 시점, 동반 증상, 복용 약처럼 빠진 정보를 짧게 질문
-4. **진료 질문 정리** — 유튜브·지인·민간요법·복약 걱정을 의사에게 물어볼 질문으로 정리
-5. **의사용 리포트** — 증상, 질문, 확인 필요 항목을 1장으로 정리
-
-> AI는 의료적 답을 주는 대신, 어르신의 말을 **증상 · 질문 · 확인 항목**으로 정리합니다.
+| 문제 | 현장 영향 | 문진톡톡의 처리 방식 |
+| --- | --- | --- |
+| 구어체·사투리 표현 | "코가 맥혀요", "목이 칼칼해요" 같은 표현이 표준 증상명으로 바로 정리되지 않음 | LLM이 표준어 의미로 정리하되 원문 quote를 함께 저장 |
+| 환자 질문 누락 | 복약, 영양제, 재내원 기준 등 중요한 질문이 진료실에서 빠질 수 있음 | Q4 발화를 agenda로 분리하여 의사 답변 입력 영역에 표시 |
+| 짧은 진료 시간 | 의료진이 주호소, 경과, 복약, 질문을 다시 물어야 함 | 진료 전 원페이퍼에 증상·문맥·확인 항목·EMR 초안을 제공 |
+| 문진표 접근성 | 고령 환자가 긴 텍스트 문진표를 입력하기 어려움 | 태블릿 화면과 음성 중심 인터페이스 제공 |
+| LLM 신뢰성 | LLM이 원문에 없는 증상이나 수치를 생성할 위험 | Pydantic schema, enum, source_quote 검증, retry loop로 제한 |
 
 ---
 
-## 워크플로우
+## 사용자 흐름
 
-```
-[환자 음성 입력]  →  [AI 증상 정리]  →  [후속 질문]  →  [진료 질문 정리]  →  [의사용 1장 리포트]
-   말로 입력           표준 증상 매핑        빠진 정보 보완       질문 목록 변환          진료 전 30초 확인
+```text
+직원 접수
+  -> 환자 태블릿 음성 문진
+  -> 실시간 STT
+  -> LLM 의미 추출과 schema 검증
+  -> Hybrid IR 표준 증상 매칭
+  -> 원페이퍼 생성
+  -> 의료진 확인과 답변 입력
+  -> 환자 안내문 출력
 ```
 
----
+### 1. 직원 접수
 
-## 사용 예시
+접수처 직원은 환자 기본 정보를 입력하고 문진 세션을 생성합니다.
 
-**어르신 발화 (입력)**
+- 이름
+- 생년월일
+- 성별
+- 진료과
+- 담당 의사
+- 연락처
+- 초진/재진 여부
 
-> "어제부터 가심이 답답하고 숨이 좀 차요. 밤에 더 그래요.
-> 혈압약 먹는데 처방약이랑 계속 먹어야 하는지도 물어보고 싶고,
-> 유튜브에서 양파즙이 혈관에 좋다던데 먹어도 되는지 궁금해요."
+세션 생성 후 `session_id`가 만들어지며, 이 값이 환자 태블릿, 의사 원페이퍼, 안내문 화면을 연결합니다.
 
-**문진톡톡 정리 결과**
+### 2. 환자 태블릿 문진
 
-| 입력 내용 | 정리 결과 |
-|-----------|-----------|
-| "가심이 답답하다" | 흉부 답답함 |
-| "숨이 차다" | 호흡곤란 |
-| "밤에 더 그래요" | 야간 악화 |
-| "혈압약 계속 먹어야 하나" | 복약 지속 여부 질문 |
-| "양파즙 먹어도 되나" | 건강식품 병용 가능 여부 질문 |
+환자는 태블릿에서 초진 또는 재진 질문을 순서대로 답합니다. 브라우저는 마이크 음성을 Amazon Transcribe Streaming WebSocket으로 전송하고, 최종 텍스트만 백엔드 `/process-answer`로 전달합니다.
 
-**의사용 요약 (출력)**
+초진 질문:
 
-> 74세 환자. 어제부터 흉부 답답함과 호흡곤란 호소. 야간 악화 언급.
-> 혈압약 복용 지속 여부와 건강식품 병용 가능 여부를 질문하고 싶어함.
+| 질문 | 목적 |
+| --- | --- |
+| Q1. 어디가 불편하셔서 오셨어요? | 주호소와 주요 증상 추출 |
+| Q2. 그 증상은 언제부터 그러셨어요? | 시작 시점과 경과 문맥 추출 |
+| Q3. 지금 드시는 약이 있으세요? | 복약, 영양제, 무복약 여부 확인 |
+| Q4. 의사선생님께 묻고 싶은 점이 있으세요? | 환자 질문 agenda 분리 |
 
----
+재진 질문:
 
-## SMART 원페이퍼 리포트
+| 질문 | 목적 |
+| --- | --- |
+| Q1. 지난번 진료 이후 어떻게 지내셨어요? | 증상 변화와 경과 확인 |
+| Q2. 처방받은 약은 잘 드시고 계세요? | 복약 순응도 확인 |
+| Q3. 그동안 새로 생긴 증상은 없으세요? | 새 증상, 악화, 위험 표현 확인 |
+| Q4. 지난번에 못 여쭤본 점이 있으신가요? | 추가 질문 분리 |
 
-의사가 30초 안에 확인할 수 있도록 **S · M · A · R · T** 구조로 구성됩니다.
+### 3. 백엔드 처리
 
-- **S**ymptom — 환자 원문
-- **M**apping — 표준 증상 매핑
-- **A**sk — 환자가 묻고 싶은 질문
-- **R**eview — 의료진 확인 필요 항목
-- **T**ranscript — EMR 복사문
+환자 답변 하나는 LangGraph 파이프라인에서 다음 순서로 처리됩니다.
 
----
+1. 필수 입력 확인
+2. 위험 표현 quick safety flag
+3. Bedrock Nova 기반 의미 분할과 표준화
+4. Pydantic fixed schema 검증
+5. `source_quote` 원문 포함 여부 검증
+6. 증상 문항이면 Hybrid IR 매칭
+7. DynamoDB 세션 저장
+8. 원페이퍼 갱신
+9. 처리 trace 반환
 
-## 경쟁 서비스와의 차별점
+### 4. 의료진 원페이퍼
 
-| 구분 | 기존 AI 문진/증상 체커 | **문진톡톡** |
-|------|-----------------------|-------------|
-| 주 사용층 | 일반 환자, 병원 이용자 | 고령 지역 환자, 지역 의료진 |
-| 입력 방식 | 문진표, 앱 입력, 텍스트 중심 | **음성 중심** |
-| 핵심 목적 | 증상 체크, 예상 질환, 진료 연결 | 증상·질문을 의사에게 전달 |
-| AI 역할 | 분석, 추천, 예측 | **정리, 변환, 누락 방지** |
-| 최종 결과 | 사용자 안내 또는 병원 업무 자동화 | **의사용 1장 인수인계 리포트** |
+의사는 원페이퍼에서 다음 정보를 확인합니다.
 
-> 차별점: 고령층 음성 입력 + 사투리·구어체 증상 정리 + 진료 질문 제공
+- 오늘 말한 불편함
+- 환자 원문 quote
+- 표준 증상 매칭 여부
+- 증상 맥락 chip
+- 환자 질문과 답변 입력 영역
+- 의료진 확인 항목
+- EMR 복사용 문장
+- 환자 안내 강조사항
 
----
+원페이퍼의 증상 카드에는 숫자형 confidence를 표시하지 않습니다. 내부 `ir_trace`에는 BM25, vector, label, rank score가 저장되지만, 의료진 UI에서는 “매칭됨” 또는 “우선 확인” 상태로만 표시합니다.
 
-## MVP 범위
+### 5. 환자 안내문
 
-대표 시나리오 하나를 끝까지 구현합니다.
+의사가 환자 질문에 답변하고 강조사항을 입력하면 안내문 화면에 정리됩니다.
 
-**MVP 시나리오**
-> 고령 환자가 흉부 답답함과 호흡곤란을 말함 → 증상 정리 → 복용약·진료 질문 추가 확인 → 의사용 1장 리포트 생성
+- 환자 질문별 쉬운 답변
+- 의사 강조사항
+- 말로 재생하기 버튼
+- 종이 출력용 화면
 
-**구현 범위**
-
-| 단계 | 범위 |
-|------|------|
-| 입력 | 음성 또는 텍스트 입력 |
-| 증상 정리 | 강원 방언/구어체 예시 5~10개 처리 |
-| 후속 질문 | 고정 질문 3개 |
-| 질문 정리 | 환자 발화를 질문 목록으로 변환 |
-| 출력 | 웹 화면 또는 PDF 형태의 1장 리포트 |
-
-> MVP 목표: 완전한 의료 AI 서비스가 아니라, **'어르신의 말이 의사용 리포트로 바뀌는 핵심 가치'를 데모로 증명**합니다.
-
----
-
-## 기대 효과
-
-- **어르신** — 진료 때 말하지 못하거나 까먹는 질문을 줄임
-- **의료진** — 진료 전 증상과 질문을 빠르게 확인
-- **보호자** — 부모님의 걱정과 진료 질문을 함께 정리
-- **지역 의료** — 짧은 진료 시간 안에서 문진 품질을 높임
+의사가 입력한 강조사항은 LLM이 변형하지 않고 원문 그대로 별도 카드에 표시합니다.
 
 ---
 
-## 구현 및 배포 문서
+## 기술 아키텍처
 
-- [MVP 실행 및 배포](docs/MVP_SETUP.md)
-- [AWS 배포 가이드](docs/DEPLOYMENT.md)
-- [프로젝트 구조](docs/PROJECT_STRUCTURE.md)
+```mermaid
+flowchart LR
+  Staff["직원 접수 화면<br/>/staff"]
+  Tablet["환자 태블릿<br/>/patient/:sessionId"]
+  Doctor["의사 원페이퍼<br/>/doctor/:sessionId"]
+  Guide["환자 안내문<br/>/guide/:sessionId"]
+
+  Amplify["AWS Amplify Hosting<br/>React + Vite"]
+  Api["API Gateway HTTP API"]
+  Lambda["AWS Lambda Python 3.12<br/>LangGraph Pipeline"]
+  Dynamo["DynamoDB<br/>MunjinSessions"]
+  Transcribe["Amazon Transcribe Streaming"]
+  Bedrock["Amazon Bedrock<br/>Nova Pro / Nova Lite"]
+  Titan["Amazon Titan Text Embeddings"]
+  Data["Local source JSON<br/>diseases_cleaned + symptom_index"]
+
+  Staff --> Amplify
+  Tablet --> Amplify
+  Doctor --> Amplify
+  Guide --> Amplify
+
+  Amplify --> Api --> Lambda
+  Tablet --> Transcribe
+  Lambda --> Dynamo
+  Lambda --> Bedrock
+  Lambda --> Titan
+  Lambda --> Data
+```
 
 ---
 
-## 팀 — DLC
+## AI 처리 원칙
+
+문진톡톡은 LLM이 모든 결정을 단독으로 내리는 구조가 아닙니다. LLM은 환자 발화를 fixed schema 안에 채우는 역할을 담당하고, 저장 전 검증 로직이 결과를 제한합니다.
+
+| 단계 | 기술 | 역할 | 검증·제한 |
+| --- | --- | --- | --- |
+| 음성 인식 | Amazon Transcribe Streaming | 환자 음성을 한국어 텍스트로 변환 | 음성 파일 저장 없음 |
+| 의미 추출 | Bedrock Nova Pro/Lite | 발화 의미 단위 분할, 표준화, 질문 분리 | Pydantic schema와 원문 quote 검증 |
+| prompt/message 구성 | LangChain Core | Bedrock 메시지 형식 구성 | 프롬프트 계층 분리 |
+| 파이프라인 제어 | LangGraph | 노드 순서, 분기, trace 관리 | active_path와 pipeline_trace 저장 |
+| 증상 매칭 | BM25 + Titan Vector Hybrid IR | LLM 증상 후보를 표준 증상명과 매칭 | threshold와 ir_trace 기록 |
+| 원페이퍼 리뷰 | Bedrock Nova Pro | 의료진 확인 항목과 EMR 초안 생성 | review schema 검증 |
+| 안내문 변환 | Bedrock Nova Lite | 의사 답변을 환자 안내문으로 변환 | guide schema 검증 |
+
+핵심 제한:
+
+- LLM은 `score`, `confidence`, `probability` 같은 임의 수치를 생성할 수 없습니다.
+- `source_quote`와 `original_quote`는 환자 원문에 실제 존재해야 합니다.
+- 예상하지 않은 JSON 필드는 Pydantic에서 거부됩니다.
+- 증상 매칭은 LLM 단독 판단이 아니라 원천 JSON 기반 Hybrid IR을 통과해야 합니다.
+- rule-based extraction fallback은 운영 코드에서 제거되어 LLM/validator 실패를 조용히 대체하지 않습니다.
+
+---
+
+## Hybrid IR 개요
+
+증상 매칭은 두 원천 JSON과 사전 계산된 embedding cache를 사용합니다.
+
+```text
+backend/serverless/src/data/diseases_cleaned.json
+backend/serverless/src/data/symptom_index.json
+backend/serverless/src/data/symptom_embeddings_amazon.titan-embed-text-v2_0_512.json
+```
+
+처리 순서:
+
+1. LLM extraction이 증상 span을 생성합니다.
+2. span의 `source_quote`, `normalized_text`, `name`, `slot_ref`를 query로 구성합니다.
+3. `symptom_index.json`과 `diseases_cleaned.json`에서 검색 문서를 deterministic하게 구성합니다.
+4. BM25로 lexical 유사도를 계산합니다.
+5. Titan embedding으로 semantic 유사도를 계산합니다.
+6. 표준 증상명/alias 직접 일치 신호를 label score로 보조 반영합니다.
+7. 채택 조건을 통과한 후보만 `matched_slots`에 저장합니다.
+8. 내부 검토용 `ir_trace`에 BM25, vector, label, rank score를 남깁니다.
+
+현재 alias는 호흡기 MVP 범위의 제한적 bridge mapping입니다. 장기적으로는 표준 증상 인덱스 기반 alias registry와 provenance 관리가 필요합니다.
+
+---
+
+## 저장소 구조
+
+```text
+munjin-talk-talk-mvp/
+├── README.md
+├── amplify.yml
+├── frontend/
+│   ├── README.md
+│   ├── package.json
+│   └── src/
+│       ├── App.jsx
+│       ├── components/
+│       ├── hooks/
+│       ├── services/
+│       ├── config/
+│       └── styles/
+├── backend/
+│   ├── README.md
+│   └── serverless/
+│       ├── README.md
+│       ├── template.yaml
+│       └── src/
+│           ├── handler.py
+│           ├── pipeline_graph.py
+│           ├── pipeline_nodes.py
+│           ├── extraction.py
+│           ├── retrieval.py
+│           ├── onepager.py
+│           ├── guide.py
+│           ├── schemas/
+│           └── data/
+└── docs/
+    ├── PROJECT_STRUCTURE.md
+    ├── LANGGRAPH_PIPELINE.md
+    ├── DATA_SCHEMA.md
+    ├── MVP_SETUP.md
+    ├── DEPLOYMENT.md
+    ├── architecture.drawio
+    ├── architecture.svg
+    └── technical-guide.html
+```
+
+---
+
+## 문서 지도
+
+| 문서 | 목적 |
+| --- | --- |
+| [frontend/README.md](frontend/README.md) | 프론트엔드 화면, 라우팅, STT, API 연동 설명 |
+| [backend/README.md](backend/README.md) | 백엔드 책임, LangGraph, LLM, IR, 저장 구조 설명 |
+| [backend/serverless/README.md](backend/serverless/README.md) | SAM 배포, API endpoint, 환경 변수, 스모크 테스트 |
+| [docs/README.md](docs/README.md) | 세부 문서 목록 |
+| [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md) | 파일별 역할과 수정 위치 |
+| [docs/LANGGRAPH_PIPELINE.md](docs/LANGGRAPH_PIPELINE.md) | 환자 답변 1개가 처리되는 노드 흐름 |
+| [docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md) | DynamoDB, extraction, onepaper, guide JSON 구조 |
+| [docs/MVP_SETUP.md](docs/MVP_SETUP.md) | 로컬 실행과 test 환경 점검 |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Amplify와 SAM 배포 절차 |
+| [docs/technical-guide.html](docs/technical-guide.html) | 발표·공유용 기술 설명 페이지 |
+
+---
+
+## 로컬 실행
+
+프론트엔드 실행:
+
+```powershell
+cd frontend
+npm install
+Copy-Item .env.example .env.local
+npm run dev -- --host 127.0.0.1 --port 5173
+```
+
+브라우저:
+
+```text
+http://127.0.0.1:5173/staff
+```
+
+AWS 백엔드 연결 시 `frontend/.env.local`:
+
+```text
+VITE_API_BASE_URL=https://<api-id>.execute-api.<region>.amazonaws.com
+```
+
+---
+
+## AWS 배포 개요
+
+백엔드:
+
+```powershell
+cd backend/serverless
+sam build
+sam deploy --guided
+```
+
+프론트엔드 Amplify 설정:
+
+```text
+Repository: <owner>/<repository>
+Branch: main 또는 test
+Monorepo app root: frontend
+Build command: npm run build
+Build output directory: dist
+Environment variable:
+  VITE_API_BASE_URL=https://<api-id>.execute-api.<region>.amazonaws.com
+```
+
+SPA rewrite:
+
+```json
+[
+  {
+    "source": "/<*>",
+    "status": "404-200",
+    "target": "/index.html"
+  }
+]
+```
+
+---
+
+## 검증 명령
+
+프론트엔드:
+
+```powershell
+cd frontend
+npm run build
+```
+
+백엔드 Python syntax:
+
+```powershell
+py -3.12 -m compileall backend/serverless/src
+```
+
+SAM build:
+
+```powershell
+cd backend/serverless
+sam build
+```
+
+Windows에서 SAM CLI가 Python 3.12을 찾지 못하면 Python 3.12 설치 경로를 `PATH`에 추가한 뒤 다시 실행합니다.
+
+---
+
+## 개인정보와 보안 기준
+
+현재 저장소는 MVP 검증용입니다. 실제 환자 데이터로 공개 테스트하기 전 다음 항목이 필요합니다.
+
+- 직원/의사 화면 인증
+- 역할 기반 접근 제어
+- DynamoDB TTL 또는 보존 기간 정책
+- CloudWatch Logs 보존 기간 정책
+- API Gateway throttling
+- WAF 또는 접근 제한
+- 환자 동의 문구
+- 개인정보 처리 기준
+- 실제 병원 업무망과의 배포 경계 검토
+
+현재 구현에서 환자 음성은 S3에 저장하지 않습니다. 다만 DynamoDB에는 문진 텍스트와 원페이퍼 JSON이 저장되므로 실제 개인정보를 입력하려면 별도 보안 검토가 필요합니다.
+
+---
+
+## 공개 저장소 주의사항
+
+저장소에 포함하지 않아야 하는 항목:
+
+- `.env`, `.env.local`
+- AWS access key 또는 secret key
+- SAM `samconfig.toml`
+- `.aws-sam/`
+- `frontend/node_modules/`
+- `frontend/dist/`
+- 실제 환자 데이터
+- 실제 API Gateway endpoint를 고정한 문서
+
+현재 `.gitignore`는 위 항목 대부분을 제외하도록 구성되어 있습니다.
+
+---
+
+## 팀
 
 | 역할 | 이름 |
-|------|------|
+| --- | --- |
 | 리더 | 최기범 |
 | 팀원 | 김원재, 방정호, 서지민, 박나현 |
 
@@ -169,4 +409,4 @@
 
 ## 면책 조항
 
-문진톡톡은 의료적 진단이나 처방을 제공하지 않습니다. 본 서비스는 환자의 발화를 의료진이 확인하기 쉬운 형태로 **정리**하는 인수인계 도구이며, 모든 의료적 판단은 의료진이 수행합니다.
+문진톡톡은 의료적 진단, 처방, 질병 예측을 수행하지 않습니다. 본 프로젝트는 환자 발화를 구조화하여 의료진의 확인을 돕는 MVP이며, 모든 진료 판단은 의료진이 수행해야 합니다.
