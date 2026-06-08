@@ -47,13 +47,13 @@ backend/serverless/src/pipeline_trace.py
 
 | 기술 | 사용하는 위치 | 하는 일 |
 | --- | --- | --- |
-| LangChain Core | `langchain_prompting.py` | Bedrock에 보낼 prompt/message를 정리 |
+| LangChain Core | `langchain_prompting.py`, `llm.py` | PromptTemplate, Bedrock 호출 Runnable, JSON parser를 하나의 chain으로 실행 |
 | LangGraph | `pipeline_graph.py`, `pipeline_nodes.py` | 문항 처리 순서, 조건 분기, trace 관리 |
 
 쉽게 말하면:
 
 ```text
-LangChain = LLM에게 어떻게 물어볼지 정리하는 도구
+LangChain = LLM에게 어떻게 물어보고, 호출하고, JSON으로 파싱할지 정리하는 도구
 LangGraph = 여러 처리 단계를 어떤 순서로 실행할지 정리하는 도구
 ```
 

@@ -19,7 +19,7 @@
 | Amazon Transcribe Streaming | 구현 | 음성 파일을 S3에 저장하지 않고 실시간 전사 |
 | Bedrock LLM extraction | 구현 | 문항별 환자 발화를 fixed schema로 구조화 |
 | Pydantic schema validation | 구현 | 타입, enum, 필수 필드, extra field, source_quote 검증 |
-| LangChain | 구현 | Bedrock 호출 메시지 구성용 경량 wrapper |
+| LangChain | 구현 | PromptTemplate, Bedrock Runnable, JSON parser를 묶은 LLM 호출 chain |
 | LangGraph | 구현 | 문항 처리 노드, 분기, trace를 명시적으로 구성 |
 | Hybrid IR | 구현 | BM25 + Titan Vector + label bridge 기반 표준 증상 매칭 |
 | 의료진 원페이퍼 | 구현 | 증상, 원문 quote, 문진 맥락, 확인 항목, EMR 초안 표시 |
@@ -158,7 +158,7 @@ flowchart LR
 - Amazon Bedrock Nova Pro / Nova Lite
 - Amazon Titan Text Embeddings
 - Pydantic schema validation
-- LangChain prompt/message helper
+- LangChain Runnable 기반 Bedrock JSON chain
 - LangGraph pipeline
 
 ---
@@ -171,7 +171,7 @@ flowchart LR
 | --- | --- | --- | --- |
 | 음성 인식 | Amazon Transcribe Streaming | 환자 음성을 한국어 텍스트로 전환 | 음성 원본 파일 저장 없음 |
 | 의미 추출 | Bedrock Nova Pro/Lite | 문항별 발화를 schema에 맞게 구조화 | Pydantic, enum, source_quote 검증 |
-| prompt/message 구성 | LangChain Core | Bedrock 호출 메시지 구성 | prompt 계층 분리 |
+| LLM 호출 chain | LangChain Core | PromptTemplate, Bedrock Runnable, JSON parser 구성 | chain meta와 parser 경로 추적 |
 | 파이프라인 제어 | LangGraph | 노드 순서, 분기, trace 관리 | active_path와 pipeline_trace 저장 |
 | 증상 매칭 | BM25 + Titan Vector Hybrid IR | LLM 증상 후보를 표준 증상명과 매칭 | threshold와 ir_trace 기록 |
 | 원페이퍼 리뷰 | Bedrock Nova Pro | 의료진 확인 항목과 EMR 초안 보강 | review schema 검증 |

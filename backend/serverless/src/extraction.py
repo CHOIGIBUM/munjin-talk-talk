@@ -12,7 +12,7 @@ from extraction_prompts import (
     select_extraction_model,
 )
 from extraction_schema import normalize_extraction_output
-from llm import call_bedrock_json
+from llm import call_bedrock_json_with_meta
 from settings import (
     EXTRACTION_RETRY_ATTEMPTS,
     MAX_LLM_TOKENS,
@@ -47,7 +47,7 @@ def extract_question_bedrock(body):
 
     for attempt in range(1, attempts + 1):
         prompt = build_extraction_prompt(visit_type, question_id, question_type, transcript, repair_note)
-        obj, raw_text = call_bedrock_json(prompt, model_id, MAX_LLM_TOKENS)
+        obj, raw_text, chain_meta = call_bedrock_json_with_meta(prompt, model_id, MAX_LLM_TOKENS)
         normalized, validation_errors = normalize_extraction_output(obj, transcript, question_id, question_type)
         last_normalized = normalized
         last_raw_text = raw_text
@@ -64,6 +64,7 @@ def extract_question_bedrock(body):
         "llm_meta": {
             "model_id": model_id,
             "raw_sha256": hashlib.sha256(last_raw_text.encode("utf-8")).hexdigest(),
+            "langchain": chain_meta,
             "validation_errors": last_errors,
             "attempts": attempt,
             "retry_loop": "schema_quote_repair",

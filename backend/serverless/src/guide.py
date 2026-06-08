@@ -12,7 +12,7 @@ import json
 from typing import Any
 
 from artifact_store import DOCTOR_REVIEW_FILE, GUIDE_FILE, ONEPAPER_FILE, get_json, put_json
-from llm import call_bedrock_json
+from llm import call_bedrock_json_with_meta
 from schemas.guide import validate_guide_payload
 from sessions import get_session, update_session
 from settings import GUIDE_MAX_TOKENS, GUIDE_MODEL_ID
@@ -163,7 +163,7 @@ Required JSON schema:
 Data:
 {json.dumps(payload, ensure_ascii=False, default=json_default)}
 """.strip()
-    obj, raw_text = call_bedrock_json(prompt, GUIDE_MODEL_ID, GUIDE_MAX_TOKENS)
+    obj, raw_text, chain_meta = call_bedrock_json_with_meta(prompt, GUIDE_MODEL_ID, GUIDE_MAX_TOKENS)
     validated_obj, schema_errors = validate_guide_payload(obj)
     if schema_errors:
         raise ValueError(f"guide_pydantic_schema_failed: {schema_errors}")
@@ -185,6 +185,7 @@ Data:
         "llm_meta": {
             "model_id": GUIDE_MODEL_ID,
             "raw_sha256": hashlib.sha256(raw_text.encode("utf-8")).hexdigest(),
+            "langchain": chain_meta,
         },
     }
 

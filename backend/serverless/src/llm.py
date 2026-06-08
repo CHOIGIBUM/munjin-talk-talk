@@ -1,61 +1,32 @@
-"""Bedrock JSON-call helpers.
+"""LLM JSON 호출 호환 계층.
 
-Nova Pro/Lite prompt는 각 업무 모듈에서 만들고, 실제 Bedrock converse 호출과
-JSON 추출은 이 모듈을 통과합니다. 응답이 markdown fence를 포함해도 JSON만
-꺼내도록 방어합니다.
+실제 Bedrock 호출은 `langchain_prompting.call_bedrock_json_chain()`에서
+LangChain Runnable chain으로 실행합니다. 이 파일은 기존 extraction/review/guide
+모듈이 공통 인터페이스로 LLM을 부를 수 있게 유지하는 얇은 wrapper입니다.
 """
 
-import json
-import re
+from __future__ import annotations
 
-from langchain_prompting import build_bedrock_messages
-from settings import bedrock_runtime
+from typing import Any
 
-def call_bedrock_json(prompt, model_id, max_tokens):
-    """Bedrock converse를 호출하고 첫 번째 JSON object만 dict로 파싱합니다."""
-    resp = bedrock_runtime.converse(
-        modelId=model_id,
-        messages=build_bedrock_messages(prompt),
-        inferenceConfig={"temperature": 0, "maxTokens": max_tokens},
+from langchain_prompting import call_bedrock_json_chain, extract_first_json_object
+
+
+def call_bedrock_json(prompt: str, model_id: str, max_tokens: int) -> tuple[dict[str, Any], str]:
+    """기존 호출부 호환용 함수입니다. parsed JSON과 raw text만 반환합니다."""
+    parsed, raw_text, _meta = call_bedrock_json_with_meta(prompt, model_id, max_tokens)
+    return parsed, raw_text
+
+
+def call_bedrock_json_with_meta(
+    prompt: str,
+    model_id: str,
+    max_tokens: int,
+) -> tuple[dict[str, Any], str, dict[str, Any]]:
+    """LangChain Runnable 기반 Bedrock 호출 결과와 meta를 함께 반환합니다."""
+    result = call_bedrock_json_chain(prompt, model_id, max_tokens)
+    return (
+        result.get("parsed") if isinstance(result.get("parsed"), dict) else {},
+        str(result.get("raw_text") or ""),
+        result.get("meta") if isinstance(result.get("meta"), dict) else {},
     )
-    raw_text = "".join(
-        block.get("text", "")
-        for block in resp.get("output", {}).get("message", {}).get("content", [])
-    )
-    return extract_first_json_object(raw_text), raw_text
-
-
-def extract_first_json_object(text):
-    """LLM 응답 텍스트에서 가장 바깥 JSON object를 찾아 파싱합니다."""
-    raw = str(text or "").strip()
-    raw = re.sub(r"^```(?:json)?", "", raw, flags=re.I).strip()
-    raw = re.sub(r"```$", "", raw).strip()
-    try:
-        return json.loads(raw)
-    except Exception:
-        pass
-    start = raw.find("{")
-    if start < 0:
-        return {}
-    depth = 0
-    in_string = False
-    escape = False
-    for idx in range(start, len(raw)):
-        ch = raw[idx]
-        if in_string:
-            if escape:
-                escape = False
-            elif ch == "\\":
-                escape = True
-            elif ch == '"':
-                in_string = False
-            continue
-        if ch == '"':
-            in_string = True
-        elif ch == "{":
-            depth += 1
-        elif ch == "}":
-            depth -= 1
-            if depth == 0:
-                return json.loads(raw[start:idx + 1])
-    return {}

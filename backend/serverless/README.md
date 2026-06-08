@@ -146,6 +146,8 @@ backend/serverless/
 | `pipeline_trace.py` | active path와 trace 저장 |
 | `extraction.py` | Bedrock 기반 의미 추출 |
 | `extraction_prompts.py` | Q별 영어 prompt |
+| `langchain_prompting.py` | LangChain PromptTemplate, Bedrock Runnable, JSON parser chain |
+| `llm.py` | LLM JSON 호출 호환 wrapper와 chain meta 반환 |
 | `schemas/extraction.py` | Pydantic extraction schema |
 | `retrieval.py` | Hybrid IR 진입점 |
 | `retrieval_documents.py` | 원천 JSON을 검색 문서로 변환 |

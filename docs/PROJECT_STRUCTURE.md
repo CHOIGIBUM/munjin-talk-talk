@@ -267,7 +267,7 @@ backend/serverless/src/
 | 파일 | 역할 |
 | --- | --- |
 | `llm.py` | Bedrock Runtime 호출 |
-| `langchain_prompting.py` | LangChain Core 기반 message 조립 |
+| `langchain_prompting.py` | LangChain Core 기반 PromptTemplate, Bedrock Runnable, JSON parser chain |
 | `extraction_prompts.py` | extraction prompt와 Q별 모델 라우팅 |
 
 ### LangGraph 파이프라인

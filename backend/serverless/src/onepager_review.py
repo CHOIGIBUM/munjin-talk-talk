@@ -9,7 +9,7 @@ import hashlib
 import json
 import re
 
-from llm import call_bedrock_json
+from llm import call_bedrock_json_with_meta
 from schemas.review import validate_review_payload
 from settings import REVIEWER_MODEL_ID, REVIEW_MAX_TOKENS, REVIEW_RETRY_ATTEMPTS
 from utils import clean_quote, json_default, normalize_text, unique, visit_label
@@ -47,7 +47,7 @@ def apply_bedrock_onepager_review(session, onepager, heuristic_review_candidates
                     "\n\nPrevious final-review output failed validation: "
                     f"{last_error}. Regenerate grounded JSON only."
                 )
-            obj, raw_text = call_bedrock_json(prompt, REVIEWER_MODEL_ID, REVIEW_MAX_TOKENS)
+            obj, raw_text, chain_meta = call_bedrock_json_with_meta(prompt, REVIEWER_MODEL_ID, REVIEW_MAX_TOKENS)
         except Exception as exc:
             last_error = str(exc)
             continue
@@ -58,7 +58,7 @@ def apply_bedrock_onepager_review(session, onepager, heuristic_review_candidates
             last_error = f"pydantic_schema_failed: {schema_errors}"
             continue
 
-        reviewed = merge_review_output(onepager, validated_obj, raw_text, attempt)
+        reviewed = merge_review_output(onepager, validated_obj, raw_text, chain_meta, attempt)
         if reviewed.get("review_items") and reviewed.get("review_item_generation", {}).get("method") == "bedrock_nova_pro":
             return reviewed
         last_error = "review_items_empty_or_ungrounded"
@@ -72,7 +72,7 @@ def apply_bedrock_onepager_review(session, onepager, heuristic_review_candidates
     return reviewed
 
 
-def merge_review_output(onepager, obj, raw_text, attempt):
+def merge_review_output(onepager, obj, raw_text, chain_meta, attempt):
     """Nova Pro 응답 중 검증을 통과한 필드만 onepager에 반영합니다."""
     reviewed = dict(onepager)
     if isinstance(obj.get("review_items"), list):
@@ -95,6 +95,7 @@ def merge_review_output(onepager, obj, raw_text, attempt):
     reviewed["llm_review"] = {
         "model_id": REVIEWER_MODEL_ID,
         "raw_sha256": hashlib.sha256(raw_text.encode("utf-8")).hexdigest(),
+        "langchain": chain_meta,
         "issues": obj.get("issues") if isinstance(obj.get("issues"), list) else [],
         "attempts": attempt,
     }
