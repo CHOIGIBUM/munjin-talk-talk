@@ -54,7 +54,51 @@ def build_clinical_clues(q1, q2, q3, visit_type):
             normalized = normalize_clinical_clue(item, qid)
             if normalized:
                 structured_clues.append(normalized)
+        structured_clues.extend(span_progress_clues(q.get("spans") or [], qid, visit_type))
     return unique_clues(structured_clues)
+
+
+def span_progress_clues(spans, qid, visit_type):
+    """호전/부재 span을 현재 증상 카드 대신 문진 맥락 단서로 보존합니다.
+
+    이 함수는 새로운 증상을 rule-base로 추출하지 않습니다. 이미 LLM과 Pydantic
+    검증을 통과한 span 중 `progress_improved` 또는 `status=없음`으로 표시된
+    항목만 원페이퍼 단서로 재배치합니다.
+    """
+    clues = []
+    for span in spans:
+        if not isinstance(span, dict):
+            continue
+        span_type = str(span.get("type") or "")
+        status = str(span.get("status") or "")
+        slot_ref = span.get("slot_ref")
+        is_absent_symptom = status == "없음" and is_symptom_like_span(span_type, slot_ref)
+        if span_type != "progress_improved" and not is_absent_symptom:
+            continue
+        source_quote = clean_quote(span.get("source_quote") or "")
+        if not source_quote:
+            continue
+        name = clean_quote(span.get("name") or slot_to_name(span.get("slot_ref")) or "증상")
+        if span_type == "progress_improved":
+            label = "호전"
+            summary = f"{name} 호전 또는 해소"
+        else:
+            label = "현재양상"
+            summary = f"{name} 없음"
+        category = "재진경과" if visit_type == "followup" or span_type == "progress_improved" else "증상맥락"
+        clues.append({
+            "id": f"{qid}-{label}-{source_quote}",
+            "category": category,
+            "label": label,
+            "summary": summary,
+            "source_question": qid,
+            "source_quote": source_quote,
+            "priority": "일반",
+            "related_symptoms": [name] if name else [],
+            "action_hint": f"{summary} 확인",
+            "explain": "LLM이 현재 호소가 아닌 호전/부재 맥락으로 태깅한 항목입니다.",
+        })
+    return clues
 
 
 def normalize_clinical_clue(item, default_qid):

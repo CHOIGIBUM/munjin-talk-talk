@@ -605,6 +605,9 @@ sessions/YYYY-MM-DD/{session_id}/llm_trace.redacted.json
 - `matched_slots`와 `unmatched_spans` 생성
 - 운영 artifact에는 숫자 점수와 전체 후보 목록을 저장하지 않고, 최소 설명 trace에 확정 근거 요약만 저장
 
+`progress_improved` 또는 `status="없음"`으로 검증된 span은 현재 불편함 카드용 IR에서 제외됩니다.
+예를 들어 “열은 내렸다”, “두통은 없어졌다”는 증상 카드가 아니라 `clinical_clues`의 재진경과/호전 단서로 남깁니다.
+
 ---
 
 ## 현재 retry 정책

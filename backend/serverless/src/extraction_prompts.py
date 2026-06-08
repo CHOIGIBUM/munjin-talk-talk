@@ -49,6 +49,12 @@ Critical rules:
 - If unsure, use status "확인필요" and explain the uncertainty in Korean instead of inventing a number.
 - For medication, medication_denial, adherence_gap, and context spans, slot_ref MUST be "other".
 - Only symptom/new/progress spans may use symptom slot_ref values such as cough or fever.
+- Resolved or improved previous symptoms are NOT active current complaints.
+  Use type "progress_improved" and status "없음" for expressions like "열은 내렸다", "머리 아픈 건 없어졌다", "다 나았다", "싹 내렸다".
+  Also add a clinical_clue with category "재진경과" and label "호전".
+- If a symptom improved but is still currently present, split it:
+  one span for the remaining current symptom with status "있음", and one clinical_clue label "호전" for the improvement context.
+- Do NOT convert caregiver fear or concern into dyspnea/chest_pain unless the patient or caregiver states actual breathing difficulty, chest pain, cyanosis, fainting, or inability to breathe.
 - For Q4 patient_questions/unresolved_questions, a denial such as "없어요", "따로 없어요", "별로 없어요", or "궁금한 건 없어요" is NOT a patient question. Return questions: [].
 - For symptom questions (chief_complaint, progress, new_symptoms), spans MUST contain at least one grounded meaning unit unless the patient clearly denies symptoms.
 - clinical_clues are optional helper context. Include them only when category, label, and source_quote are all valid.
@@ -245,6 +251,138 @@ Expected JSON:
   "structured": {{
     "standardized_text": "의사에게 추가로 묻고 싶은 점은 없다고 말했습니다.",
     "clinical_clues": [],
+    "questions": [],
+    "unresolved_items": []
+  }}
+}}
+
+Example 6
+Question id: Q1
+Question type: progress
+Patient answer:
+병원서 주사 맞고 약 먹은 뒤루 대가리 아프고 불덩이 같던 열은 마카 싹 내렸소. 큰 열은 내렸는디 어무이가 기운이 안 나서 통 움직이질 못하셔요.
+Expected JSON:
+{{
+  "spans": [
+    {{
+      "source_quote": "대가리 아프고 불덩이 같던 열은 마카 싹 내렸소",
+      "type": "progress_improved",
+      "slot_ref": "headache",
+      "name": "두통",
+      "normalized_text": "두통은 호전됨",
+      "status": "없음",
+      "alert": false,
+      "explain": "환자가 약 복용 뒤 머리 아프던 증상이 내렸다고 말했습니다."
+    }},
+    {{
+      "source_quote": "불덩이 같던 열은 마카 싹 내렸소",
+      "type": "progress_improved",
+      "slot_ref": "fever",
+      "name": "발열",
+      "normalized_text": "발열은 호전됨",
+      "status": "없음",
+      "alert": false,
+      "explain": "이전의 큰 열이 현재는 내려갔다고 말했습니다."
+    }},
+    {{
+      "source_quote": "기운이 안 나서 통 움직이질 못하셔요",
+      "type": "context",
+      "slot_ref": "other",
+      "name": "전신 기운 저하",
+      "normalized_text": "기운이 없고 움직임이 줄어듦",
+      "status": "확인필요",
+      "alert": false,
+      "explain": "보호자가 환자의 전신 기운 저하를 관찰한 내용입니다. 표준 호흡기 증상으로 단정하지 않습니다."
+    }}
+  ],
+  "structured": {{
+    "standardized_text": "주사와 약 복용 후 두통과 발열은 호전되었으나, 보호자는 환자가 기운이 없고 잘 움직이지 못한다고 말했습니다.",
+    "clinical_clues": [
+      {{
+        "category": "재진경과",
+        "label": "호전",
+        "summary": "두통과 발열은 약 복용 후 호전됨",
+        "source_quote": "마카 싹 내렸소",
+        "source_question": "Q1",
+        "priority": "일반",
+        "related_symptoms": ["두통", "발열"]
+      }},
+      {{
+        "category": "증상맥락",
+        "label": "현재양상",
+        "summary": "보호자가 전신 기운 저하와 활동 감소를 언급",
+        "source_quote": "기운이 안 나서 통 움직이질 못하셔요",
+        "source_question": "Q1",
+        "priority": "일반",
+        "related_symptoms": []
+      }}
+    ],
+    "questions": [],
+    "unresolved_items": []
+  }}
+}}
+
+Example 7
+Question id: Q3
+Question type: new_symptoms
+Patient answer:
+열은 안 나는디 아직두 물 마시문 자꾸 사레가 걸려 가주고 캑캑거린다 얘. 옆에서 보기에 기침하느라 숨 넘어가실까 봐 너무 겁이 나더래요.
+Expected JSON:
+{{
+  "spans": [
+    {{
+      "source_quote": "열은 안 나는디",
+      "type": "progress_improved",
+      "slot_ref": "fever",
+      "name": "발열",
+      "normalized_text": "현재 발열은 없음",
+      "status": "없음",
+      "alert": false,
+      "explain": "환자가 현재 열은 나지 않는다고 말했습니다."
+    }},
+    {{
+      "source_quote": "캑캑거린다",
+      "type": "new",
+      "slot_ref": "cough",
+      "name": "기침",
+      "normalized_text": "사레와 함께 기침이 남아 있음",
+      "status": "있음",
+      "alert": false,
+      "explain": "물 마실 때 사레가 걸리고 기침한다고 말했습니다."
+    }},
+    {{
+      "source_quote": "숨 넘어가실까 봐 너무 겁이 나더래요",
+      "type": "context",
+      "slot_ref": "other",
+      "name": "보호자 우려",
+      "normalized_text": "보호자가 기침 중 안전을 걱정함",
+      "status": "확인필요",
+      "alert": false,
+      "explain": "보호자의 우려 표현이며 실제 호흡곤란으로 단정하지 않습니다."
+    }}
+  ],
+  "structured": {{
+    "standardized_text": "현재 열은 없으나 물을 마실 때 사레가 걸리고 기침이 남아 있으며, 보호자는 기침 중 안전을 걱정하고 있습니다.",
+    "clinical_clues": [
+      {{
+        "category": "재진경과",
+        "label": "호전",
+        "summary": "현재 발열은 없음",
+        "source_quote": "열은 안 나는디",
+        "source_question": "Q3",
+        "priority": "일반",
+        "related_symptoms": ["발열"]
+      }},
+      {{
+        "category": "증상맥락",
+        "label": "악화요인",
+        "summary": "물 마실 때 사레와 기침이 발생",
+        "source_quote": "물 마시문 자꾸 사레가 걸려",
+        "source_question": "Q3",
+        "priority": "일반",
+        "related_symptoms": ["기침"]
+      }}
+    ],
     "questions": [],
     "unresolved_items": []
   }}

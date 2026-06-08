@@ -148,6 +148,9 @@ def match_slots(body):
     for span in spans:
         slot_id = span.get("slot_ref") or "other"
         span_type = span.get("type", "symptom")
+        if should_skip_active_symptom_ir(span):
+            unmatched.append(span)
+            continue
         if not is_symptom_like_span(span_type, slot_id):
             unmatched.append(span)
             continue
@@ -219,6 +222,21 @@ def match_slots(body):
             },
         })
     return {"matched_slots": matched, "unmatched_spans": unmatched}
+
+
+def should_skip_active_symptom_ir(span):
+    """호전/부재로 검증된 span은 현재 불편함 카드용 IR에서 제외합니다.
+
+    LLM이 "열은 내렸다", "두통은 없어졌다"처럼 과거 또는 호전 맥락을
+    올바르게 `progress_improved`나 `status=없음`으로 태깅했다면, 해당 표현은
+    의사용 원페이퍼의 "오늘 말한 불편함"에 올라가면 안 됩니다. 대신
+    answers artifact와 clinical_clues에서 재진 경과 단서로 확인합니다.
+    """
+    span_type = str(span.get("type") or "")
+    status = str(span.get("status") or "")
+    if status == "없음":
+        return True
+    return span_type == "progress_improved"
 
 
 def slot_to_name(slot_id):
