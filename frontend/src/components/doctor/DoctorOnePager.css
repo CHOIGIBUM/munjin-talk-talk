@@ -95,6 +95,49 @@
   background: #cbd5e1;
   border-radius: 50%;
 }
+.op-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.op-tool-btn {
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #bfdbfe;
+  background: #fff;
+  color: #0f2347;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.op-tool-btn:hover:not(:disabled) {
+  background: #eff6ff;
+}
+.op-tool-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.op-tool-btn-primary {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+.op-tool-btn-primary:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+.op-tool-status {
+  min-width: 70px;
+  font-size: 11px;
+  font-weight: 900;
+  color: #64748b;
+  text-align: right;
+}
+.op-tool-status.error {
+  color: #dc2626;
+}
 .op-principles {
   display: flex;
   gap: 6px;

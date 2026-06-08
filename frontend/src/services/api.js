@@ -18,6 +18,7 @@ export {
 
 export {
   getOnePager,
+  rerunOnePagerReview,
   submitDoctorResponse,
   getPatientGuide,
 } from './api/doctor.js'

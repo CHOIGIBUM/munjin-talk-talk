@@ -30,7 +30,7 @@ from onepager_sections import (
 )
 from privacy import safety_summary
 from sessions import create_session, get_session, update_session
-from utils import format_hhmm, mask_name, normalize_visit_type, response
+from utils import format_hhmm, mask_name, normalize_visit_type, now_iso, response
 
 
 def validate_and_save(body: dict[str, Any]):
@@ -142,6 +142,32 @@ def get_onepager_payload(session: dict[str, Any]) -> dict[str, Any]:
             "onepager": onepager,
         }
     }
+
+
+def rerun_onepager_review(session_id: str):
+    """저장된 onepaper를 기준으로 최종 AI 검토만 다시 실행합니다.
+
+    환자 답변 자체를 다시 추출하거나 IR을 다시 돌리지는 않습니다.
+    의사가 화면에서 "AI 재검토"를 누를 때 checklist, EMR 초안, doctor brief만
+    다시 생성해 보고, 검증을 통과한 결과만 S3 onepaper artifact에 반영합니다.
+    """
+    session = get_session(session_id)
+    if not session:
+        return None, response(404, {"error": "session_not_found"})
+
+    onepager = get_json(session, ONEPAPER_FILE, default=None)
+    if not isinstance(onepager, dict) or not onepager:
+        onepager = build_onepager(session)
+
+    responses = load_answers(session)
+    session_for_review = {**session, "responses": responses, "question_results": responses}
+    reviewed = apply_bedrock_onepager_review(session_for_review, onepager)
+    put_json(session, ONEPAPER_FILE, reviewed)
+    updated_session = update_session(session_id, {
+        "onepager_ready": True,
+        "onepager_reviewed_at": now_iso(),
+    }) or session
+    return get_onepager_payload(updated_session), None
 
 
 def build_onepager(session: dict[str, Any]) -> dict[str, Any]:

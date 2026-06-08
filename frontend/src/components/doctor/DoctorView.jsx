@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import {
-  getOnePager, submitDoctorResponse
+  getOnePager,
+  rerunOnePagerReview,
+  submitDoctorResponse
 } from '../../services/api.js'
 import DoctorOnePager from './DoctorOnePager.jsx'
 import DoctorAgendaPanel from './DoctorAgendaPanel.jsx'
@@ -30,15 +32,50 @@ export default function DoctorView() {
   const [sessionData, setSessionData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [submitStatus, setSubmitStatus] = useState(null)
+  const [onepagerStatus, setOnepagerStatus] = useState(null)
 
   // 화면 진입 시 백엔드에 저장된 최신 onepager JSON을 조회합니다.
   useEffect(() => {
+    let alive = true
     setLoading(true)
     getOnePager(sessionId).then(data => {
+      if (!alive) return
       setSessionData(data)
-      setLoading(false)
+    }).finally(() => {
+      if (alive) setLoading(false)
     })
+    return () => {
+      alive = false
+    }
   }, [sessionId])
+
+  const refreshOnePager = async () => {
+    if (!sessionId) return
+    setOnepagerStatus('refreshing')
+    try {
+      const data = await getOnePager(sessionId)
+      setSessionData(data)
+      setOnepagerStatus('refreshed')
+      setTimeout(() => setOnepagerStatus(null), 1600)
+    } catch (err) {
+      console.error('원페이퍼 새로고침 실패:', err)
+      setOnepagerStatus('error')
+    }
+  }
+
+  const handleAiReview = async () => {
+    if (!sessionId) return
+    setOnepagerStatus('reviewing')
+    try {
+      const data = await rerunOnePagerReview(sessionId)
+      setSessionData(data)
+      setOnepagerStatus('reviewed')
+      setTimeout(() => setOnepagerStatus(null), 1800)
+    } catch (err) {
+      console.error('원페이퍼 AI 재검토 실패:', err)
+      setOnepagerStatus('error')
+    }
+  }
 
   // 의사가 작성한 답변과 강조사항을 저장하고 환자 안내문 생성 결과 상태를 표시합니다.
   const handleSubmitResponse = async ({ answers, additionalNotes }) => {
@@ -54,7 +91,7 @@ export default function DoctorView() {
         answers,
         additionalNotes
       })
-      if (result.validator_passed !== false) {
+      if (result.guide_generation_valid !== false) {
         setSubmitStatus('success')
       } else {
         setSubmitStatus('invalid')
@@ -74,6 +111,9 @@ export default function DoctorView() {
       <DoctorOnePager
         sessionId={sessionId}
         sessionData={sessionData}
+        onRefresh={refreshOnePager}
+        onAiReview={handleAiReview}
+        onepagerStatus={onepagerStatus}
         // Agenda + 답변 입력은 별도 우측 패널로 분리
         renderAgenda={false}
         // 우측 영역에 답변 입력 함께 표시

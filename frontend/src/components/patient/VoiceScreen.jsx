@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import ScreenHeader from '../tablet/ScreenHeader.jsx'
 import { useStreamingTranscribe } from '../../hooks/useStreamingTranscribe.js'
 
@@ -30,10 +30,25 @@ export default function VoiceScreen({
   onStaffCall,
 }) {
   const [notice, setNotice] = useState(null)
+  const handleAutoStop = useCallback((finalText, reason) => {
+    const cleanText = String(finalText || '').trim()
+    if (cleanText) {
+      setNotice(null)
+      onFinish(cleanText)
+      return
+    }
+    setNotice(
+      reason === 'no_speech'
+        ? '말씀이 들리지 않았습니다. 마이크 버튼을 눌러 다시 말씀해 주세요.'
+        : '음성 인식 결과가 비어 있습니다. 마이크 버튼을 눌러 다시 말씀해 주세요.'
+    )
+  }, [onFinish])
+
   const { isRecording, transcript, error, elapsed, start, stop } = useStreamingTranscribe({
     sessionId,
     questionId: question.id,
     visitType,
+    onAutoStop: handleAutoStop,
   })
 
   useEffect(() => {
@@ -111,7 +126,7 @@ export default function VoiceScreen({
             </div>
           )}
           <div className="voice-timer">
-            {isProcessing ? '분석 중' : formatTime(elapsed)} <span>{isProcessing ? '잠시만 기다려 주세요' : '/ 01:00'}</span>
+            {isProcessing ? '분석 중' : formatTime(elapsed)} <span>{isProcessing ? '잠시만 기다려 주세요' : '말씀이 끝나면 자동으로 넘어갑니다'}</span>
           </div>
         </div>
 
@@ -125,7 +140,7 @@ export default function VoiceScreen({
       <div className="screen-footer">
         <button className="btn-help staff-button-wide" onClick={onStaffCall} disabled={isProcessing}>직원 도움</button>
         <button className="btn-primary" onClick={handleEnd} disabled={isProcessing || !isRecording}>
-          {isProcessing ? '분석 중...' : '발화 마치기'}
+          {isProcessing ? '분석 중...' : '말 끝났어요'}
         </button>
       </div>
     </>

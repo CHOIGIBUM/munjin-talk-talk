@@ -125,6 +125,12 @@ Resources:
             ApiId: !Ref MunjinHttpApi
             Path: /onepager/{session_id}
             Method: GET
+        OnePagerReview:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /onepager/{session_id}/review
+            Method: POST
         DoctorResponse:
           Type: HttpApi
           Properties:

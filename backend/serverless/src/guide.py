@@ -57,6 +57,9 @@ def save_doctor_response(body: dict[str, Any]):
     return {
         "doctor_review_saved": True,
         "patient_guide_generated": bool(guide.get("items")),
+        "guide_generation_valid": validator_passed,
+        "guide_validator_passed": validator_passed,
+        # 이전 프론트와의 호환성을 위해 남기지만, 신규 UI에서는 환자 문진 validator와 혼동하지 않습니다.
         "validator_passed": validator_passed,
         "patient_guide": response_guide,
     }, None

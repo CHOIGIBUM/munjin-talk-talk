@@ -57,6 +57,9 @@ body {
   color: #b6c0ce;
   cursor: not-allowed;
 }
+.mode-switcher.patient-mode-switcher {
+  display: none;
+}
 
 /* ============== Portrait Tablet Frame ============== */
 .tablet-frame {
@@ -112,6 +115,7 @@ body {
   min-height: 100dvh;
   aspect-ratio: auto;
   border-radius: 0;
+  overflow: hidden;
 }
 @media (max-width: 700px) {
   .app-stage {
@@ -1568,5 +1572,114 @@ body {
     min-height: 62px;
     font-size: 20px;
     border-top: 1px solid #e2e8f0;
+  }
+}
+
+/* ─── Tablet 운영 보정: 브라우저 주소창/하단 내비게이션에 잘리지 않도록 최종 override ─── */
+.tablet-live-shell,
+.tablet-screen-device {
+  height: 100dvh;
+  min-height: 100dvh;
+}
+
+.screen-body {
+  min-height: 0;
+}
+
+.screen-footer {
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+.voice-body {
+  justify-content: flex-start;
+  overflow-y: auto !important;
+}
+
+.voice-body .voice-live-box {
+  margin-top: 10px !important;
+  margin-bottom: 16px !important;
+}
+
+.voice-body .voice-mic-wrap {
+  min-height: 190px !important;
+  margin-top: 18px !important;
+}
+
+.voice-body .voice-mic {
+  width: 112px !important;
+  height: 112px !important;
+  flex-basis: 112px !important;
+}
+
+.voice-body .voice-mic svg {
+  width: 44px;
+  height: 44px;
+}
+
+.voice-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1.25;
+}
+
+.voice-timer span {
+  max-width: 240px;
+  text-align: center;
+}
+
+.verify-edit-area {
+  width: 100%;
+  min-height: 130px;
+  border: 0;
+  outline: none;
+  resize: vertical;
+  background: transparent;
+  color: var(--navy, #0f2347);
+  font: inherit;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.edit-v4 {
+  flex: 1.1;
+}
+
+@media (max-width: 900px) {
+  .app-stage {
+    min-height: 100dvh;
+    padding: 0;
+  }
+
+  .tablet-live-shell {
+    width: 100vw;
+    box-shadow: none;
+  }
+
+  .screen-header {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .voice-body {
+    padding: 14px 18px 10px !important;
+  }
+
+  .voice-body .voice-question {
+    font-size: 30px !important;
+  }
+
+  .screen-footer {
+    gap: 10px;
+  }
+
+  .verify-footer-btn {
+    min-width: 0;
+    padding-left: 12px;
+    padding-right: 12px;
+    font-size: 15px;
   }
 }

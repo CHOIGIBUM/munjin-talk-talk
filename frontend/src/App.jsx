@@ -7,11 +7,22 @@ import PatientGuideScreen from './components/patient/PatientGuideScreen.jsx'
 import ReceptionView from './components/staff/ReceptionView.jsx'
 import { getDoctorQueue } from './services/api.js'
 
+function sessionIdFromPath(path) {
+  const match = path.match(/^\/(?:patient|guide)\/([^/]+)/)
+    || (path.startsWith('/doctor/') && path !== '/doctor/queue'
+      ? path.match(/^\/doctor\/([^/]+)/)
+      : null)
+  return match ? decodeURIComponent(match[1]) : null
+}
+
 // 앱의 최상위 라우터입니다.
-// 실제 운영 흐름은 접수처에서 세션을 만들고, 그 sessionId로 태블릿/원페이퍼/안내문을 여는 구조입니다.
+// 환자별 화면에서는 URL의 sessionId를 기준으로 상단 이동 링크를 고정합니다.
+// 이렇게 해야 대기열이 갱신되어도 이전 환자 원페이퍼/안내문이 다른 환자로 바뀌지 않습니다.
 export default function App() {
   const [sessions, setSessions] = useState([])
   const location = useLocation()
+  const path = location.pathname
+  const activeSessionId = useMemo(() => sessionIdFromPath(path), [path])
 
   // 상단 메뉴는 실제 백엔드 대기열을 주기적으로 읽어 가장 자연스러운 세션으로 이동시킵니다.
   useEffect(() => {
@@ -29,6 +40,15 @@ export default function App() {
   }, [])
 
   const navTargets = useMemo(() => {
+    if (activeSessionId) {
+      const encoded = encodeURIComponent(activeSessionId)
+      return {
+        patient: `/patient/${encoded}`,
+        doctor: `/doctor/${encoded}`,
+        guide: `/guide/${encoded}`,
+      }
+    }
+
     const tablet = sessions.find((session) => session.status === 'waiting_tablet')
       || sessions.find((session) => session.status === 'in_progress')
       || sessions[0]
@@ -39,14 +59,14 @@ export default function App() {
       doctor: doctor ? `/doctor/${doctor.sessionId}` : null,
       guide: doctor ? `/guide/${doctor.sessionId}` : null,
     }
-  }, [sessions])
+  }, [activeSessionId, sessions])
 
-  const path = location.pathname
   const navClass = (active) => (active ? 'active' : '')
+  const patientRoute = path.startsWith('/patient/')
 
   return (
     <>
-      <nav className="mode-switcher">
+      <nav className={`mode-switcher ${patientRoute ? 'patient-mode-switcher' : ''}`}>
         <Link to="/staff" className={navClass(path === '/staff' || path === '/')}>
           직원 접수
         </Link>

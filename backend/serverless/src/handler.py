@@ -10,7 +10,7 @@ from urllib.parse import unquote_plus
 
 from audio import generate_streaming_transcribe_url
 from guide import get_guide, save_doctor_response
-from onepager import get_onepager_payload
+from onepager import get_onepager_payload, rerun_onepager_review
 from orchestration import process_answer
 from sessions import create_session, get_session, list_sessions, public_session, save_patient_consent, update_session
 from utils import parse_body, response
@@ -80,6 +80,11 @@ def route(method, path, event):
         if not session:
             return response(404, {"error": "session_not_found"})
         return response(200, get_onepager_payload(session))
+
+    match = re.fullmatch(r"/onepager/([^/]+)/review", path)
+    if method == "POST" and match:
+        payload, err = rerun_onepager_review(unquote_plus(match.group(1)))
+        return err or response(200, payload)
 
     if method == "POST" and path == "/doctor-response":
         payload, err = save_doctor_response(body)

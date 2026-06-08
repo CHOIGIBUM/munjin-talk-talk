@@ -219,12 +219,13 @@ export default function PatientFlow({
     setStep(STEPS.Q_VOICE)
   }, [])
 
-  const handleConfirmTranscript = useCallback(async () => {
-    const answerText = String(transcript || '').trim()
+  const handleConfirmTranscript = useCallback(async (confirmedText = transcript) => {
+    const answerText = String(confirmedText || transcript || '').trim()
     if (!answerText || answerText.includes('음성 인식 결과가 비어 있습니다')) {
       setStep(STEPS.Q_VOICE)
       return
     }
+    setTranscript(answerText)
     setIsTranscribing(true)
 
     try {

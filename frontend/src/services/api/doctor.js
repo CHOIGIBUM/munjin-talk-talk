@@ -11,6 +11,20 @@ export async function getOnePager(sessionId) {
   return res.json()
 }
 
+// 저장된 onepaper를 기준으로 최종 AI 검토만 다시 실행합니다.
+// 환자 답변 추출/IR을 다시 돌리는 것이 아니라 의료진 확인 항목과 EMR 초안을 재검토합니다.
+export async function rerunOnePagerReview(sessionId) {
+  if (!sessionId) return null
+  ensureApiConfigured()
+
+  const res = await fetch(`${API_BASE_URL}/onepager/${sessionId}/review`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  })
+  if (!res.ok) throw new Error('원페이퍼 AI 재검토 실패')
+  return res.json()
+}
+
 // 의사가 환자 질문에 답변하고 강조사항을 적으면 백엔드에 저장합니다.
 // 백엔드는 이 값을 바탕으로 환자 안내문을 생성하거나, 의사 원문 강조사항을 그대로 노출합니다.
 export async function submitDoctorResponse({

@@ -37,6 +37,14 @@ function guideQuestionLabel(item) {
   return item.question
 }
 
+function formatGuideDate(value) {
+  const date = value ? new Date(value) : new Date()
+  if (Number.isNaN(date.getTime())) {
+    return new Date().toLocaleDateString('ko-KR')
+  }
+  return date.toLocaleDateString('ko-KR')
+}
+
 export default function PatientGuideScreen() {
   const { sessionId } = useParams()
   const [guide, setGuide] = useState(null)
@@ -45,16 +53,25 @@ export default function PatientGuideScreen() {
 
   // doctor-response 저장 후 생성된 안내문 JSON을 조회합니다.
   useEffect(() => {
+    let alive = true
     if (!sessionId) {
       setGuide(null)
       setLoading(false)
-      return
+      return () => {
+        alive = false
+      }
     }
     setLoading(true)
     getPatientGuide(sessionId).then(data => {
+      if (!alive) return
       if (data) setGuide(data)
       else setGuide(null)
-    }).finally(() => setLoading(false))
+    }).finally(() => {
+      if (alive) setLoading(false)
+    })
+    return () => {
+      alive = false
+    }
   }, [sessionId])
 
   // 컴포넌트 언마운트 시 정지
@@ -120,7 +137,7 @@ export default function PatientGuideScreen() {
   }
 
   const items = guide ? normalizeGuideItems(guide) : []
-  const generatedAt = guide?.patient_guide?.generated_at || new Date().toISOString()
+  const generatedAt = formatGuideDate(guide?.patient_guide?.generated_at)
   const emptyMessage = loading
     ? '안내문을 불러오는 중입니다.'
     : sessionId
@@ -140,7 +157,7 @@ export default function PatientGuideScreen() {
             <img className="pg-logo-svg" src={logoUrl} alt="" aria-hidden="true" />
             <div className="pg-meta-text">
               <span>문진톡톡</span>
-              <small>{new Date(generatedAt).toLocaleDateString('ko-KR')}</small>
+              <small>{generatedAt}</small>
             </div>
           </div>
         </header>

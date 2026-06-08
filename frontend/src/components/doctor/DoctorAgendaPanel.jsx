@@ -165,9 +165,9 @@ export default function DoctorAgendaPanel({ sessionData, submitStatus, onSubmit 
       {/* ─── 액션 ─── */}
       <div className="dap-action-bar">
         <div className="dap-status">
-          {submitStatus === 'submitting' && '전송 중... (LLM 변환 + Validator 2차)'}
-          {submitStatus === 'success' && '✓ 전송 완료. 환자 안내 화면 확인 가능'}
-          {submitStatus === 'invalid' && '⚠ 안내문 생성 검증 실패. 답변 내용을 확인해 주세요'}
+          {submitStatus === 'submitting' && '안내문 생성 중...'}
+          {submitStatus === 'success' && '✓ 안내문 생성 완료. 안내문 출력 화면에서 확인할 수 있습니다.'}
+          {submitStatus === 'invalid' && '⚠ 안내문 문장 생성에 실패했습니다. 답변을 조금 더 구체적으로 작성해 주세요.'}
           {submitStatus === 'error' && '⚠ 전송 실패. 다시 시도해 주세요'}
           {!submitStatus && `${filledCount}/${answers.length} 답변 입력됨`}
         </div>
@@ -176,7 +176,7 @@ export default function DoctorAgendaPanel({ sessionData, submitStatus, onSubmit 
           disabled={!canSubmit || submitStatus === 'submitting'}
           onClick={handleSubmit}
         >
-          {submitStatus === 'submitting' ? '전송 중...' : '환자에게 전송'}
+          {submitStatus === 'submitting' ? '생성 중...' : '환자 안내문 생성'}
         </button>
       </div>
     </div>

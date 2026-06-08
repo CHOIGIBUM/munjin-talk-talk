@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import ScreenHeader from '../tablet/ScreenHeader.jsx'
 
 export default function ConfirmTranscriptScreen({
@@ -11,6 +12,16 @@ export default function ConfirmTranscriptScreen({
   onRetry,
   onStaffCall,
 }) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [editedText, setEditedText] = useState(transcript || '')
+
+  useEffect(() => {
+    setEditedText(transcript || '')
+    setIsEditing(false)
+  }, [transcript])
+
+  const confirmedText = editedText.trim()
+
   return (
     <>
       <ScreenHeader
@@ -27,9 +38,20 @@ export default function ConfirmTranscriptScreen({
         </p>
 
         <div className="transcript-box transcript-box-v4">
-          <div className="transcript-text transcript-text-large">
-            “{transcript || '인식된 내용이 없습니다'}”
-          </div>
+          {isEditing ? (
+            <textarea
+              className="verify-edit-area"
+              value={editedText}
+              onChange={(event) => setEditedText(event.target.value)}
+              autoFocus
+              rows={4}
+              aria-label="인식된 문장 직접 수정"
+            />
+          ) : (
+            <div className="transcript-text transcript-text-large">
+              “{editedText || '인식된 내용이 없습니다'}”
+            </div>
+          )}
         </div>
       </div>
 
@@ -40,7 +62,14 @@ export default function ConfirmTranscriptScreen({
         <button className="retry-v4 verify-footer-btn" onClick={onRetry} disabled={isProcessing}>
           다시 말할게요
         </button>
-        <button className="confirm-v4 verify-footer-btn" onClick={onConfirm} disabled={isProcessing || !transcript}>
+        <button
+          className="retry-v4 verify-footer-btn edit-v4"
+          onClick={() => setIsEditing(value => !value)}
+          disabled={isProcessing || !transcript}
+        >
+          {isEditing ? '수정 마침' : '직접 고치기'}
+        </button>
+        <button className="confirm-v4 verify-footer-btn" onClick={() => onConfirm(confirmedText)} disabled={isProcessing || !confirmedText}>
           {isProcessing ? '분석 중...' : '맞아요 · 다음'}
         </button>
       </div>

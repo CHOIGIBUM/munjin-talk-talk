@@ -15,7 +15,15 @@ import './DoctorOnePager.css'
 // - 좌우 패널 길이 차이로 무너지지 않도록 균형 조정
 // - "위험 — 우선 평가 필요" amber 배지는 실제 safety flag가 있을 때만 표시
 
-export default function DoctorOnePager({ sessionId, sessionData, sidePanel, renderAgenda = true }) {
+export default function DoctorOnePager({
+  sessionId,
+  sessionData,
+  sidePanel,
+  renderAgenda = true,
+  onRefresh,
+  onAiReview,
+  onepagerStatus,
+}) {
   const [apiData, setApiData] = useState(null)
   const [copied, setCopied] = useState(false)
   const [checked, setChecked] = useState({})  // {0: true, 2: true} 형태
@@ -93,11 +101,37 @@ export default function DoctorOnePager({ sessionId, sessionData, sidePanel, rend
               {isFollowup ? '재진' : '초진'}
             </span>
             <span>접수 {data.patient.receivedAt}</span>
-            <span className="op-dot" />
-            <span>음성 {data.patient.audioDuration}초</span>
           </p>
         </div>
-        {/* "진단명 추천 없음" / "검증 완료" chips 제거됨 */}
+        {(onRefresh || onAiReview) && (
+          <div className="op-toolbar">
+            <button
+              type="button"
+              className="op-tool-btn"
+              onClick={onRefresh}
+              disabled={onepagerStatus === 'refreshing' || onepagerStatus === 'reviewing'}
+            >
+              새로고침
+            </button>
+            <button
+              type="button"
+              className="op-tool-btn op-tool-btn-primary"
+              onClick={onAiReview}
+              disabled={onepagerStatus === 'refreshing' || onepagerStatus === 'reviewing'}
+            >
+              AI 재검토
+            </button>
+            {onepagerStatus && (
+              <span className={`op-tool-status ${onepagerStatus}`}>
+                {onepagerStatus === 'refreshing' && '불러오는 중'}
+                {onepagerStatus === 'reviewing' && '재검토 중'}
+                {onepagerStatus === 'refreshed' && '최신 반영'}
+                {onepagerStatus === 'reviewed' && '재검토 완료'}
+                {onepagerStatus === 'error' && '실패'}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 좌우 분할 */}

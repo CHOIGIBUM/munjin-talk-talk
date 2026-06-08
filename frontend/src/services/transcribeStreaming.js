@@ -11,6 +11,7 @@ export async function openTranscribeStream({
   onTranscript,
   onStatus,
   onError,
+  onAudioActivity,
 }) {
   ensureApiConfigured()
 
@@ -111,6 +112,10 @@ export async function openTranscribeStream({
       return
     }
     const input = event.inputBuffer.getChannelData(0)
+    onAudioActivity?.({
+      rms: calculateRms(input),
+      timestamp: Date.now(),
+    })
     const chunk = floatToPcm16(input)
     socket.send(encodeAudioEvent(chunk))
     framesSent += 1
@@ -173,6 +178,14 @@ async function getTranscribeStreamUrl({ sessionId, questionId, visitType, sample
   })
   if (!res.ok) throw new Error('transcribe_stream_url_failed')
   return res.json()
+}
+
+function calculateRms(input) {
+  let sum = 0
+  for (let i = 0; i < input.length; i += 1) {
+    sum += input[i] * input[i]
+  }
+  return Math.sqrt(sum / Math.max(1, input.length))
 }
 
 function encodeAudioEvent(payload) {
