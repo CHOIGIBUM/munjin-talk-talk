@@ -6,7 +6,7 @@ LLM/IR이 공유하는 증상 slot, alias, 안전 플래그 후보를 모아둡�
 
 import re
 
-from domain_config import get_domain_pack, symptom_slot_ids
+from domain_config import get_domain_pack
 from utils import clean_quote, find_keyword_quote
 
 _DOMAIN_PACK = get_domain_pack()
@@ -63,11 +63,6 @@ SAFETY_FLAG_RULES = [
     for item in _DOMAIN_PACK.get("safety_flags", [])
     if isinstance(item, dict) and item.get("category") and item.get("pattern")
 ]
-
-
-def allowed_symptom_slot_refs():
-    """Pydantic schema와 prompt가 공유하는 허용 slot_ref 집합을 반환합니다."""
-    return symptom_slot_ids()
 
 
 def find_safety_flag(text, matched_slots=None):

@@ -9,7 +9,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, ValidationInfo, field_validator
 
-from clinical_terms import allowed_symptom_slot_refs
+from domain_config import llm_symptom_slot_ids
 from utils import clean_quote
 
 SpanType = Literal[
@@ -121,9 +121,10 @@ class ExtractionSpan(StrictModel):
     @field_validator("slot_ref", mode="before")
     @classmethod
     def validate_slot_ref(cls, value):
-        slot_ref = clean_quote(value or "other") or "other"
-        if slot_ref not in allowed_symptom_slot_refs():
-            raise ValueError(f"slot_ref is not allowed by active domain pack: {slot_ref}")
+        allowed = llm_symptom_slot_ids() + ["other"]
+        slot_ref = clean_quote(value)
+        if slot_ref not in allowed:
+            raise ValueError(f"slot_ref must be one of: {', '.join(allowed)}")
         return slot_ref
 
     @field_validator("source_quote", mode="before")

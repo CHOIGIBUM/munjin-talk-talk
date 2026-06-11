@@ -14,6 +14,7 @@ import PrivacyConsentModal, {
   SENSITIVE_NOTICE_ITEMS,
 } from './PrivacyConsentModal.jsx'
 import { QUESTIONS } from '../../config/questions.js'
+import { questionTextForBackend } from '../../config/questionText.js'
 import { detectSafetyKeyword } from '../../config/safetyKeywords.js'
 import { processTranscript, recordPatientConsent } from '../../services/api.js'
 
@@ -452,13 +453,4 @@ export default function PatientFlow({
       {!consentAccepted && renderConsentGate()}
     </TabletFrame>
   )
-}
-
-function questionTextForBackend(question) {
-  if (!question) return ''
-  return [question.badge, question.title, question.sub]
-    .filter(Boolean)
-    .join(' ')
-    .replace(/\s+/g, ' ')
-    .trim()
 }

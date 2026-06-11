@@ -6,8 +6,7 @@
 """
 
 from settings import LIGHT_MODEL_ID, STRONG_MODEL_ID
-from clinical_terms import allowed_symptom_slot_refs
-from domain_config import question_text_for
+from domain_config import llm_symptom_slot_ids, question_text_for
 from utils import visit_label
 
 
@@ -29,8 +28,11 @@ def build_extraction_prompt(
 ):
     """Nova가 반드시 지켜야 할 quote grounding과 fixed schema를 명시합니다."""
     visit = visit_label(visit_type)
-    question_text = str(question_text_override or question_text_for(visit_type, question_id) or "")
-    allowed_slots = ", ".join(sorted(allowed_symptom_slot_refs()))
+    server_text = question_text_for(visit_type, question_id)
+    # 알려진 기본 문항은 서버 정의가 항상 우선입니다.
+    # 클라이언트 override는 서버에 정의되지 않은 커스텀 문항 전용 fallback입니다.
+    question_text = str(server_text or question_text_override or "").strip()
+    allowed_slots = ", ".join(llm_symptom_slot_ids() + ["other"])
     return f"""
 You are the semantic parsing LLM for a Korean clinic intake MVP.
 Task: standardize dialect/colloquial speech, split meaning units, and tag the answer into the fixed schema.

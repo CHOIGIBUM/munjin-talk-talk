@@ -40,14 +40,25 @@ def question_text_for(visit_type: str, question_id: str) -> str:
     return str(visit_questions.get(str(question_id or "")) or "")
 
 
-def symptom_slot_ids() -> set[str]:
-    """LLM extraction schema에서 허용할 증상 slot_ref 집합입니다."""
+def llm_symptom_slot_ids() -> list[str]:
+    """LLM extraction에 노출/허용되는 slot_id입니다.
+
+    순서는 프롬프트 계약의 일부입니다. domain pack의 `symptom_rules` 순서를
+    그대로 보존하고, `other`는 호출자가 필요한 곳에서 명시적으로 붙입니다.
+    IR 전용 canonical id는 LLM 출력 schema에 노출하지 않습니다.
+    """
     pack = get_domain_pack()
-    ids = {
+    return [
         str(item.get("slot_id"))
         for item in pack.get("symptom_rules", [])
         if isinstance(item, dict) and item.get("slot_id")
-    }
+    ]
+
+
+def symptom_slot_ids() -> set[str]:
+    """IR 계층에서 사용할 수 있는 전체 증상 slot_ref 집합입니다."""
+    pack = get_domain_pack()
+    ids = set(llm_symptom_slot_ids())
     ids.update(str(item) for item in (pack.get("ir_slot_to_canonical_name") or {}).keys())
     ids.add("other")
     return ids

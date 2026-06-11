@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createIntakeSession, getDoctorQueue, getIntakeSession, processTranscript } from '../../services/api.js'
 import { QUESTIONS } from '../../config/questions.js'
+import { questionTextForBackend } from '../../config/questionText.js'
 import logoUrl from '../../assets/munjin-logo.svg'
 import ReceptionForm from './ReceptionForm.jsx'
 import ReceptionManualInput from './ReceptionManualInput.jsx'
@@ -148,15 +149,6 @@ export default function ReceptionView() {
       />
     </div>
   )
-}
-
-function questionTextForBackend(question) {
-  if (!question) return ''
-  return [question.badge, question.title, question.sub]
-    .filter(Boolean)
-    .join(' ')
-    .replace(/\s+/g, ' ')
-    .trim()
 }
 
 function makeManualTextState(session) {
