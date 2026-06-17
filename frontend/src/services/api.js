@@ -17,6 +17,10 @@ export {
 } from './api/transcripts.js'
 
 export {
+  getQuestionSet,
+} from './api/questionSets.js'
+
+export {
   getOnePager,
   rerunOnePagerReview,
   submitDoctorResponse,

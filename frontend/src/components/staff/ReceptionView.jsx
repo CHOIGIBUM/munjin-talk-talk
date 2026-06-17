@@ -2,11 +2,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createIntakeSession, getDoctorQueue, getIntakeSession, processTranscript } from '../../services/api.js'
 import { QUESTIONS } from '../../config/questions.js'
+import { questionTextForBackend } from '../../config/questionText.js'
 import logoUrl from '../../assets/munjin-logo.svg'
 import ReceptionForm from './ReceptionForm.jsx'
 import ReceptionManualInput from './ReceptionManualInput.jsx'
 import ReceptionSessionList from './ReceptionSessionList.jsx'
-import { INITIAL_RECEPTION_FORM } from './receptionUtils.js'
+import { formatBirthDate, getBirthDateError, INITIAL_RECEPTION_FORM } from './receptionUtils.js'
 import './ReceptionView.css'
 
 // 접수처 화면의 controller 역할만 담당합니다.
@@ -21,6 +22,7 @@ export default function ReceptionView() {
   const [manualOriginalTexts, setManualOriginalTexts] = useState({})
   const [manualStatus, setManualStatus] = useState('')
   const [manualSubmitting, setManualSubmitting] = useState(false)
+  const [formError, setFormError] = useState('')
 
   const loadSessions = useCallback(async () => {
     try {
@@ -43,14 +45,29 @@ export default function ReceptionView() {
   )
 
   const updateField = (key, value) => {
-    setForm((prev) => ({ ...prev, [key]: value }))
+    setForm((prev) => {
+      const nextValue = key === 'birthDate' ? formatBirthDate(value, prev.birthDate) : value
+      return { ...prev, [key]: nextValue }
+    })
+    if (key === 'birthDate') setFormError('')
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    const next = await createIntakeSession(form)
-    await loadSessions()
-    setCreated(next)
+    const birthError = getBirthDateError(form.birthDate)
+    if (birthError) {
+      setFormError(birthError)
+      return
+    }
+    setFormError('')
+    try {
+      const next = await createIntakeSession(form)
+      await loadSessions()
+      setCreated(next)
+    } catch (error) {
+      console.error('create session failed:', error)
+      setFormError('문진 세션을 생성하지 못했습니다. 네트워크와 백엔드 상태를 확인해 주세요.')
+    }
   }
 
   const openManualInput = async (session) => {
@@ -86,6 +103,8 @@ export default function ReceptionView() {
           sessionId: manualSession.sessionId,
           questionId: question.id,
           questionType: question.question_type,
+          questionText: questionTextForBackend(question),
+          questionSetId: manualSession.questionSetId || 'default',
           visitType: manualSession.visitType,
           transcript,
         })
@@ -132,6 +151,7 @@ export default function ReceptionView() {
           updateField={updateField}
           onSubmit={handleSubmit}
           onOpenTablet={(sessionId) => navigate(`/patient/${sessionId}`)}
+          submitError={formError}
         />
         <ReceptionSessionList sessions={sessions} onOpenManualInput={openManualInput} />
       </div>

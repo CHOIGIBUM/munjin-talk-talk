@@ -6,12 +6,15 @@
 """
 
 import re
+import json
+import traceback
 from urllib.parse import unquote_plus
 
 from audio import generate_streaming_transcribe_url
 from guide import get_guide, save_doctor_response
 from onepager import get_onepager_payload, rerun_onepager_review
 from orchestration import process_answer
+from question_sets import public_question_set
 from sessions import create_session, get_session, list_sessions, public_session, save_patient_consent, update_session
 from utils import parse_body, response
 
@@ -28,7 +31,22 @@ def handler(event, context):
     try:
         return route(method, path, event)
     except Exception as exc:
-        return response(500, {"error": "internal_error", "message": str(exc)})
+        print(json.dumps({
+            "level": "error",
+            "error": "unhandled_exception",
+            "path": path,
+            "method": method,
+            "exception_type": exc.__class__.__name__,
+            "traceback": traceback.format_exc(),
+            "aws_request_id": getattr(context, "aws_request_id", ""),
+        }, ensure_ascii=False))
+        return response(
+            500,
+            {
+                "error": "internal_error",
+                "message": "요청 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+            },
+        )
 
 
 def route(method, path, event):
@@ -69,6 +87,13 @@ def route(method, path, event):
     if method == "POST" and path == "/process-answer":
         payload, err = process_answer(body)
         return err or response(200, payload)
+
+    match = re.fullmatch(r"/question-sets/([^/]+)", path)
+    if method == "GET" and match:
+        question_set = public_question_set(unquote_plus(match.group(1)))
+        if not question_set:
+            return response(404, {"error": "question_set_not_found"})
+        return response(200, question_set)
 
     if method == "GET" and path == "/doctor/queue":
         return response(200, {"sessions": list_sessions()})

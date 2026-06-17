@@ -21,6 +21,7 @@ export function normalizeSession(session) {
     sessionId: session.sessionId || session.session_id,
     queueNumber: Number(session.queueNumber || session.queue_number || 0),
     visitType: session.visitType || session.visit_type || 'initial',
+    questionSetId: session.questionSetId || session.question_set_id || 'default',
     patient: {
       ...patient,
       fullName: patient.fullName || patient.full_name || '',

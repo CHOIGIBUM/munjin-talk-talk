@@ -13,10 +13,11 @@ from clinical_state import (
     ACTIVE_SYMPTOM_SPAN_TYPES,
     NON_ACTIVE_SYMPTOM_SPAN_TYPES,
 )
-from schemas.extraction import SymptomSlotRef, validate_extraction_payload
+from domain_config import llm_symptom_slot_ids
+from schemas.extraction import validate_extraction_payload
 
 
-SYMPTOM_SLOT_REFS = set(SymptomSlotRef.__args__)
+SYMPTOM_SLOT_REFS = set(llm_symptom_slot_ids()) | {"other"}
 SYMPTOM_QUESTION_TYPES = {"chief_complaint", "progress", "new_symptoms"}
 NON_SYMPTOM_SPAN_TYPES = {"medication", "medication_denial", "adherence_gap", "context"}
 PATIENT_QUESTION_TYPES = {"patient_questions", "unresolved_questions"}

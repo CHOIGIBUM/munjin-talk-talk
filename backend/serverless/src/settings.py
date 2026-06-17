@@ -17,6 +17,8 @@ REGION = os.environ.get("AWS_REGION", "ap-northeast-2")
 TABLE_NAME = os.environ.get("SESSIONS_TABLE", "MunjinSessions")
 ARTIFACTS_BUCKET = os.environ.get("ARTIFACTS_BUCKET", "")
 CUSTOM_VOCABULARY = os.environ.get("CUSTOM_VOCABULARY", "")
+DOMAIN_PACK = os.environ.get("DOMAIN_PACK", "respiratory")
+QUESTION_SET = os.environ.get("QUESTION_SET", "default")
 
 # Bedrock 모델 라우팅입니다. 난도가 높은 의미 추출/검토는 Pro 계열,
 # 환자 안내문처럼 상대적으로 가벼운 변환은 Lite 계열을 기본값으로 둡니다.

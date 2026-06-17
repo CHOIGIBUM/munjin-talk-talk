@@ -10,6 +10,7 @@ export async function createIntakeSession(form) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       visit_type: form.visitType,
+      question_set_id: form.questionSetId || 'default',
       patient: {
         full_name: form.fullName,
         birth_date: form.birthDate,

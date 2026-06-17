@@ -48,6 +48,7 @@ export default function PatientKioskView() {
       sessionId={session.sessionId}
       patient={session.patient}
       queueNumber={session.queueNumber}
+      questionSetId={session.questionSetId}
       initialVisitType={session.visitType}
       frameVariant="device"
       skipVisitTypeWhenPreset={false}

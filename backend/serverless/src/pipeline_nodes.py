@@ -21,6 +21,7 @@ from pipeline_trace import (
     response_errors,
     trace_update,
 )
+from question_sets import prompt_question_text
 from rag_context import retrieve_intake_rag_context
 from retrieval import match_slots
 from settings import EXTRACTION_RETRY_ATTEMPTS, MAX_LLM_TOKENS
@@ -33,13 +34,19 @@ def input_transcript_node(state: AnswerPipelineState) -> dict[str, Any]:
     session_id = body.get("session_id") or body.get("sessionId")
     question_id = body.get("question_id") or body.get("questionId")
     question_type = body.get("question_type") or body.get("questionType")
+    question_set_id = (body.get("question_set_id") or body.get("questionSetId") or "").strip()
     visit_type = normalize_visit_type(body.get("visit_type") or body.get("visitType"))
+    server_question_text = prompt_question_text(visit_type, question_id, question_set_id or None)
+    client_question_text = (body.get("question_text") or body.get("questionText") or "").strip()
+    question_text = server_question_text or client_question_text
     transcript = (body.get("transcript") or "").strip()
 
     update: dict[str, Any] = {
         "session_id": session_id,
         "question_id": question_id,
         "question_type": question_type,
+        "question_set_id": question_set_id or "default",
+        "question_text": question_text[:300],
         "visit_type": visit_type,
         "transcript": transcript,
     }
@@ -60,6 +67,8 @@ def input_transcript_node(state: AnswerPipelineState) -> dict[str, Any]:
             {
                 "question_id": question_id,
                 "question_type": question_type,
+                "question_set_id": question_set_id or "default",
+                "question_text_chars": len(question_text),
                 "visit_type": visit_type,
                 "transcript_chars": len(transcript),
             },
@@ -127,6 +136,8 @@ def semantic_extraction_node(state: AnswerPipelineState) -> dict[str, Any]:
             transcript,
             repair_note=state.get("repair_note") or "",
             rag_context_note=rag_context.get("prompt_note") or "",
+            question_text_override=state.get("question_text") or "",
+            question_set_id=state.get("question_set_id") or "",
         )
         obj, raw_text, chain_meta = call_bedrock_json_with_meta(prompt, model_id, MAX_LLM_TOKENS)
     except Exception as exc:
@@ -136,12 +147,15 @@ def semantic_extraction_node(state: AnswerPipelineState) -> dict[str, Any]:
             "transcript": transcript,
             "method": "bedrock_error",
             "validator_passed": False,
-            "error": str(exc),
+            "error": "Bedrock extraction failed before schema validation.",
             "llm_meta": {
                 "model_id": model_id,
                 "attempts": attempt,
                 "retry_loop": "langgraph_schema_quote_repair",
-                "langchain": {"chain": "langchain_core_prompt_bedrock_json", "error": str(exc)},
+                "langchain": {
+                    "chain": "langchain_core_prompt_bedrock_json",
+                    "error_type": exc.__class__.__name__,
+                },
             },
         }
         update = {

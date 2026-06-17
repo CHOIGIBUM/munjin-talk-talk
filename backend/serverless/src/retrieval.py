@@ -9,6 +9,7 @@ from decimal import Decimal
 
 from clinical_state import is_non_active_symptom_state
 from clinical_terms import (
+    ALERT_SLOT_IDS,
     IR_RED_FLAG_NAMES,
     SYMPTOM_RULES,
     is_symptom_like_span,
@@ -23,6 +24,7 @@ from settings import (
     HYBRID_TOP_K,
     HYBRID_VECTOR_WEIGHT,
 )
+from domain_config import excluded_ir_symptom_names
 from retrieval_documents import get_ir_index, get_symptom_name_by_id, preferred_canonical_name
 from retrieval_embeddings import embed_text, get_doc_embeddings
 from retrieval_scoring import cosine, direct_label_score, minmax_norm
@@ -30,6 +32,8 @@ from utils import (
     normalize_text,
 )
 
+
+EXCLUDED_IR_SYMPTOM_NAMES = excluded_ir_symptom_names()
 
 
 def retrieve_symptom_docs(source_quote, normalized_text, span_name="", preferred_slot_id=""):
@@ -48,7 +52,9 @@ def retrieve_symptom_docs(source_quote, normalized_text, span_name="", preferred
     try:
         q_emb = embed_text(query)
     except Exception as exc:
-        vector_error = str(exc)
+        # 운영 trace에는 원문 예외 메시지를 남기지 않는다.
+        # AWS/라이브러리 예외에는 요청 본문 일부가 섞일 수 있어 타입만 보존한다.
+        vector_error = f"embedding_exception:{exc.__class__.__name__}"
 
     doc_embeddings = get_doc_embeddings(docs) if q_emb is not None else {}
     if q_emb is not None and doc_embeddings:
@@ -73,7 +79,8 @@ def retrieve_symptom_docs(source_quote, normalized_text, span_name="", preferred
                 emb = embed_text(docs[idx].get("embedding_text", ""))
                 vector_raw[idx] = max(0.0, cosine(q_emb, emb))
             except Exception as exc:
-                vector_error = str(exc)
+                # 재시도 실패도 같은 정책으로 예외 타입만 남긴다.
+                vector_error = f"embedding_retry_exception:{exc.__class__.__name__}"
         candidate_vectors = [vector_raw[idx] for idx in candidate_ids]
         norm_lookup = dict(zip(candidate_ids, minmax_norm(candidate_vectors)))
         vector_norm = [norm_lookup.get(idx, 0.0) for idx in range(len(docs))]
@@ -82,6 +89,9 @@ def retrieve_symptom_docs(source_quote, normalized_text, span_name="", preferred
     intersection_ids = bm25_top & (vector_top or candidate_ids)
     for idx in candidate_ids:
         doc = docs[idx]
+        if doc["display_name"] in EXCLUDED_IR_SYMPTOM_NAMES:
+            # 인덱스/embedding hash는 유지하고, 운영 후보 채택에서만 제외합니다.
+            continue
         label = direct_label_score(query, doc["display_name"])
         preferred_hit = doc["display_name"] == preferred_name
         if preferred_hit:
@@ -181,7 +191,7 @@ def match_slots(body):
         name = top.get("display_text") or span.get("name") or slot_to_name(top.get("slot_id"))
         alert = bool(
             span.get("alert")
-            or top.get("slot_id") in ("hemoptysis", "dyspnea", "chest_pain")
+            or top.get("slot_id") in ALERT_SLOT_IDS
             or name in IR_RED_FLAG_NAMES
         )
         matched.append({

@@ -40,7 +40,6 @@ export async function openTranscribeStream({
   socket.binaryType = 'arraybuffer'
 
   const source = audioContext.createMediaStreamSource(stream)
-  const processor = audioContext.createScriptProcessor(4096, 1, 1)
   const silentGain = audioContext.createGain()
   // 완전한 0 gain은 일부 브라우저에서 오디오 그래프가 쉬어버릴 수 있어
   // 들리지 않는 수준의 아주 작은 gain으로 그래프를 계속 당겨옵니다.
@@ -105,26 +104,22 @@ export async function openTranscribeStream({
     if (!stopped) onStatus?.('stopped')
   }
 
-  processor.onaudioprocess = (event) => {
-    if (!started || stopped || socket.readyState !== WebSocket.OPEN) return
-    if (audioContext.state === 'suspended') {
-      resumeAudioContext(audioContext)
-      return
-    }
-    const input = event.inputBuffer.getChannelData(0)
-    onAudioActivity?.({
-      rms: calculateRms(input),
-      timestamp: Date.now(),
-    })
-    const chunk = floatToPcm16(input)
-    socket.send(encodeAudioEvent(chunk))
-    framesSent += 1
-    bytesSent += chunk.byteLength
-  }
+  const audioPipeline = await createAudioCapturePipeline({
+    audioContext,
+    source,
+    silentGain,
+    onChunk({ pcm, rms, timestamp }) {
+      if (!started || stopped || socket.readyState !== WebSocket.OPEN) return
+      onAudioActivity?.({ rms, timestamp })
+      socket.send(encodeAudioEvent(pcm))
+      framesSent += 1
+      bytesSent += pcm.byteLength
+    },
+    onFallbackError(error) {
+      console.warn('audio worklet fallback:', error)
+    },
+  })
 
-  source.connect(processor)
-  processor.connect(silentGain)
-  silentGain.connect(audioContext.destination)
   await resumeAudioContext(audioContext)
   started = true
   onStatus?.('recording')
@@ -143,14 +138,70 @@ export async function openTranscribeStream({
           socket.close()
         }
       } finally {
-        processor.disconnect()
-        source.disconnect()
-        silentGain.disconnect()
+        audioPipeline.disconnect()
         stream.getTracks().forEach((track) => track.stop())
         await audioContext.close()
         onStatus?.('stopped')
       }
       return latestText.trim()
+    },
+  }
+}
+
+async function createAudioCapturePipeline({ audioContext, source, silentGain, onChunk, onFallbackError }) {
+  if (audioContext.audioWorklet && typeof AudioWorkletNode !== 'undefined') {
+    try {
+      await audioContext.audioWorklet.addModule('/audio-worklets/pcm16-processor.js')
+      const workletNode = new AudioWorkletNode(audioContext, 'pcm16-processor')
+      workletNode.port.onmessage = (event) => {
+        const { pcm, rms, timestamp } = event.data || {}
+        if (!pcm) return
+        onChunk({ pcm: new Uint8Array(pcm), rms: Number(rms || 0), timestamp: timestamp || Date.now() })
+      }
+      source.connect(workletNode)
+      workletNode.connect(silentGain)
+      silentGain.connect(audioContext.destination)
+      return {
+        mode: 'audio_worklet',
+        disconnect() {
+          workletNode.port.onmessage = null
+          workletNode.disconnect()
+          source.disconnect()
+          silentGain.disconnect()
+        },
+      }
+    } catch (error) {
+      onFallbackError?.(error)
+    }
+  }
+
+  const processor = audioContext.createScriptProcessor(4096, 1, 1)
+  processor.onaudioprocess = (event) => {
+    if (audioContext.state === 'suspended') {
+      resumeAudioContext(audioContext)
+      return
+    }
+    const input = event.inputBuffer.getChannelData(0)
+    onChunk({
+      pcm: floatToPcm16(input),
+      rms: calculateRms(input),
+      timestamp: Date.now(),
+    })
+  }
+
+  source.connect(processor)
+  processor.connect(silentGain)
+  silentGain.connect(audioContext.destination)
+  return {
+    mode: 'script_processor',
+    disconnect() {
+      try {
+        processor.disconnect()
+        source.disconnect()
+        silentGain.disconnect()
+      } catch {
+        // disconnect는 stop 중 정리 작업이라 실패해도 사용자 흐름을 막지 않습니다.
+      }
     },
   }
 }

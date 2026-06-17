@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
-import { formatPhone } from './receptionUtils.js'
+import { formatBirthDate, formatPhone, getBirthDateError } from './receptionUtils.js'
 
 // 신분 확인과 문진 세션 생성을 담당하는 좌측 폼입니다.
-export default function ReceptionForm({ form, created, updateField, onSubmit, onOpenTablet }) {
+export default function ReceptionForm({ form, created, updateField, onSubmit, onOpenTablet, submitError = '' }) {
+  const birthDateError = form.birthDate ? getBirthDateError(form.birthDate) : ''
+  const canSubmit = !birthDateError
+
   return (
     <section className="rp-panel">
       <div className="rp-panel-title">
@@ -17,7 +20,17 @@ export default function ReceptionForm({ form, created, updateField, onSubmit, on
         </label>
         <label>
           <span>생년월일</span>
-          <input type="date" value={form.birthDate} onChange={(e) => updateField('birthDate', e.target.value)} />
+          <input
+            type="text"
+            inputMode="numeric"
+            autoComplete="bday"
+            maxLength={10}
+            placeholder="YYYY-MM-DD"
+            aria-invalid={Boolean(birthDateError)}
+            value={form.birthDate}
+            onChange={(e) => updateField('birthDate', formatBirthDate(e.target.value, form.birthDate))}
+          />
+          {birthDateError && <small className="rp-field-error">{birthDateError}</small>}
         </label>
         <label>
           <span>성별</span>
@@ -65,7 +78,9 @@ export default function ReceptionForm({ form, created, updateField, onSubmit, on
           </button>
         </div>
 
-        <button className="rp-primary wide" type="submit">문진 세션 생성</button>
+        {submitError && <p className="rp-form-error wide">{submitError}</p>}
+
+        <button className="rp-primary wide" type="submit" disabled={!canSubmit}>문진 세션 생성</button>
       </form>
 
       {created && (

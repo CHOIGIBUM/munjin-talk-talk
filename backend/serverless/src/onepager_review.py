@@ -9,6 +9,7 @@ import hashlib
 import json
 import re
 
+from domain_config import reviewer_domain_rules
 from llm import call_bedrock_json_with_meta
 from schemas.review import validate_review_payload
 from settings import REVIEWER_MODEL_ID, REVIEW_MAX_TOKENS, REVIEW_RETRY_ATTEMPTS
@@ -46,16 +47,16 @@ def apply_bedrock_onepager_review(session, onepager):
                 prompt += (
                     "\n\nPrevious final-review output failed validation: "
                     f"{last_error}. Regenerate grounded JSON only."
-                )
+            )
             obj, raw_text, chain_meta = call_bedrock_json_with_meta(prompt, REVIEWER_MODEL_ID, REVIEW_MAX_TOKENS)
         except Exception as exc:
-            last_error = str(exc)
+            last_error = f"bedrock_exception:{exc.__class__.__name__}"
             continue
 
         # LLM이 만든 checklist JSON도 fixed schema를 통과해야만 다음 근거 검증으로 넘어갑니다.
         validated_obj, schema_errors = validate_review_payload(obj)
         if schema_errors:
-            last_error = f"pydantic_schema_failed: {schema_errors}"
+            last_error = f"pydantic_schema_failed:{len(schema_errors)}_errors"
             continue
 
         reviewed = merge_review_output(onepager, validated_obj, raw_text, chain_meta, attempt)
@@ -104,6 +105,19 @@ def merge_review_output(onepager, obj, raw_text, chain_meta, attempt):
 
 def build_onepager_review_prompt(session, onepager):
     """의사가 볼 다음 행동 checklist를 만들도록 Nova Pro에 주는 프롬프트입니다."""
+    domain_rules = reviewer_domain_rules()
+    rule5 = domain_rules.get(
+        "rule5",
+        "5. Do NOT add fever/temperature tasks unless fever, heat, chill, high fever, antipyretic use, or body temperature appears in evidence.",
+    )
+    rule6 = domain_rules.get(
+        "rule6",
+        "6. Do NOT add X-ray, TB, pneumonia, cancer, antibiotics, or lab/test tasks unless safety_flags, patient wording, or clinician agenda explicitly supports them.",
+    )
+    rule11_suffix = domain_rules.get(
+        "rule11_suffix",
+        "Ordinary sore throat, nasal obstruction, cough, or runny nose must not be marked urgent.",
+    )
     payload = {
         "visit_type": visit_label(session.get("visit_type")),
         "patient": session.get("patient", {}),
@@ -146,8 +160,8 @@ Review item rules:
 2. Each review_item must be grounded in at least one of: raw Q1-Q4 text, symptom_slots, clinical_clues, agenda, or safety_flags.
 3. Prefer concrete verbs: "확인", "질문", "안내", "상담", "검토", "평가". Avoid passive summaries.
 4. Avoid vague items such as "원인 규명", "진단 필요", "상태 평가" by themselves. Specify what to check or answer.
-5. Do NOT add fever/temperature tasks unless fever, heat, chill, high fever, antipyretic use, or body temperature appears in evidence.
-6. Do NOT add X-ray, TB, pneumonia, cancer, antibiotics, or lab/test tasks unless safety_flags, patient wording, or clinician agenda explicitly supports them.
+{rule5}
+{rule6}
 7. If Q4 contains patient questions, create one task per distinct question so the doctor can answer it.
    - The task must preserve the same medication/food/test names as the agenda.
    - Never introduce new drug classes, sprays, tests, or disease names that are absent from the evidence.
@@ -158,7 +172,7 @@ Review item rules:
 10. Do NOT revive improved/resolved symptoms as current complaints.
    - If clinical_clues says "호전", "없음", "내렸음", "해소", or the source span was symptom_absent/progress_improved, treat it as follow-up context.
    - Create a task only when the remaining current symptom, safety flag, or patient question requires clarification.
-11. Use "[우선]" only when safety_flags is non-empty or the raw patient wording clearly describes a red flag. Ordinary sore throat, nasal obstruction, cough, or runny nose must not be marked urgent.
+11. Use "[우선]" only when safety_flags is non-empty or the raw patient wording clearly describes a red flag. {rule11_suffix}
 12. Keep review_items short, Korean, and directly actionable. Good style: "콧물/코막힘 지속 정도와 알레르기 병력 확인".
 13. Preserve uncertainty. Do not assert unsupported diagnoses or treatment decisions.
 14. Return JSON only. No markdown, no prose outside JSON.
