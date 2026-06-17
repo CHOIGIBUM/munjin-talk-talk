@@ -12,17 +12,17 @@ const TABLET_QUEUE_STATUSES = new Set([
 ])
 
 const TABLET_STATUS_LABEL = {
-  waiting_tablet: '문진 대기',
-  in_progress: '문진 진행 중',
-  staff_help: '직원 도움 요청',
-  consent_rejected: '수기 문진 필요',
+  waiting_tablet: '준비됨',
+  in_progress: '진행 중',
+  staff_help: '직원 확인 중',
+  consent_rejected: '직원 도움 필요',
 }
 
 function actionLabel(status) {
-  if (status === 'in_progress') return '문진 이어하기'
-  if (status === 'staff_help') return '도움 화면 열기'
-  if (status === 'consent_rejected') return '수기 문진 확인'
-  return '문진 시작'
+  if (status === 'in_progress') return '이어서 하기'
+  if (status === 'staff_help') return '직원 확인 보기'
+  if (status === 'consent_rejected') return '직원 도움 보기'
+  return '문진 시작하기'
 }
 
 // 여러 태블릿이 같은 주소(/patient)에 접속해도 오늘 문진 대기 환자를 고를 수 있는 화면입니다.
@@ -63,8 +63,8 @@ export default function PatientTabletQueueView() {
         <div className="tablet-queue-brand">
           <img src={logoUrl} alt="" aria-hidden="true" />
           <div>
-            <p>환자 태블릿</p>
-            <h1>문진 대기열</h1>
+            <p>문진톡톡</p>
+            <h1>문진 시작하기</h1>
           </div>
         </div>
         <button type="button" onClick={loadSessions}>새로고침</button>
@@ -72,18 +72,18 @@ export default function PatientTabletQueueView() {
 
       <div className="tablet-queue-panel">
         <div className="tablet-queue-title">
-          <h2>문진할 환자를 선택해 주세요</h2>
-          <span>{waitingSessions.length}명 대기</span>
+          <h2>성함을 확인하고 눌러 주세요</h2>
+          <span>{waitingSessions.length}명</span>
         </div>
 
         {error && <p className="tablet-queue-error">{error}</p>}
-        {loading && <p className="tablet-queue-empty">문진 대기열을 불러오는 중입니다.</p>}
+        {loading && <p className="tablet-queue-empty">문진 준비 상태를 확인하고 있습니다.</p>}
 
         {!loading && !waitingSessions.length && (
           <div className="tablet-queue-empty">
-            <strong>현재 문진 대기 환자가 없습니다</strong>
-            <p>접수 데스크에서 문진 세션을 생성하면 이곳에 표시됩니다.</p>
-            <Link to="/staff">접수 화면으로 이동</Link>
+            <strong>아직 준비된 문진이 없습니다</strong>
+            <p>접수 직원이 준비해 드리면 이곳에 성함이 표시됩니다.</p>
+            <p>잠시만 기다려 주세요.</p>
           </div>
         )}
 
