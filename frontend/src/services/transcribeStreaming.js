@@ -219,7 +219,7 @@ async function resumeAudioContext(audioContext) {
 async function getTranscribeStreamUrl({ sessionId, questionId, visitType, sampleRate }) {
   const res = await fetch(`${API_BASE_URL}/transcribe-stream-url`, {
     method: 'POST',
-    headers: apiHeaders({ sessionId, json: true }),
+    headers: await apiHeaders({ sessionId, json: true }),
     body: JSON.stringify({
       session_id: sessionId,
       question_id: questionId,

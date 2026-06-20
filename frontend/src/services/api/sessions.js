@@ -13,7 +13,7 @@ export async function createIntakeSession(form) {
 
   const res = await fetch(`${API_BASE_URL}/sessions`, {
     method: 'POST',
-    headers: apiHeaders({ role: 'staff', json: true }),
+    headers: await apiHeaders({ role: 'staff', json: true }),
     body: JSON.stringify({
       visit_type: form.visitType,
       question_set_id: form.questionSetId || 'default',
@@ -40,7 +40,7 @@ export async function getDoctorQueue({ role = 'doctor' } = {}) {
   ensureApiConfigured()
 
   const res = await fetch(`${API_BASE_URL}/doctor/queue`, {
-    headers: apiHeaders({ role }),
+    headers: await apiHeaders({ role }),
   })
   if (!res.ok) throw new Error('의사 대기열 조회 실패')
   const data = await res.json()
@@ -56,7 +56,7 @@ export async function getIntakeSession(sessionId, { role = '', patientToken = ''
   ensureApiConfigured()
 
   const res = await fetch(`${API_BASE_URL}/sessions/${encodeURIComponent(sessionId)}`, {
-    headers: apiHeaders({ role, sessionId, patientToken }),
+    headers: await apiHeaders({ role, sessionId, patientToken }),
   })
   if (!res.ok) return null
   const session = normalizeSession(await res.json())
@@ -70,7 +70,7 @@ export async function requestStaffHelp(sessionId) {
 
   const res = await fetch(`${API_BASE_URL}/sessions/${encodeURIComponent(sessionId)}/staff-help`, {
     method: 'POST',
-    headers: apiHeaders({ sessionId }),
+    headers: await apiHeaders({ sessionId }),
   })
   if (!res.ok) return null
   return normalizeSession(await res.json())
@@ -81,7 +81,7 @@ export async function recordPatientConsent(sessionId, consent) {
 
   const res = await fetch(`${API_BASE_URL}/sessions/${encodeURIComponent(sessionId)}/consent`, {
     method: 'POST',
-    headers: apiHeaders({ sessionId, json: true }),
+    headers: await apiHeaders({ sessionId, json: true }),
     body: JSON.stringify(consent),
   })
   if (!res.ok) throw new Error('개인정보 동의 이력 저장 실패')

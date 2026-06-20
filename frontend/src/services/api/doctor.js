@@ -6,7 +6,7 @@ export async function getOnePager(sessionId, { role = 'doctor' } = {}) {
   ensureApiConfigured()
 
   const res = await fetch(`${API_BASE_URL}/onepager/${sessionId}`, {
-    headers: apiHeaders({ role }),
+    headers: await apiHeaders({ role }),
   })
   if (!res.ok) return null
   return res.json()
@@ -19,7 +19,7 @@ export async function rerunOnePagerReview(sessionId) {
 
   const res = await fetch(`${API_BASE_URL}/onepager/${sessionId}/review`, {
     method: 'POST',
-    headers: apiHeaders({ role: 'doctor', json: true }),
+    headers: await apiHeaders({ role: 'doctor', json: true }),
   })
   if (!res.ok) throw new Error('원페이퍼 AI 재검토 실패')
   return res.json()
@@ -36,7 +36,7 @@ export async function submitDoctorResponse({
 
   const res = await fetch(`${API_BASE_URL}/doctor-response`, {
     method: 'POST',
-    headers: apiHeaders({ role: 'doctor', json: true }),
+    headers: await apiHeaders({ role: 'doctor', json: true }),
     body: JSON.stringify({
       session_id: sessionId,
       reviewer_id: reviewerId || 'unknown',
@@ -56,7 +56,7 @@ export async function getPatientGuide(sessionId, { role = 'doctor', patientToken
 
   const token = patientToken || getPatientToken(sessionId)
   const res = await fetch(`${API_BASE_URL}/guide/${sessionId}`, {
-    headers: apiHeaders({ role: token ? '' : role, sessionId, patientToken: token }),
+    headers: await apiHeaders({ role: token ? '' : role, sessionId, patientToken: token }),
   })
   if (!res.ok) return null
   return res.json()

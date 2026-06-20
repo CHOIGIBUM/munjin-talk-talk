@@ -1,11 +1,15 @@
 // API 공통 설정과 인증 헤더 조립을 담당합니다.
-// 직원/의료진 접근 코드는 프론트 빌드에 박지 않고, 브라우저 세션 탭 안에만 보관합니다.
+// 직원/의료진은 접근 코드를 직접 API에 반복 전송하지 않고,
+// 백엔드가 발급한 짧은 시간 유효 세션 토큰만 Authorization 헤더에 싣습니다.
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
-const ROLE_TOKEN_STORAGE = {
-  staff: 'munjin:staff-access-token',
-  doctor: 'munjin:doctor-access-token',
+const ROLE_SESSION_STORAGE = {
+  staff: 'munjin:staff-role-session',
+  doctor: 'munjin:doctor-role-session',
 }
+
+let authPromptHandler = null
+const pendingAuthRequests = []
 
 export function isRemoteApiEnabled() {
   return Boolean(API_BASE_URL)
@@ -14,6 +18,15 @@ export function isRemoteApiEnabled() {
 export function ensureApiConfigured() {
   if (!API_BASE_URL) {
     throw new Error('API endpoint is not configured.')
+  }
+}
+
+export function setAuthPromptHandler(handler) {
+  authPromptHandler = handler
+  if (!authPromptHandler) return
+  while (pendingAuthRequests.length) {
+    const { role, resolve, reject } = pendingAuthRequests.shift()
+    authPromptHandler({ role }).then(resolve).catch(reject)
   }
 }
 
@@ -72,26 +85,81 @@ export function sessionUrl(path, patientToken = '') {
   return `${path}${joiner}pt=${encodeURIComponent(patientToken)}`
 }
 
-function roleToken(role) {
-  if (!role) return ''
-  const key = ROLE_TOKEN_STORAGE[role]
-  if (!key) return ''
-
-  const cached = window.sessionStorage.getItem(key)
-  if (cached) return cached
-
-  const label = role === 'doctor' ? '의료진 접근 코드' : '직원 접근 코드'
-  const token = window.prompt(`${label}를 입력해 주세요.`) || ''
-  if (token.trim()) window.sessionStorage.setItem(key, token.trim())
-  return token.trim()
+function roleSessionStorageKey(role) {
+  return ROLE_SESSION_STORAGE[role] || ''
 }
 
-export function apiHeaders({ role = '', sessionId = '', patientToken = '', json = false } = {}) {
+function readRoleSession(role) {
+  const key = roleSessionStorageKey(role)
+  if (!key) return null
+  try {
+    return JSON.parse(window.sessionStorage.getItem(key) || 'null')
+  } catch {
+    window.sessionStorage.removeItem(key)
+    return null
+  }
+}
+
+function writeRoleSession(role, session) {
+  const key = roleSessionStorageKey(role)
+  if (!key || !session?.access_token) return
+  window.sessionStorage.setItem(key, JSON.stringify(session))
+}
+
+export function clearRoleSession(role) {
+  const key = roleSessionStorageKey(role)
+  if (key) window.sessionStorage.removeItem(key)
+}
+
+function isRoleSessionValid(session) {
+  if (!session?.access_token || !session?.expires_at) return false
+  const expiresAt = new Date(session.expires_at).getTime()
+  return Number.isFinite(expiresAt) && expiresAt > Date.now() + 30_000
+}
+
+export async function loginWithAccessCode(role, accessCode) {
+  ensureApiConfigured()
+  const res = await fetch(`${API_BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      role,
+      access_code: accessCode,
+    }),
+  })
+  const payload = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(payload?.message || '접근 코드가 맞지 않습니다.')
+  }
+  writeRoleSession(role, payload)
+  return payload
+}
+
+async function roleSessionToken(role) {
+  if (!role) return ''
+  const cached = readRoleSession(role)
+  if (isRoleSessionValid(cached)) return cached.access_token
+
+  const session = await requestRoleSession(role)
+  if (!isRoleSessionValid(session)) {
+    throw new Error('접속 시간이 만료되었습니다. 다시 로그인해 주세요.')
+  }
+  return session.access_token
+}
+
+function requestRoleSession(role) {
+  if (authPromptHandler) return authPromptHandler({ role })
+  return new Promise((resolve, reject) => {
+    pendingAuthRequests.push({ role, resolve, reject })
+  })
+}
+
+export async function apiHeaders({ role = '', sessionId = '', patientToken = '', json = false } = {}) {
   const headers = {}
   if (json) headers['Content-Type'] = 'application/json'
 
-  const access = roleToken(role)
-  if (access) headers['X-Munjin-Access-Token'] = access
+  const roleToken = await roleSessionToken(role)
+  if (roleToken) headers.Authorization = `Bearer ${roleToken}`
 
   const patient = patientToken || getPatientToken(sessionId)
   if (patient) headers['X-Munjin-Patient-Token'] = patient

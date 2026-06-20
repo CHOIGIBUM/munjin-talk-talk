@@ -30,7 +30,7 @@
 | 저장 전 1차 가명처리 helper 추가 | 완료 | `privacy.py` |
 | SAM `ArtifactsBucketName` 파라미터 추가 | 완료 | `backend/serverless/template.yaml` |
 | API CORS origin 제한 파라미터 추가 | 완료 | `backend/serverless/template.yaml`, `utils.py` |
-| 직원/의료진 접근 코드 검증 | 완료 | `security.py`, `handler.py` |
+| 직원/의료진 접근 코드 로그인과 만료 세션 토큰 검증 | 완료 | `security.py`, `handler.py`, `frontend/src/components/auth/RoleLoginModal.jsx` |
 | 환자 세션별 접근 토큰 발급·검증 | 완료 | `sessions.py`, `security.py`, `frontend/src/services/api/client.js` |
 | S3 artifact 객체 단위 암호화 명시 | 완료 | `artifact_store.py`, `template.yaml` |
 | 환자 화면 질문 문구를 백엔드 extraction에 전달 | 완료 | `frontend/src/services/api/transcripts.js`, `pipeline_nodes.py`, `extraction_prompts.py` |
@@ -233,6 +233,6 @@ Macie는 DynamoDB 내부 필드를 직접 가명처리하는 도구가 아닙니
 | DynamoDB 보존 기간 | `expires_at` 필드 구조 사용 | TTL 속성 이름을 `expires_at`으로 활성화 |
 | CloudWatch 로그 | 코드에서 원문 로그를 남기지 않는 방향으로 정리 | 로그 그룹 보존 기간 3~7일 설정 |
 | Bedrock/Transcribe 데이터 정책 | 코드상 음성 원본 저장 없음 | AWS Organizations AI services opt-out 정책 확인 |
-| API 접근 제어 | 직원/의료진 접근 코드와 환자 세션 토큰 검증 | 상용화 시 Cognito/SSO와 사용자별 감사 로그로 확장 |
+| API 접근 제어 | 직원/의료진 접근 코드 로그인, HMAC 서명 만료 세션 토큰, 환자 세션 토큰 검증 | 상용화 시 Cognito/SSO와 사용자별 감사 로그로 확장 |
 
 따라서 이 문서는 "앞으로 해야 할 목표"만 적은 문서가 아니라, 현재 코드가 어떤 저장 경계를 지키도록 정리되었는지와 AWS 콘솔에서 어떤 운영 설정을 추가해야 하는지를 함께 확인하는 기준 문서입니다.

@@ -141,6 +141,10 @@ safety 분기: schema_quote_validation → safety_guardrail_save → response_pa
 | `AWS_REGION` | | 기본 `ap-northeast-2` |
 | `CUSTOM_VOCABULARY` | | Transcribe custom vocabulary |
 | `ALLOWED_ORIGINS` | | CORS origin (SAM `CorsAllowOrigin`) |
+| `STAFF_ACCESS_CODE` / `DOCTOR_ACCESS_CODE` | ✅ | 직원/의료진 로그인 모달에서 입력하는 접근 코드 |
+| `STAFF_ACCESS_CODE_SHA256` / `DOCTOR_ACCESS_CODE_SHA256` | | 접근 코드를 평문 대신 SHA-256 해시로 검증할 때 사용 |
+| `AUTH_SIGNING_SECRET` | ✅ | 로그인 성공 후 발급하는 역할 세션 토큰의 HMAC 서명 비밀값 |
+| `AUTH_TOKEN_TTL_MINUTES` | | 직원/의료진 세션 토큰 유효 시간. 기본 240분 |
 | `STRONG_MODEL_ID` / `LIGHT_MODEL_ID` | | Bedrock 강/경 모델. 기본 Nova Pro / Nova Lite |
 | `REVIEWER_MODEL_ID` / `GUIDE_MODEL_ID` | | 원페이퍼 리뷰 / 안내문 모델 (미설정 시 strong/light) |
 | `MAX_LLM_TOKENS` / `REVIEW_MAX_TOKENS` / `GUIDE_MAX_TOKENS` | | 최대 출력 토큰 |

@@ -274,7 +274,7 @@ munjin-talk-talk-mvp/
 
 현재 저장소는 해커톤 시연과 구조 검증을 위한 MVP입니다. 코드에는 1차 접근 제어와 저장 최소화 장치가 들어가 있지만, 실제 의료기관 운영 전에는 AWS 콘솔 정책과 병원 보안 기준을 추가로 맞춰야 합니다.
 
-- [x] 직원/의사 접근 코드 + 환자 세션 토큰 기반 1차 접근 제어
+- [x] 직원/의사 접근 코드 로그인 + 만료 세션 토큰 + 환자 세션 토큰 기반 1차 접근 제어
 - [x] 음성 원본 미저장 Transcribe Streaming, S3 artifact 서버 측 암호화 코드, CORS origin 제한
 - [ ] DynamoDB TTL 콘솔 활성화 · S3 Lifecycle · Block Public Access · KMS key 운영 설정
 - [ ] API Gateway throttling · WAF · CloudWatch 로그 보존/원문 금지 정책

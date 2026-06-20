@@ -212,6 +212,6 @@ sam validate
 
 ## 🔒 보안 주의
 
-현재 MVP 백엔드는 `security.py`에서 직원/의료진 접근 코드와 환자 세션 토큰을 검증합니다. 다만 이는 해커톤 MVP 수준의 1차 접근 제어이므로, 실제 의료기관 운영 전에는 Cognito 또는 병원 SSO, 사용자별 계정, 감사 로그, DynamoDB TTL 콘솔 활성화, S3 Lifecycle/KMS/Macie, CloudWatch Logs 보존, API Gateway throttling, WAF/IP 제한, 환자 동의 절차, 의료정보 처리 기준 검토가 필요합니다.
+현재 MVP 백엔드는 `security.py`에서 직원/의료진 접근 코드 로그인, HMAC 서명 세션 토큰, 환자 세션별 토큰을 검증합니다. 직원/의료진 접근 코드는 `/auth/login`에서만 검증하고, 이후 보호 API는 `Authorization: Bearer <token>`으로 만료 세션 토큰을 확인합니다. 다만 이는 해커톤 MVP 수준의 1차 접근 제어이므로, 실제 의료기관 운영 전에는 Cognito 또는 병원 SSO, 사용자별 계정, 감사 로그, DynamoDB TTL 콘솔 활성화, S3 Lifecycle/KMS/Macie, CloudWatch Logs 보존, API Gateway throttling, WAF/IP 제한, 환자 동의 절차, 의료정보 처리 기준 검토가 필요합니다.
 
 자세한 내용: [serverless README](serverless/README.md) · [데이터 전수조사](../docs/SECURITY_DATA_INVENTORY.md)

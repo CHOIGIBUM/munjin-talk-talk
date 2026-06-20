@@ -53,12 +53,14 @@ ap-northeast-2
 
 백엔드 보안 파라미터:
 
-- `StaffAccessToken`: 직원 접수 화면에서 API 호출 시 입력하는 접근 코드
-- `DoctorAccessToken`: 의료진 화면에서 API 호출 시 입력하는 접근 코드
+- `StaffAccessToken`: 직원이 로그인 모달에 입력하는 접근 코드. 파라미터 이름은 기존 배포 호환을 위해 유지합니다.
+- `DoctorAccessToken`: 의료진이 로그인 모달에 입력하는 접근 코드. 파라미터 이름은 기존 배포 호환을 위해 유지합니다.
+- `AuthSigningSecret`: 로그인 성공 후 발급되는 직원/의료진 세션 토큰의 HMAC 서명 비밀값
+- `AuthTokenTtlMinutes`: 직원/의료진 세션 토큰 유효 시간. 기본값은 240분입니다.
 - `CorsAllowOrigin`: 해당 백엔드를 호출할 Amplify HTTPS origin
 - `S3KmsKeyId`: S3 artifact를 SSE-KMS로 암호화할 때 사용하는 KMS key id 또는 ARN. 비워두면 코드에서 SSE-S3(AES256)를 명시합니다.
 
-접근 코드는 GitHub, README, Amplify 환경 변수에 올리지 않습니다. 배포 담당자가 SAM/CloudFormation 파라미터 또는 Lambda 환경 변수로만 관리합니다.
+접근 코드와 서명 비밀값은 GitHub, README, Amplify 환경 변수에 올리지 않습니다. 배포 담당자가 SAM/CloudFormation 파라미터 또는 Lambda 환경 변수로만 관리합니다. 프론트엔드는 접근 코드를 저장하지 않고, 백엔드가 발급한 만료 세션 토큰만 브라우저 `sessionStorage`에 보관합니다.
 
 ---
 
@@ -239,6 +241,8 @@ Parameter CustomVocabularyName:
 Parameter CorsAllowOrigin: https://<amplify-branch-domain>
 Parameter StaffAccessToken: <staff-access-code>
 Parameter DoctorAccessToken: <doctor-access-code>
+Parameter AuthSigningSecret: <random-signing-secret>
+Parameter AuthTokenTtlMinutes: 240
 Parameter S3KmsKeyId: <empty-or-kms-key-id>
 Confirm changes before deploy: y
 Allow SAM CLI IAM role creation: n
@@ -300,7 +304,7 @@ AMPLIFY_DIFF_DEPLOY=false
 
 test와 main이 서로 다른 백엔드를 바라보게 하려면 브랜치별 환경 변수가 필요합니다. Amplify UI에서 브랜치별 재정의가 불편하면 test용 Amplify 앱을 별도로 만드는 것이 안전합니다.
 
-직원/의료진 접근 코드는 Amplify 환경 변수로 넣지 않습니다. 프론트 빌드 산출물에 secret이 포함되지 않도록, 화면에서 처음 API 호출 시 접근 코드를 입력받고 브라우저 sessionStorage에만 보관합니다.
+직원/의료진 접근 코드와 `AuthSigningSecret`은 Amplify 환경 변수로 넣지 않습니다. 프론트 빌드 산출물에 secret이 포함되지 않도록, 화면에서 처음 내부 API 호출 시 로그인 모달로 접근 코드를 입력받고 `/auth/login`에서 짧은 시간 유효한 세션 토큰을 발급받습니다. 이후 API 요청은 `Authorization: Bearer <token>`만 사용합니다.
 
 ---
 

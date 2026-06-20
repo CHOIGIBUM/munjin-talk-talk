@@ -15,7 +15,7 @@ from guide import get_guide, save_doctor_response
 from onepager import get_onepager_payload, rerun_onepager_review
 from orchestration import process_answer
 from question_sets import public_question_set
-from security import require_patient_session, require_role, role_for_event
+from security import is_auth_configured, issue_role_token, require_patient_session, require_role, role_for_event, verify_access_code
 from sessions import create_session, get_session, list_sessions, public_session, save_patient_consent, update_session
 from utils import parse_body, response, set_request_origin
 
@@ -55,6 +55,27 @@ def handler(event, context):
 def route(method, path, event):
     """문진톡톡 MVP의 공개 API 라우팅 테이블입니다."""
     body = parse_body(event)
+
+    if method == "POST" and path == "/auth/login":
+        role = str(body.get("role") or "").strip()
+        access_code = str(body.get("access_code") or body.get("accessCode") or "").strip()
+        if not is_auth_configured(role):
+            return response(
+                503,
+                {
+                    "error": "auth_not_configured",
+                    "message": "접근 코드 설정이 서버에 준비되지 않았습니다.",
+                },
+            )
+        if not verify_access_code(role, access_code):
+            return response(
+                401,
+                {
+                    "error": "invalid_access_code",
+                    "message": "접근 코드가 맞지 않습니다. 다시 확인해 주세요.",
+                },
+            )
+        return response(200, issue_role_token(role))
 
     if method == "POST" and path == "/sessions":
         auth_error = require_role(event, "staff")

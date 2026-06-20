@@ -17,7 +17,7 @@ export async function processTranscript({
 
   const res = await fetch(`${API_BASE_URL}/process-answer`, {
     method: 'POST',
-    headers: apiHeaders({ role, sessionId, json: true }),
+    headers: await apiHeaders({ role, sessionId, json: true }),
     body: JSON.stringify({
       session_id: sessionId,
       question_id: questionId,

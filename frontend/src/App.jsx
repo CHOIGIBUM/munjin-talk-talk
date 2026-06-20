@@ -6,6 +6,7 @@ import DoctorView from './components/doctor/DoctorView.jsx'
 import DoctorQueueView from './components/doctor/DoctorQueueView.jsx'
 import PatientGuideScreen from './components/patient/PatientGuideScreen.jsx'
 import ReceptionView from './components/staff/ReceptionView.jsx'
+import RoleLoginModal from './components/auth/RoleLoginModal.jsx'
 import { getDoctorQueue } from './services/api.js'
 import { getPatientToken, sessionUrl } from './services/api/client.js'
 
@@ -100,6 +101,7 @@ export default function App() {
           <Route path="/guide/:sessionId" element={<PatientGuideScreen />} />
         </Routes>
       </main>
+      <RoleLoginModal />
     </>
   )
 }
