@@ -270,17 +270,20 @@ munjin-talk-talk-mvp/
 
 ---
 
-## 🧭 상용화 확장 계획
+## 🧭 제출 환경 보안 상태와 상용화 확장 계획
 
-현재 저장소는 해커톤 시연과 구조 검증을 위한 MVP입니다. 코드에는 1차 접근 제어와 저장 최소화 장치가 들어가 있지만, 실제 의료기관 운영 전에는 AWS 콘솔 정책과 병원 보안 기준을 추가로 맞춰야 합니다.
+현재 저장소는 해커톤 시연과 구조 검증을 위한 MVP입니다. 코드에는 1차 접근 제어와 저장 최소화 장치가 들어가 있으며, 제출용 AWS 환경에는 WAF, CloudTrail, GuardDuty, Security Hub, Macie, S3 lifecycle, DynamoDB TTL 같은 운영 보안 설정을 함께 적용했습니다.
+
+다만 실제 의료기관 운영 전에는 병원 SSO/Cognito, 사용자별 감사 로그, 세부 IAM least privilege, 병원 개인정보 처리 기준 검토가 추가로 필요합니다.
 
 - [x] 직원/의사 접근 코드 로그인 + 만료 세션 토큰 + 환자 세션 토큰 기반 1차 접근 제어
 - [x] 음성 원본 미저장 Transcribe Streaming, S3 artifact 서버 측 암호화 코드, CORS origin 제한
-- [ ] DynamoDB TTL 콘솔 활성화 · S3 Lifecycle · Block Public Access · KMS key 운영 설정
-- [ ] API Gateway throttling · WAF · CloudWatch 로그 보존/원문 금지 정책
+- [x] DynamoDB TTL · S3 Lifecycle 3일 삭제 · Block Public Access · Macie 민감정보 탐지
+- [x] API Gateway throttling · Amplify WAF · CloudTrail · GuardDuty · Security Hub · CloudWatch 로그 단기 보존
+- [x] AWS AI Services opt-out 정책 적용
 - [ ] 실제 EMR 연동 설계
 - [ ] **강원 방언 RAG** — 국립국어원/방언 사전 기반 retriever로 확장 (계획)
-- [ ] 환자 동의 문구·개인정보 처리 기준, Bedrock/Transcribe 데이터 처리 정책과 AWS AI services opt-out 정책 검토
+- [ ] 병원 운영 기준에 맞춘 Cognito/SSO, 사용자별 권한, 감사 로그 고도화
 
 ---
 

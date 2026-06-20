@@ -39,7 +39,7 @@ sessions/YYYY-MM-DD/{session_id}/
   consent.json  answers.redacted.json  onepaper.redacted.json
   doctor_review.redacted.json  patient_guide.redacted.json  llm_trace.redacted.json
 ```
-운영 권장: Block Public Access, 기본 암호화/KMS, Lifecycle 3일 삭제, Macie, Lambda role만 `GetObject`/`PutObject`.
+제출 환경 운영 설정: Block Public Access, 기본 암호화, Lifecycle 3일 삭제, Macie, Lambda role 중심 `GetObject`/`PutObject` 권한 제한.
 
 **Bedrock:** Nova Pro(의미 추출·Q4 분리·원페이퍼 리뷰), Nova Lite(가벼운 구조화·안내문 변환), Titan Embeddings(IR vector). **Transcribe:** 음성 미업로드, 브라우저가 presigned WebSocket으로 직접 스트리밍.
 
@@ -170,9 +170,9 @@ sam deploy --guided
 권장 입력 예시:
 
 ```text
-Stack Name: munjin-mvp-backend-test
+Stack Name: munjin-mvp-backend
 AWS Region: ap-northeast-2
-SessionsTableName: MunjinSessionsTest
+SessionsTableName: MunjinSessions
 ArtifactsBucketName: <s3-artifact-bucket-name>
 LambdaRoleArn: <lambda-role-arn>
 CorsAllowOrigin: https://<amplify-branch-domain>

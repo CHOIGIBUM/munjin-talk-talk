@@ -103,10 +103,10 @@ sessions/YYYY-MM-DD/{session_id}/
 
 ## 4. DynamoDB table
 
-권장 table name:
+제출용 table name:
 
 ```text
-MunjinSessionsTest
+MunjinSessions
 ```
 
 Primary key:
@@ -232,9 +232,9 @@ sam deploy --guided
 입력 예시:
 
 ```text
-Stack Name: munjin-mvp-backend-test
+Stack Name: munjin-mvp-backend
 AWS Region: ap-northeast-2
-Parameter SessionsTableName: MunjinSessionsTest
+Parameter SessionsTableName: MunjinSessions
 Parameter ArtifactsBucketName: <s3-artifact-bucket-name>
 Parameter LambdaRoleArn: <lambda-role-arn>
 Parameter CustomVocabularyName:
@@ -257,9 +257,7 @@ ApiEndpoint = https://<api-id>.execute-api.ap-northeast-2.amazonaws.com
 
 이 값을 Amplify 환경 변수 `VITE_API_BASE_URL`에 넣습니다.
 
-`CorsAllowOrigin`은 해당 백엔드를 호출할 프론트엔드 HTTPS origin입니다. 예를 들어 test 브랜치 Amplify URL이
-`https://<test-branch>.<amplify-app-id>.amplifyapp.com`이면 backend test stack에도 같은 값을 넣습니다. 개발 중에는 `*`로 둘 수 있지만,
-공개 시연 또는 제출용 환경에서는 Amplify branch domain으로 좁히는 것을 권장합니다.
+`CorsAllowOrigin`은 해당 백엔드를 호출할 프론트엔드 HTTPS origin입니다. 제출용 운영은 Amplify `main` 브랜치 기본 도메인을 넣습니다. 개발 중에는 `*`로 둘 수 있지만, 공개 시연 또는 제출용 환경에서는 실제 Amplify domain으로 좁히는 것을 권장합니다.
 
 주의:
 
@@ -276,7 +274,7 @@ Amplify Console에서 앱을 생성합니다.
 
 ```text
 Repository: CHOIGIBUM/munjin-talk-talk-mvp
-Branch: test 또는 main
+Branch: main
 ```
 
 ### Monorepo 설정
@@ -302,7 +300,7 @@ AMPLIFY_MONOREPO_APP_ROOT=frontend
 AMPLIFY_DIFF_DEPLOY=false
 ```
 
-test와 main이 서로 다른 백엔드를 바라보게 하려면 브랜치별 환경 변수가 필요합니다. Amplify UI에서 브랜치별 재정의가 불편하면 test용 Amplify 앱을 별도로 만드는 것이 안전합니다.
+제출용 Amplify 앱은 `main` 브랜치 하나만 운영합니다. 기능 실험은 Git 브랜치에서 진행하되, Amplify 배포와 AWS 리소스는 `main` 기준으로 단일화해 DynamoDB/S3/API endpoint 혼선을 줄입니다.
 
 직원/의료진 접근 코드와 `AuthSigningSecret`은 Amplify 환경 변수로 넣지 않습니다. 프론트 빌드 산출물에 secret이 포함되지 않도록, 화면에서 처음 내부 API 호출 시 로그인 모달로 접근 코드를 입력받고 `/auth/login`에서 짧은 시간 유효한 세션 토큰을 발급받습니다. 이후 API 요청은 `Authorization: Bearer <token>`만 사용합니다.
 
@@ -447,10 +445,10 @@ MVP 테스트에서 큰 비용을 만들 수 있는 항목:
 
 ## 14. GitHub 반영 기준
 
-배포 브랜치:
+브랜치 운영:
 
-- `main`: 안정 배포 또는 발표용
-- `test`: 기능 검증과 실험용
+- `main`: 제출·시연용 안정 배포 브랜치
+- 기능 검증 브랜치: 로컬 또는 GitHub 작업용으로만 사용하고, Amplify와 AWS 리소스는 별도로 늘리지 않는 것을 기본 원칙으로 합니다.
 
 커밋 전 확인:
 
