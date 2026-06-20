@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import time
 import uuid
+import secrets
 from typing import Any
 
 from artifact_store import artifact_meta, load_answers, put_json, CONSENT_FILE
@@ -24,6 +25,15 @@ QUEUE_COUNTER_SESSION_ID = "__meta_queue_counter__"
 def make_session_id() -> str:
     """새 문진 세션의 고유 ID를 만듭니다."""
     return f"s_{int(time.time())}_{uuid.uuid4().hex[:8]}"
+
+
+def make_patient_access() -> dict[str, Any]:
+    """환자 태블릿에서 자기 세션에만 접근하기 위한 난수 토큰을 발급합니다."""
+    return {
+        "token": secrets.token_urlsafe(24),
+        "issued_at": now_iso(),
+        "scope": "patient_session",
+    }
 
 
 def get_session(session_id: str | None) -> dict[str, Any] | None:
@@ -136,6 +146,7 @@ def create_session(body: dict[str, Any]) -> dict[str, Any]:
         "question_set_id": question_set_id,
         "risk": "none",
         "patient": patient,
+        "patient_access": make_patient_access(),
         "artifact": artifact_meta(session_id, created_at),
         "question_status": {},
         "onepager_ready": False,
@@ -173,7 +184,11 @@ def save_patient_consent(session_id: str, body: dict[str, Any]) -> dict[str, Any
     return update_session(session_id, updates)
 
 
-def public_session(session: dict[str, Any], include_artifacts: bool = False) -> dict[str, Any]:
+def public_session(
+    session: dict[str, Any],
+    include_artifacts: bool = False,
+    include_patient_token: bool = False,
+) -> dict[str, Any]:
     """프론트엔드가 쓰는 세션 응답을 최소 필드 중심으로 반환합니다.
 
     대기열 목록에서는 artifact를 포함하지 않습니다. 직원 직접 입력처럼 세션
@@ -211,10 +226,15 @@ def public_session(session: dict[str, Any], include_artifacts: bool = False) -> 
     }
     if include_artifacts:
         payload["responses"] = load_answers(session)
+    if include_patient_token:
+        token = (session.get("patient_access") or {}).get("token") or session.get("patient_token")
+        if token:
+            payload["patientToken"] = token
+            payload["patient_token"] = token
     return payload
 
 
-def list_sessions() -> list[dict[str, Any]]:
+def list_sessions(include_patient_token: bool = False) -> list[dict[str, Any]]:
     """접수처와 의사 대기열에서 사용할 최신 세션 목록을 반환합니다."""
     res = table.scan(Limit=100)
     items = [
@@ -222,4 +242,4 @@ def list_sessions() -> list[dict[str, Any]]:
         if not str(item.get("session_id") or "").startswith("__meta")
     ]
     items.sort(key=lambda x: x.get("created_at", ""), reverse=True)
-    return [public_session(item) for item in items]
+    return [public_session(item, include_patient_token=include_patient_token) for item in items]

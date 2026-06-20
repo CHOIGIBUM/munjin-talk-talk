@@ -1,4 +1,4 @@
-import { API_BASE_URL, ensureApiConfigured } from './client.js'
+import { API_BASE_URL, apiHeaders, ensureApiConfigured } from './client.js'
 
 // 이미 스트리밍으로 확보한 전사 텍스트를 백엔드 orchestration graph에 전달합니다.
 // 백엔드는 Bedrock extraction, schema validation, 증상 IR, 세션 저장,
@@ -11,12 +11,13 @@ export async function processTranscript({
   questionSetId = 'default',
   visitType,
   transcript,
+  role = '',
 }) {
   ensureApiConfigured()
 
   const res = await fetch(`${API_BASE_URL}/process-answer`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: apiHeaders({ role, sessionId, json: true }),
     body: JSON.stringify({
       session_id: sessionId,
       question_id: questionId,

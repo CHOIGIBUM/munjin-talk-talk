@@ -15,8 +15,9 @@ from guide import get_guide, save_doctor_response
 from onepager import get_onepager_payload, rerun_onepager_review
 from orchestration import process_answer
 from question_sets import public_question_set
+from security import require_patient_session, require_role, role_for_event
 from sessions import create_session, get_session, list_sessions, public_session, save_patient_consent, update_session
-from utils import parse_body, response
+from utils import parse_body, response, set_request_origin
 
 
 def handler(event, context):
@@ -24,6 +25,8 @@ def handler(event, context):
     method = event.get("requestContext", {}).get("http", {}).get("method") or event.get("httpMethod", "GET")
     path = event.get("rawPath") or event.get("path") or "/"
     path = path.rstrip("/") or "/"
+    event_headers = event.get("headers") or {}
+    set_request_origin(event_headers.get("origin") or event_headers.get("Origin") or "")
 
     if method == "OPTIONS":
         return response(200, {"ok": True})
@@ -54,37 +57,64 @@ def route(method, path, event):
     body = parse_body(event)
 
     if method == "POST" and path == "/sessions":
+        auth_error = require_role(event, "staff")
+        if auth_error:
+            return auth_error
         session = create_session(body)
-        return response(200, public_session(session))
+        return response(200, public_session(session, include_patient_token=True))
 
     match = re.fullmatch(r"/sessions/([^/]+)", path)
     if method == "GET" and match:
         session = get_session(unquote_plus(match.group(1)))
         if not session:
             return response(404, {"error": "session_not_found"})
-        return response(200, public_session(session, include_artifacts=True))
+        auth_error = require_patient_session(event, session, body, allow_roles=("staff", "doctor"))
+        if auth_error:
+            return auth_error
+        include_token = role_for_event(event) == "staff"
+        return response(200, public_session(session, include_artifacts=True, include_patient_token=include_token))
 
     match = re.fullmatch(r"/sessions/([^/]+)/staff-help", path)
     if method == "POST" and match:
         session_id = unquote_plus(match.group(1))
-        if not get_session(session_id):
+        session = get_session(session_id)
+        if not session:
             return response(404, {"error": "session_not_found"})
+        auth_error = require_patient_session(event, session, body, allow_roles=("staff",))
+        if auth_error:
+            return auth_error
         session = update_session(session_id, {"status": "staff_help"})
         return response(200, public_session(session))
 
     match = re.fullmatch(r"/sessions/([^/]+)/consent", path)
     if method == "POST" and match:
         session_id = unquote_plus(match.group(1))
-        session = save_patient_consent(session_id, body)
+        session = get_session(session_id)
         if not session:
             return response(404, {"error": "session_not_found"})
+        auth_error = require_patient_session(event, session, body, allow_roles=("staff",))
+        if auth_error:
+            return auth_error
+        session = save_patient_consent(session_id, body)
         return response(200, public_session(session))
 
     if method == "POST" and path == "/transcribe-stream-url":
+        session = get_session(body.get("session_id") or body.get("sessionId"))
+        if not session:
+            return response(404, {"error": "session_not_found"})
+        auth_error = require_patient_session(event, session, body, allow_roles=("staff",))
+        if auth_error:
+            return auth_error
         payload, err = generate_streaming_transcribe_url(body)
         return err or response(200, payload)
 
     if method == "POST" and path == "/process-answer":
+        session = get_session(body.get("session_id") or body.get("sessionId"))
+        if not session:
+            return response(404, {"error": "session_not_found"})
+        auth_error = require_patient_session(event, session, body, allow_roles=("staff",))
+        if auth_error:
+            return auth_error
         payload, err = process_answer(body)
         return err or response(200, payload)
 
@@ -96,10 +126,16 @@ def route(method, path, event):
         return response(200, question_set)
 
     if method == "GET" and path == "/doctor/queue":
-        return response(200, {"sessions": list_sessions()})
+        auth_error = require_role(event, "staff", "doctor")
+        if auth_error:
+            return auth_error
+        return response(200, {"sessions": list_sessions(include_patient_token=role_for_event(event) == "staff")})
 
     match = re.fullmatch(r"/onepager/([^/]+)", path)
     if method == "GET" and match:
+        auth_error = require_role(event, "staff", "doctor")
+        if auth_error:
+            return auth_error
         session_id = unquote_plus(match.group(1))
         session = get_session(session_id)
         if not session:
@@ -108,16 +144,29 @@ def route(method, path, event):
 
     match = re.fullmatch(r"/onepager/([^/]+)/review", path)
     if method == "POST" and match:
+        auth_error = require_role(event, "doctor")
+        if auth_error:
+            return auth_error
         payload, err = rerun_onepager_review(unquote_plus(match.group(1)))
         return err or response(200, payload)
 
     if method == "POST" and path == "/doctor-response":
+        auth_error = require_role(event, "doctor")
+        if auth_error:
+            return auth_error
         payload, err = save_doctor_response(body)
         return err or response(200, payload)
 
     match = re.fullmatch(r"/guide/([^/]+)", path)
     if method == "GET" and match:
-        guide = get_guide(unquote_plus(match.group(1)))
+        session_id = unquote_plus(match.group(1))
+        session = get_session(session_id)
+        if not session:
+            return response(404, {"error": "session_not_found"})
+        auth_error = require_patient_session(event, session, body, allow_roles=("staff", "doctor"))
+        if auth_error:
+            return auth_error
+        guide = get_guide(session_id)
         if not guide:
             return response(404, {"error": "session_not_found"})
         return response(200, guide)

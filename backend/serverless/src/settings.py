@@ -19,6 +19,10 @@ ARTIFACTS_BUCKET = os.environ.get("ARTIFACTS_BUCKET", "")
 CUSTOM_VOCABULARY = os.environ.get("CUSTOM_VOCABULARY", "")
 DOMAIN_PACK = os.environ.get("DOMAIN_PACK", "respiratory")
 QUESTION_SET = os.environ.get("QUESTION_SET", "default")
+STAFF_ACCESS_TOKEN = os.environ.get("STAFF_ACCESS_TOKEN", "")
+DOCTOR_ACCESS_TOKEN = os.environ.get("DOCTOR_ACCESS_TOKEN", "")
+S3_SERVER_SIDE_ENCRYPTION = os.environ.get("S3_SERVER_SIDE_ENCRYPTION", "AES256")
+S3_KMS_KEY_ID = os.environ.get("S3_KMS_KEY_ID", "")
 
 # Bedrock 모델 라우팅입니다. 난도가 높은 의미 추출/검토는 Pro 계열,
 # 환자 안내문처럼 상대적으로 가벼운 변환은 Lite 계열을 기본값으로 둡니다.

@@ -7,8 +7,11 @@
 import json
 import os
 import re
+import contextvars
 from datetime import datetime, timezone
 from decimal import Decimal
+
+_REQUEST_ORIGIN = contextvars.ContextVar("request_origin", default="")
 
 def now_iso():
     return datetime.now(timezone.utc).isoformat()
@@ -22,11 +25,20 @@ def response(status, body):
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": cors_allow_origin(),
             "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type,Authorization",
+            "Access-Control-Allow-Headers": "Content-Type,Authorization,X-Munjin-Access-Token,X-Munjin-Patient-Token",
             "Vary": "Origin",
         },
         "body": json.dumps(body, ensure_ascii=False, default=json_default),
     }
+
+
+def set_request_origin(origin):
+    """현재 요청의 Origin을 저장해 CORS 응답에서 허용 여부를 판별합니다."""
+    _REQUEST_ORIGIN.set(str(origin or "").strip())
+
+
+def allowed_origins():
+    return [item.strip() for item in os.environ.get("ALLOWED_ORIGINS", "*").split(",") if item.strip()]
 
 
 def cors_allow_origin():
@@ -36,9 +48,12 @@ def cors_allow_origin():
     배포에서는 SAM parameter `CorsAllowOrigin`을 Amplify HTTPS 도메인으로
     지정해 API 호출 출처를 좁히는 것을 권장합니다.
     """
-    origins = [item.strip() for item in os.environ.get("ALLOWED_ORIGINS", "*").split(",") if item.strip()]
+    origins = allowed_origins()
     if not origins or "*" in origins:
         return "*"
+    request_origin = _REQUEST_ORIGIN.get("")
+    if request_origin in origins:
+        return request_origin
     return origins[0]
 
 

@@ -21,8 +21,22 @@ Parameters:
     Description: Optional Amazon Transcribe custom vocabulary name.
   CorsAllowOrigin:
     Type: String
-    Default: '*'
+    Default: 'https://main.dv5herezqtt1t.amplifyapp.com'
     Description: Frontend HTTPS origin allowed to call the API. Use the Amplify branch domain for production-like tests.
+  StaffAccessToken:
+    Type: String
+    NoEcho: true
+    Default: ''
+    Description: Shared access code for staff-only API calls.
+  DoctorAccessToken:
+    Type: String
+    NoEcho: true
+    Default: ''
+    Description: Shared access code for doctor-only API calls.
+  S3KmsKeyId:
+    Type: String
+    Default: ''
+    Description: Optional KMS key id or ARN for S3 artifact encryption. Empty value uses SSE-S3 AES256.
   DomainPack:
     Type: String
     Default: respiratory
@@ -46,6 +60,10 @@ Globals:
         ARTIFACTS_BUCKET: !Ref ArtifactsBucketName
         CUSTOM_VOCABULARY: !Ref CustomVocabularyName
         ALLOWED_ORIGINS: !Ref CorsAllowOrigin
+        STAFF_ACCESS_TOKEN: !Ref StaffAccessToken
+        DOCTOR_ACCESS_TOKEN: !Ref DoctorAccessToken
+        S3_SERVER_SIDE_ENCRYPTION: AES256
+        S3_KMS_KEY_ID: !Ref S3KmsKeyId
         DOMAIN_PACK: !Ref DomainPack
         QUESTION_SET: !Ref QuestionSet
         STRONG_MODEL_ID: apac.amazon.nova-pro-v1:0
@@ -79,6 +97,8 @@ Resources:
         AllowHeaders:
           - Content-Type
           - Authorization
+          - X-Munjin-Access-Token
+          - X-Munjin-Patient-Token
         AllowMethods:
           - GET
           - POST

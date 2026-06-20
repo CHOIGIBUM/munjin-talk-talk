@@ -8,6 +8,7 @@ import ReceptionForm from './ReceptionForm.jsx'
 import ReceptionManualInput from './ReceptionManualInput.jsx'
 import ReceptionSessionList from './ReceptionSessionList.jsx'
 import { formatBirthDate, getBirthDateError, INITIAL_RECEPTION_FORM } from './receptionUtils.js'
+import { sessionUrl } from '../../services/api/client.js'
 import './ReceptionView.css'
 
 // 접수처 화면의 controller 역할만 담당합니다.
@@ -26,7 +27,7 @@ export default function ReceptionView() {
 
   const loadSessions = useCallback(async () => {
     try {
-      setSessions(await getDoctorQueue())
+      setSessions(await getDoctorQueue({ role: 'staff' }))
     } catch (error) {
       console.error('reception queue refresh failed:', error)
       setSessions([])
@@ -72,7 +73,7 @@ export default function ReceptionView() {
 
   const openManualInput = async (session) => {
     setManualStatus('문진 내용을 불러오는 중입니다.')
-    const detail = await getIntakeSession(session.sessionId)
+    const detail = await getIntakeSession(session.sessionId, { role: 'staff' })
     const nextSession = detail || session
     const nextTexts = makeManualTextState(nextSession)
     setManualSession(nextSession)
@@ -107,10 +108,11 @@ export default function ReceptionView() {
           questionSetId: manualSession.questionSetId || 'default',
           visitType: manualSession.visitType,
           transcript,
+          role: 'staff',
         })
       }
       await loadSessions()
-      const refreshed = await getIntakeSession(manualSession.sessionId)
+      const refreshed = await getIntakeSession(manualSession.sessionId, { role: 'staff' })
       if (refreshed) setManualSession(refreshed)
       setManualOriginalTexts(manualTexts)
       setManualStatus('직원 입력이 저장되었습니다. 원페이퍼에서 결과를 확인할 수 있습니다.')
@@ -150,7 +152,7 @@ export default function ReceptionView() {
           created={created}
           updateField={updateField}
           onSubmit={handleSubmit}
-          onOpenTablet={(sessionId) => navigate(`/patient/${sessionId}`)}
+          onOpenTablet={(sessionId, patientToken) => navigate(sessionUrl(`/patient/${sessionId}`, patientToken))}
           submitError={formError}
         />
         <ReceptionSessionList sessions={sessions} onOpenManualInput={openManualInput} />
