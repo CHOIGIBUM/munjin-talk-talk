@@ -19,6 +19,17 @@ ARTIFACTS_BUCKET = os.environ.get("ARTIFACTS_BUCKET", "")
 CUSTOM_VOCABULARY = os.environ.get("CUSTOM_VOCABULARY", "")
 DOMAIN_PACK = os.environ.get("DOMAIN_PACK", "respiratory")
 QUESTION_SET = os.environ.get("QUESTION_SET", "default")
+# 직원/의료진 로그인 설정입니다.
+# 사람이 입력하는 접근 코드는 *_ACCESS_CODE로 받고, 기존 배포 호환을 위해
+# 과거 이름인 *_ACCESS_TOKEN도 fallback으로 읽습니다.
+STAFF_ACCESS_CODE = os.environ.get("STAFF_ACCESS_CODE") or os.environ.get("STAFF_ACCESS_TOKEN", "")
+DOCTOR_ACCESS_CODE = os.environ.get("DOCTOR_ACCESS_CODE") or os.environ.get("DOCTOR_ACCESS_TOKEN", "")
+STAFF_ACCESS_CODE_SHA256 = os.environ.get("STAFF_ACCESS_CODE_SHA256", "")
+DOCTOR_ACCESS_CODE_SHA256 = os.environ.get("DOCTOR_ACCESS_CODE_SHA256", "")
+AUTH_SIGNING_SECRET = os.environ.get("AUTH_SIGNING_SECRET", "")
+AUTH_TOKEN_TTL_MINUTES = int(os.environ.get("AUTH_TOKEN_TTL_MINUTES", "240"))
+S3_SERVER_SIDE_ENCRYPTION = os.environ.get("S3_SERVER_SIDE_ENCRYPTION", "AES256")
+S3_KMS_KEY_ID = os.environ.get("S3_KMS_KEY_ID", "")
 
 # Bedrock 모델 라우팅입니다. 난도가 높은 의미 추출/검토는 Pro 계열,
 # 환자 안내문처럼 상대적으로 가벼운 변환은 Lite 계열을 기본값으로 둡니다.

@@ -21,8 +21,31 @@ Parameters:
     Description: Optional Amazon Transcribe custom vocabulary name.
   CorsAllowOrigin:
     Type: String
-    Default: '*'
+    Default: 'https://main.dv5herezqtt1t.amplifyapp.com'
     Description: Frontend HTTPS origin allowed to call the API. Use the Amplify branch domain for production-like tests.
+  StaffAccessToken:
+    Type: String
+    NoEcho: true
+    Default: ''
+    Description: Human-entered access code for staff login. Kept as this parameter name for backward-compatible deploy commands.
+  DoctorAccessToken:
+    Type: String
+    NoEcho: true
+    Default: ''
+    Description: Human-entered access code for doctor login. Kept as this parameter name for backward-compatible deploy commands.
+  AuthSigningSecret:
+    Type: String
+    NoEcho: true
+    Default: ''
+    Description: HMAC signing secret for short-lived staff/doctor session tokens.
+  AuthTokenTtlMinutes:
+    Type: Number
+    Default: 240
+    Description: Staff/doctor role session token lifetime in minutes.
+  S3KmsKeyId:
+    Type: String
+    Default: ''
+    Description: Optional KMS key id or ARN for S3 artifact encryption. Empty value uses SSE-S3 AES256.
   DomainPack:
     Type: String
     Default: respiratory
@@ -46,6 +69,12 @@ Globals:
         ARTIFACTS_BUCKET: !Ref ArtifactsBucketName
         CUSTOM_VOCABULARY: !Ref CustomVocabularyName
         ALLOWED_ORIGINS: !Ref CorsAllowOrigin
+        STAFF_ACCESS_CODE: !Ref StaffAccessToken
+        DOCTOR_ACCESS_CODE: !Ref DoctorAccessToken
+        AUTH_SIGNING_SECRET: !Ref AuthSigningSecret
+        AUTH_TOKEN_TTL_MINUTES: !Ref AuthTokenTtlMinutes
+        S3_SERVER_SIDE_ENCRYPTION: AES256
+        S3_KMS_KEY_ID: !Ref S3KmsKeyId
         DOMAIN_PACK: !Ref DomainPack
         QUESTION_SET: !Ref QuestionSet
         STRONG_MODEL_ID: apac.amazon.nova-pro-v1:0
@@ -79,6 +108,8 @@ Resources:
         AllowHeaders:
           - Content-Type
           - Authorization
+          - X-Munjin-Access-Token
+          - X-Munjin-Patient-Token
         AllowMethods:
           - GET
           - POST
@@ -92,6 +123,12 @@ Resources:
       Handler: handler.handler
       Role: !Ref LambdaRoleArn
       Events:
+        AuthLogin:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /auth/login
+            Method: POST
         CreateSession:
           Type: HttpApi
           Properties:

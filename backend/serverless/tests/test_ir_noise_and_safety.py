@@ -7,10 +7,17 @@ import sys
 import types
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 DATA = SRC / "data"
+PRIVATE_IR_FILES = [
+    DATA / "diseases_cleaned.json",
+    DATA / "symptom_index.json",
+    DATA / "symptom_embeddings_amazon.titan-embed-text-v2_0_512.json",
+]
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
@@ -52,7 +59,15 @@ def install_settings_stub():
     sys.modules["settings"] = settings
 
 
+def require_private_ir_data():
+    """공개 저장소에서 제외한 IR 원천 데이터가 없으면 관련 테스트만 건너뜁니다."""
+    missing = [path.name for path in PRIVATE_IR_FILES if not path.exists()]
+    if missing:
+        pytest.skip("비공개 IR 원천 데이터가 없는 환경에서는 IR 데이터 의존 테스트를 건너뜁니다: " + ", ".join(missing))
+
+
 def test_rag_references_exclude_operational_noise_symptoms():
+    require_private_ir_data()
     install_settings_stub()
     from rag_context import retrieve_symptom_references  # noqa: E402
 
@@ -64,6 +79,7 @@ def test_rag_references_exclude_operational_noise_symptoms():
 
 
 def test_excluding_noise_does_not_change_packaged_embedding_docs_hash():
+    require_private_ir_data()
     install_settings_stub()
     from retrieval_documents import get_ir_index  # noqa: E402
     from retrieval_embeddings import docs_hash  # noqa: E402
@@ -105,6 +121,7 @@ def test_safety_flag_rules_cover_six_domain_categories():
 
 
 def test_rag_alias_hint_maps_colloquial_nasal_obstruction():
+    require_private_ir_data()
     install_settings_stub()
     from rag_context import retrieve_intake_rag_context  # noqa: E402
 

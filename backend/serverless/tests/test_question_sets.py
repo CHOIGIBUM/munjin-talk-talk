@@ -46,8 +46,17 @@ def test_question_set_rejects_invalid_question_type():
 
 def install_handler_stubs():
     """handler.py를 API route만 테스트할 수 있게 주변 AWS 모듈을 가짜로 바꿉니다."""
-    for name in ["handler", "audio", "guide", "onepager", "orchestration", "sessions"]:
+    for name in ["handler", "audio", "guide", "onepager", "orchestration", "security", "settings", "sessions"]:
         sys.modules.pop(name, None)
+
+    settings = types.ModuleType("settings")
+    settings.AUTH_SIGNING_SECRET = "unit-test-signing-secret"
+    settings.AUTH_TOKEN_TTL_MINUTES = 240
+    settings.STAFF_ACCESS_CODE = "staff-test"
+    settings.DOCTOR_ACCESS_CODE = "doctor-test"
+    settings.STAFF_ACCESS_CODE_SHA256 = ""
+    settings.DOCTOR_ACCESS_CODE_SHA256 = ""
+    sys.modules["settings"] = settings
 
     audio = types.ModuleType("audio")
     audio.generate_streaming_transcribe_url = lambda _body: ({}, None)

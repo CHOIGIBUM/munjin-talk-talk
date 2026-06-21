@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import logoUrl from '../../assets/munjin-logo.svg'
 import { getDoctorQueue } from '../../services/api.js'
+import { sessionUrl } from '../../services/api/client.js'
 import './PatientKioskView.css'
 
 const TABLET_QUEUE_STATUSES = new Set([
@@ -34,7 +35,7 @@ export default function PatientTabletQueueView() {
 
   const loadSessions = useCallback(async () => {
     try {
-      const next = await getDoctorQueue()
+      const next = await getDoctorQueue({ role: 'staff' })
       setSessions(next)
       setError('')
     } catch (err) {
@@ -101,7 +102,7 @@ export default function PatientTabletQueueView() {
                   {session.visitType === 'followup' ? '재진' : '초진'}
                 </p>
               </div>
-              <Link to={`/patient/${encodeURIComponent(session.sessionId)}`}>
+              <Link to={sessionUrl(`/patient/${encodeURIComponent(session.sessionId)}`, session.patientToken)}>
                 {actionLabel(session.status)}
               </Link>
             </article>

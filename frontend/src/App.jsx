@@ -6,7 +6,9 @@ import DoctorView from './components/doctor/DoctorView.jsx'
 import DoctorQueueView from './components/doctor/DoctorQueueView.jsx'
 import PatientGuideScreen from './components/patient/PatientGuideScreen.jsx'
 import ReceptionView from './components/staff/ReceptionView.jsx'
+import RoleLoginModal from './components/auth/RoleLoginModal.jsx'
 import { getDoctorQueue } from './services/api.js'
+import { getPatientToken, sessionUrl } from './services/api/client.js'
 
 function sessionIdFromPath(path) {
   const match = path.match(/^\/(?:patient|guide)\/([^/]+)/)
@@ -27,9 +29,14 @@ export default function App() {
 
   // 상단 메뉴는 실제 백엔드 대기열을 주기적으로 읽어 가장 자연스러운 세션으로 이동시킵니다.
   useEffect(() => {
+    if (activeSessionId) {
+      setSessions([])
+      return undefined
+    }
     const refresh = async () => {
       try {
-        setSessions(await getDoctorQueue())
+        const role = path.startsWith('/staff') || path === '/' || path === '/patient' ? 'staff' : 'doctor'
+        setSessions(await getDoctorQueue({ role }))
       } catch (error) {
         console.error('queue refresh failed:', error)
         setSessions([])
@@ -38,15 +45,16 @@ export default function App() {
     refresh()
     const timer = setInterval(refresh, 5000)
     return () => clearInterval(timer)
-  }, [])
+  }, [activeSessionId, path])
 
   const navTargets = useMemo(() => {
     if (activeSessionId) {
       const encoded = encodeURIComponent(activeSessionId)
+      const patientToken = getPatientToken(activeSessionId)
       return {
-        patient: `/patient/${encoded}`,
+        patient: sessionUrl(`/patient/${encoded}`, patientToken),
         doctor: `/doctor/${encoded}`,
-        guide: `/guide/${encoded}`,
+        guide: sessionUrl(`/guide/${encoded}`, patientToken),
       }
     }
 
@@ -55,7 +63,7 @@ export default function App() {
     return {
       patient: '/patient',
       doctor: doctor ? `/doctor/${doctor.sessionId}` : null,
-      guide: doctor ? `/guide/${doctor.sessionId}` : null,
+      guide: doctor ? sessionUrl(`/guide/${doctor.sessionId}`, doctor.patientToken) : null,
     }
   }, [activeSessionId, sessions])
 
@@ -93,6 +101,7 @@ export default function App() {
           <Route path="/guide/:sessionId" element={<PatientGuideScreen />} />
         </Routes>
       </main>
+      <RoleLoginModal />
     </>
   )
 }

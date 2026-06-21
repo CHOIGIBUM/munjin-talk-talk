@@ -24,7 +24,7 @@ from artifact_policy import (
     prepare_artifact_payload,
 )
 from privacy import redact_payload
-from settings import ARTIFACTS_BUCKET, s3
+from settings import ARTIFACTS_BUCKET, S3_KMS_KEY_ID, S3_SERVER_SIDE_ENCRYPTION, s3
 from utils import json_default, now_iso
 
 
@@ -85,12 +85,20 @@ def put_json(session: dict[str, Any], filename: str, payload: Any) -> str:
         ensure_ascii=False,
         default=json_default,
     ).encode("utf-8")
-    s3.put_object(
-        Bucket=bucket,
-        Key=key,
-        Body=body,
-        ContentType="application/json; charset=utf-8",
-    )
+    put_args = {
+        "Bucket": bucket,
+        "Key": key,
+        "Body": body,
+        "ContentType": "application/json; charset=utf-8",
+    }
+    # 버킷 기본 암호화가 빠져 있어도 객체 단위 암호화가 적용되도록 명시합니다.
+    # KMS 키가 지정되면 aws:kms, 없으면 SSE-S3(AES256)를 사용합니다.
+    if S3_KMS_KEY_ID:
+        put_args["ServerSideEncryption"] = "aws:kms"
+        put_args["SSEKMSKeyId"] = S3_KMS_KEY_ID
+    elif S3_SERVER_SIDE_ENCRYPTION:
+        put_args["ServerSideEncryption"] = S3_SERVER_SIDE_ENCRYPTION
+    s3.put_object(**put_args)
     return key
 
 

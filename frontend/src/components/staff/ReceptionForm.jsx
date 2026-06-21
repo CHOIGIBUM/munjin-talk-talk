@@ -88,7 +88,7 @@ export default function ReceptionForm({ form, created, updateField, onSubmit, on
           <strong>{created.patient.name} 문진 준비 완료</strong>
           <p>태블릿에서 아래 환자용 URL을 열어 문진을 시작합니다.</p>
           <div className="rp-created-actions">
-            <button onClick={() => onOpenTablet(created.sessionId)}>태블릿 화면 열기</button>
+            <button onClick={() => onOpenTablet(created.sessionId, created.patientToken)}>태블릿 화면 열기</button>
             <Link to={`/doctor/${created.sessionId}`}>원페이퍼 미리보기</Link>
           </div>
         </div>

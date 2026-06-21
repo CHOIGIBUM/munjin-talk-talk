@@ -39,7 +39,7 @@ sessions/YYYY-MM-DD/{session_id}/
   consent.json  answers.redacted.json  onepaper.redacted.json
   doctor_review.redacted.json  patient_guide.redacted.json  llm_trace.redacted.json
 ```
-운영 권장: Block Public Access, 기본 암호화/KMS, Lifecycle 3일 삭제, Macie, Lambda role만 `GetObject`/`PutObject`.
+제출 환경 운영 설정: Block Public Access, 기본 암호화, Lifecycle 3일 삭제, Macie, Lambda role 중심 `GetObject`/`PutObject` 권한 제한.
 
 **Bedrock:** Nova Pro(의미 추출·Q4 분리·원페이퍼 리뷰), Nova Lite(가벼운 구조화·안내문 변환), Titan Embeddings(IR vector). **Transcribe:** 음성 미업로드, 브라우저가 presigned WebSocket으로 직접 스트리밍.
 
@@ -141,6 +141,10 @@ safety 분기: schema_quote_validation → safety_guardrail_save → response_pa
 | `AWS_REGION` | | 기본 `ap-northeast-2` |
 | `CUSTOM_VOCABULARY` | | Transcribe custom vocabulary |
 | `ALLOWED_ORIGINS` | | CORS origin (SAM `CorsAllowOrigin`) |
+| `STAFF_ACCESS_CODE` / `DOCTOR_ACCESS_CODE` | ✅ | 직원/의료진 로그인 모달에서 입력하는 접근 코드 |
+| `STAFF_ACCESS_CODE_SHA256` / `DOCTOR_ACCESS_CODE_SHA256` | | 접근 코드를 평문 대신 SHA-256 해시로 검증할 때 사용 |
+| `AUTH_SIGNING_SECRET` | ✅ | 로그인 성공 후 발급하는 역할 세션 토큰의 HMAC 서명 비밀값 |
+| `AUTH_TOKEN_TTL_MINUTES` | | 직원/의료진 세션 토큰 유효 시간. 기본 240분 |
 | `STRONG_MODEL_ID` / `LIGHT_MODEL_ID` | | Bedrock 강/경 모델. 기본 Nova Pro / Nova Lite |
 | `REVIEWER_MODEL_ID` / `GUIDE_MODEL_ID` | | 원페이퍼 리뷰 / 안내문 모델 (미설정 시 strong/light) |
 | `MAX_LLM_TOKENS` / `REVIEW_MAX_TOKENS` / `GUIDE_MAX_TOKENS` | | 최대 출력 토큰 |
@@ -166,9 +170,9 @@ sam deploy --guided
 권장 입력 예시:
 
 ```text
-Stack Name: munjin-mvp-backend-test
+Stack Name: munjin-mvp-backend
 AWS Region: ap-northeast-2
-SessionsTableName: MunjinSessionsTest
+SessionsTableName: MunjinSessions
 ArtifactsBucketName: <s3-artifact-bucket-name>
 LambdaRoleArn: <lambda-role-arn>
 CorsAllowOrigin: https://<amplify-branch-domain>

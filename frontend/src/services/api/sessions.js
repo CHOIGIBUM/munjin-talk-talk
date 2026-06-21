@@ -1,13 +1,19 @@
-import { API_BASE_URL, ensureApiConfigured, normalizeSession } from './client.js'
+import {
+  API_BASE_URL,
+  apiHeaders,
+  ensureApiConfigured,
+  normalizeSession,
+  rememberPatientToken,
+} from './client.js'
 
 // 접수처에서 환자 기본 정보를 받아 DynamoDB 세션을 생성합니다.
-// 여기서 만든 sessionId가 태블릿, 원페이퍼, 안내문 화면의 공통 키가 됩니다.
+// 응답에는 직원 화면에서만 필요한 환자 태블릿 접근 토큰이 포함됩니다.
 export async function createIntakeSession(form) {
   ensureApiConfigured()
 
   const res = await fetch(`${API_BASE_URL}/sessions`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await apiHeaders({ role: 'staff', json: true }),
     body: JSON.stringify({
       visit_type: form.visitType,
       question_set_id: form.questionSetId || 'default',
@@ -23,37 +29,48 @@ export async function createIntakeSession(form) {
     }),
   })
   if (!res.ok) throw new Error('문진 세션 생성 실패')
-  return normalizeSession(await res.json())
+  const session = normalizeSession(await res.json())
+  rememberPatientToken(session.sessionId, session.patientToken)
+  return session
 }
 
-// 의사 대기열과 접수처의 오늘 접수 목록을 불러옵니다.
-// 운영 환경에서는 백엔드가 DynamoDB의 최신 세션 상태를 반환합니다.
-export async function getDoctorQueue() {
+// 직원/의료진 대기열을 조회합니다.
+// 직원 화면은 환자 태블릿 URL 생성이 필요하므로 환자 토큰을 포함해 받습니다.
+export async function getDoctorQueue({ role = 'doctor' } = {}) {
   ensureApiConfigured()
 
-  const res = await fetch(`${API_BASE_URL}/doctor/queue`)
+  const res = await fetch(`${API_BASE_URL}/doctor/queue`, {
+    headers: await apiHeaders({ role }),
+  })
   if (!res.ok) throw new Error('의사 대기열 조회 실패')
   const data = await res.json()
-  return (data.sessions || []).map(normalizeSession)
+  const sessions = (data.sessions || []).map(normalizeSession)
+  sessions.forEach((session) => rememberPatientToken(session.sessionId, session.patientToken))
+  return sessions
 }
 
-// 특정 sessionId의 전체 세션 상세를 조회합니다.
-// 태블릿 화면 재접속, 직원 직접 입력, 원페이퍼 화면에서 공통으로 사용합니다.
-export async function getIntakeSession(sessionId) {
+// 특정 sessionId의 세션 상세를 조회합니다.
+// 환자 화면에서는 URL/세션 저장소의 환자 토큰, 직원/의료진 화면에서는 역할 접근 코드를 사용합니다.
+export async function getIntakeSession(sessionId, { role = '', patientToken = '' } = {}) {
   if (!sessionId) return null
   ensureApiConfigured()
 
-  const res = await fetch(`${API_BASE_URL}/sessions/${encodeURIComponent(sessionId)}`)
+  const res = await fetch(`${API_BASE_URL}/sessions/${encodeURIComponent(sessionId)}`, {
+    headers: await apiHeaders({ role, sessionId, patientToken }),
+  })
   if (!res.ok) return null
-  return normalizeSession(await res.json())
+  const session = normalizeSession(await res.json())
+  rememberPatientToken(session.sessionId, session.patientToken)
+  return session
 }
 
-// 환자가 태블릿에서 직원 도움을 요청했거나 safety alert로 멈춘 상태를 저장합니다.
+// 환자가 태블릿에서 직원 도움을 요청하거나 안전 플래그로 멈춘 상태를 저장합니다.
 export async function requestStaffHelp(sessionId) {
   ensureApiConfigured()
 
   const res = await fetch(`${API_BASE_URL}/sessions/${encodeURIComponent(sessionId)}/staff-help`, {
     method: 'POST',
+    headers: await apiHeaders({ sessionId }),
   })
   if (!res.ok) return null
   return normalizeSession(await res.json())
@@ -64,7 +81,7 @@ export async function recordPatientConsent(sessionId, consent) {
 
   const res = await fetch(`${API_BASE_URL}/sessions/${encodeURIComponent(sessionId)}/consent`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await apiHeaders({ sessionId, json: true }),
     body: JSON.stringify(consent),
   })
   if (!res.ok) throw new Error('개인정보 동의 이력 저장 실패')

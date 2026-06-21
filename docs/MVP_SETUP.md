@@ -1,6 +1,6 @@
 # 문진톡톡 MVP 실행 및 점검 가이드
 
-이 문서는 개발자와 시연 준비자가 문진톡톡 MVP를 로컬 또는 AWS test 환경에서 실행하고 점검하는 방법을 설명합니다.
+이 문서는 개발자와 시연 준비자가 문진톡톡 MVP를 로컬 또는 AWS 제출 환경에서 실행하고 점검하는 방법을 설명합니다.
 
 문진톡톡은 프론트엔드만으로 완전한 기능을 수행하지 않습니다. 음성 인식, LLM extraction, Hybrid IR, 원페이퍼 생성, 환자 안내문 저장은 AWS 백엔드와 연결되어야 실제로 동작합니다.
 
@@ -11,9 +11,8 @@
 | 모드 | 설명 | 사용 상황 |
 | --- | --- | --- |
 | 프론트 로컬 실행 | `localhost:5173`에서 React 앱 실행 | UI 수정, 화면 확인 |
-| AWS test 연결 | 로컬 프론트가 API Gateway test backend를 호출 | 실제 STT, Bedrock, DynamoDB, S3 artifact 테스트 |
-| Amplify test 배포 | GitHub `test` 브랜치 기준 Amplify 배포 | 팀 공유 테스트 |
-| Amplify main 배포 | GitHub `main` 브랜치 기준 Amplify 배포 | 발표 또는 외부 공유 |
+| AWS 제출 환경 연결 | 로컬 프론트가 API Gateway backend를 호출 | 실제 STT, Bedrock, DynamoDB, S3 artifact 점검 |
+| Amplify main 배포 | GitHub `main` 브랜치 기준 Amplify 배포 | 발표, 심사, 외부 공유 |
 
 ---
 
@@ -112,12 +111,12 @@ sam build
 sam deploy --guided
 ```
 
-test 환경 예시:
+제출 환경 예시:
 
 ```text
-Stack Name: munjin-mvp-backend-test
+Stack Name: munjin-mvp-backend
 AWS Region: ap-northeast-2
-Parameter SessionsTableName: MunjinSessionsTest
+Parameter SessionsTableName: MunjinSessions
 Parameter ArtifactsBucketName: <s3-artifact-bucket-name>
 Parameter LambdaRoleArn: <lambda-role-arn>
 Parameter CustomVocabularyName:
@@ -132,10 +131,10 @@ MunjinApiFunction has no authentication. Is this okay?: y
 
 ## 7. Amplify 브랜치/환경 점검
 
-Amplify에서 `main`, `test`, 별도 스테이징 앱 중 어떤 환경을 사용하더라도 다음 값은 반드시 확인합니다.
+제출용 Amplify 앱은 `main` 브랜치 하나를 기준으로 운영합니다. 다음 값을 반드시 확인합니다.
 
 ```text
-Branch: main 또는 test
+Branch: main
 Monorepo app root: frontend
 Build command: npm run build
 Build output directory: dist
@@ -145,8 +144,7 @@ Environment variable:
 
 주의:
 
-- `main`과 `test`가 다른 백엔드를 바라보려면 브랜치별 환경 변수를 별도로 설정해야 합니다.
-- Amplify UI에서 브랜치별 환경 변수 선택이 어려우면 운영 앱과 검증 앱을 별도로 생성하는 방식이 더 안전합니다.
+- 기능 실험은 Git 브랜치에서 진행하되, Amplify와 AWS 리소스는 `main` 제출 환경으로 단일화하면 DynamoDB/S3/API 혼선을 줄일 수 있습니다.
 
 ---
 

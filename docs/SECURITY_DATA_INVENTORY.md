@@ -30,18 +30,27 @@
 | 저장 전 1차 가명처리 helper 추가 | 완료 | `privacy.py` |
 | SAM `ArtifactsBucketName` 파라미터 추가 | 완료 | `backend/serverless/template.yaml` |
 | API CORS origin 제한 파라미터 추가 | 완료 | `backend/serverless/template.yaml`, `utils.py` |
+| 직원/의료진 접근 코드 로그인과 만료 세션 토큰 검증 | 완료 | `security.py`, `handler.py`, `frontend/src/components/auth/RoleLoginModal.jsx` |
+| 환자 세션별 접근 토큰 발급·검증 | 완료 | `sessions.py`, `security.py`, `frontend/src/services/api/client.js` |
+| S3 artifact 객체 단위 암호화 명시 | 완료 | `artifact_store.py`, `template.yaml` |
 | 환자 화면 질문 문구를 백엔드 extraction에 전달 | 완료 | `frontend/src/services/api/transcripts.js`, `pipeline_nodes.py`, `extraction_prompts.py` |
 | 증상 slot, alias, safety flag를 도메인팩으로 분리 | 완료 | `domain_config.py`, `data/domain_packs/respiratory.json`, `clinical_terms.py` |
 | LLM 임의 confidence/score 필드 차단 회귀 테스트 | 완료 | `backend/serverless/tests/test_schema_and_artifact_policy.py` |
 
-남은 운영 설정은 AWS 콘솔에서 처리해야 합니다.
+제출용 AWS 환경에서 확인한 운영 설정은 다음과 같습니다. 이 항목은 코드에 포함되는 설정이 아니라 AWS 콘솔/계정 정책으로 적용되는 보안 장치입니다.
 
 - S3 Block Public Access
-- S3 기본 암호화 또는 KMS
-- S3 Lifecycle 3일 삭제
+- S3 기본 암호화
+- S3 `sessions/` prefix Lifecycle 3일 삭제
 - Macie 민감정보 탐지
-- Lambda IAM role의 S3 bucket 접근 권한 제한
-- CloudWatch Logs 보존 기간과 원문 로그 금지 정책
+- DynamoDB TTL(`expires_at`)과 삭제 방지
+- CloudWatch Logs 3일 보존
+- API Gateway throttling
+- Amplify WAF
+- CloudTrail, GuardDuty, Security Hub
+- AWS Organizations AI Services opt-out 정책
+
+상용화 단계에서는 Lambda IAM role의 S3/DynamoDB/Bedrock 권한을 리소스 ARN 단위로 더 좁히고, Cognito 또는 병원 SSO 기반 사용자별 계정과 감사 로그를 추가해야 합니다.
 
 ## 2. 저장소 분리 원칙
 
@@ -224,11 +233,12 @@ Macie는 DynamoDB 내부 필드를 직접 가명처리하는 도구가 아닙니
 | 항목 | 현재 코드 상태 | AWS에서 추가 확인할 것 |
 | --- | --- | --- |
 | S3 공개 차단 | 프론트는 S3에 직접 접근하지 않고 Lambda만 artifact를 읽음 | bucket Block Public Access 활성화 |
-| S3 암호화 | artifact bucket 이름을 SAM 파라미터로 주입 | SSE-S3 또는 SSE-KMS 기본 암호화 |
+| S3 암호화 | 저장 코드에서 SSE-S3 또는 SSE-KMS 헤더 명시 | 필요 시 `S3KmsKeyId`에 KMS key 지정 |
 | S3 보존 기간 | artifact key가 세션별 prefix로 분리됨 | `sessions/` prefix Lifecycle 3일 삭제 |
-| Macie | S3 artifact 구조로 민감정보 감사 가능 | artifact bucket에 Macie sensitive data discovery 설정 |
+| Macie | S3 artifact 구조로 민감정보 감사 가능 | artifact bucket에 Macie sensitive data discovery 적용 |
 | DynamoDB 보존 기간 | `expires_at` 필드 구조 사용 | TTL 속성 이름을 `expires_at`으로 활성화 |
 | CloudWatch 로그 | 코드에서 원문 로그를 남기지 않는 방향으로 정리 | 로그 그룹 보존 기간 3~7일 설정 |
 | Bedrock/Transcribe 데이터 정책 | 코드상 음성 원본 저장 없음 | AWS Organizations AI services opt-out 정책 확인 |
+| API 접근 제어 | 직원/의료진 접근 코드 로그인, HMAC 서명 만료 세션 토큰, 환자 세션 토큰 검증 | 상용화 시 Cognito/SSO와 사용자별 감사 로그로 확장 |
 
 따라서 이 문서는 "앞으로 해야 할 목표"만 적은 문서가 아니라, 현재 코드가 어떤 저장 경계를 지키도록 정리되었는지와 AWS 콘솔에서 어떤 운영 설정을 추가해야 하는지를 함께 확인하는 기준 문서입니다.
