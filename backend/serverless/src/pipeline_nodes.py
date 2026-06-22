@@ -167,6 +167,7 @@ def semantic_extraction_node(state: AnswerPipelineState) -> dict[str, Any]:
     attempt = int(state.get("extraction_attempt") or 0) + 1
     model_id = select_extraction_model(visit_type, question_id, question_type)
     rag_context = state.get("rag_context") or {}
+    dialect_normalization = state.get("dialect_normalization") or {}
     try:
         prompt = build_extraction_prompt(
             visit_type,

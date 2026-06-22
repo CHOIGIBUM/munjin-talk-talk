@@ -16,16 +16,21 @@ def test_dialect_pack_loads():
     assert isinstance(entries, list)
     assert entries
     assert all(item.get("dialect") and item.get("standard") for item in entries[:5])
+    assert entries[0]["dialect"] == "(때를)에우다"
+    assert entries[0]["standard"] == "(끼니를) 잇다"
 
 
 def test_dialect_rag_returns_context_shape():
     from dialect_rag import retrieve_dialect_context
 
-    context = retrieve_dialect_context("사투리 원문 테스트")
+    context = retrieve_dialect_context("여매방아라는 말을 들었습니다")
 
     assert context["retriever"] == "local_dialect_rag"
     assert "hints" in context
     assert "prompt_note" in context
+    assert context["hints"][0]["dialect"] == "여매방아"
+    assert context["hints"][0]["standard"] == "연자방아"
+    assert all(len(item["dialect"]) >= 2 for item in context["hints"])
 
 
 def test_dialect_schema_rejects_ungrounded_quote():

@@ -28,7 +28,10 @@ def retrieve_dialect_context(text: str, top_k: int | None = None) -> dict[str, A
             continue
 
         compact_dialect = compact_ir(dialect)
-        if not compact_dialect:
+        # 한 글자 방언은 조사/어미/음절과 우연히 겹칠 가능성이 높아
+        # RAG 힌트로 넣지 않는다. 의료 문진에서는 과도한 힌트보다
+        # 근거가 분명한 방언 후보만 프롬프트에 전달하는 것이 안전하다.
+        if len(compact_dialect) < 2:
             continue
 
         if dialect in query or compact_dialect in compact_query:
