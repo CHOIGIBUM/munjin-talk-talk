@@ -1,0 +1,3 @@
+{"case_id": "sample_001", "visit_type": "초진", "dialect_type": "standard", "question_id": "Q1", "text": "어제부터 목이 칼칼하고 코가 막혀요.", "gold_symptoms": ["목의 통증", "코막힘"], "negative_symptoms": []}
+{"case_id": "sample_002", "visit_type": "초진", "dialect_type": "standard", "question_id": "Q1", "text": "기침이 계속 나고 콧물도 조금 흘러요.", "gold_symptoms": ["기침", "콧물"], "negative_symptoms": []}
+{"case_id": "sample_003", "visit_type": "재진", "dialect_type": "gangwon", "question_id": "Q3", "text": "열은 안 나는데 물 마시면 자꾸 사레가 걸려서 캑캑거려요.", "gold_symptoms": ["기침"], "negative_symptoms": ["발열"]}
