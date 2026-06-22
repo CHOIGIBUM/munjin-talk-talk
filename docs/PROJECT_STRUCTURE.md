@@ -222,6 +222,9 @@ backend/serverless/src/
 ├── pipeline_nodes.py
 ├── pipeline_state.py
 ├── pipeline_trace.py
+├── dialect_config.py
+├── dialect_rag.py
+├── dialect_normalization.py
 ├── rag_context.py
 ├── extraction_prompts.py
 ├── extraction_schema.py
@@ -239,7 +242,11 @@ backend/serverless/src/
 ├── guide.py
 ├── utils.py
 ├── schemas/
+│   └── dialect.py
 └── data/
+    └── dialect_packs/
+        ├── dialect_kangwon.csv
+        └── dialect_kangwon.json
 ```
 
 ### API 계층
@@ -285,6 +292,7 @@ backend/serverless/src/
 | `pipeline_nodes.py` | 실제 노드 구현 |
 | `pipeline_state.py` | 상태 타입과 그래프 메타데이터 |
 | `pipeline_trace.py` | LangGraph active path와 최소 trace helper |
+| `dialect_config.py` / `dialect_rag.py` / `dialect_normalization.py` | 강원 방언팩 로딩, 로컬 RAG 검색, 표준화 보조 |
 | `rag_context.py` | extraction 앞단에서 원천 JSON/alias 기반 RAG 참고 문맥 검색 |
 
 이렇게 나눈 이유:
@@ -361,7 +369,8 @@ backend/serverless/src/data/
 | Lambda 환경 변수 추가 | `template.yaml`, `settings.py` |
 | 질문 문구 수정 | 백엔드 `backend/serverless/src/data/question_sets/default.json` (환자 태블릿이 API로 사용), 오프라인 fallback `frontend/src/config/questions.js` |
 | Bedrock prompt 수정 | `extraction_prompts.py`, `onepager_review.py`, `guide.py` |
-| RAG 참고 문맥 수정 | `rag_context.py`, `retrieval_documents.py`, `domain_config.py`, `clinical_terms.py` |
+| 강원 방언 RAG 수정 | `dialect_config.py`, `dialect_rag.py`, `dialect_normalization.py`, `data/dialect_packs/` |
+| 의료 지식 RAG 참고 문맥 수정 | `rag_context.py`, `retrieval_documents.py`, `domain_config.py`, `clinical_terms.py` |
 | LLM JSON schema 수정 | `schemas/extraction.py`, `schemas/review.py`, `schemas/guide.py` |
 | source_quote 검증 수정 | `schemas/extraction.py`, `extraction_schema.py` |
 | LangGraph 노드 추가 | `pipeline_state.py`, `pipeline_nodes.py`, `pipeline_graph.py` |

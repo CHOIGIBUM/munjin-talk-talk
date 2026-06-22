@@ -495,7 +495,6 @@ def build_dialect_helper_note(standardized_text, replacements):
 
     return "\n".join(lines)
 
-
 def build_extraction_repair_note(validation_errors, transcript):
     """검증 실패 이유를 LLM에게 다시 넘겨 같은 schema 안에서 재생성하게 합니다."""
     return f"""

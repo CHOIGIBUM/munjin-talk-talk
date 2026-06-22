@@ -55,6 +55,7 @@ backend/serverless/
 │   ├── handler.py  orchestration.py  settings.py
 │   ├── sessions.py  artifact_store.py  artifact_policy.py  privacy.py  audio.py
 │   ├── pipeline_graph.py  pipeline_nodes.py  pipeline_state.py  pipeline_trace.py
+│   ├── dialect_config.py  dialect_rag.py  dialect_normalization.py
 │   ├── rag_context.py  langchain_prompting.py  llm.py
 │   ├── extraction_prompts.py  extraction_schema.py  clinical_terms.py  clinical_state.py
 │   ├── domain_config.py  question_sets.py  utils.py
@@ -63,6 +64,7 @@ backend/serverless/
 │   ├── schemas/  ├─ extraction.py ├─ review.py └─ guide.py
 │   └── data/
 │       ├── README.md
+│       ├── dialect_packs/dialect_kangwon.csv/json
 │       ├── domain_packs/respiratory.json (+ respiratory_fewshot.txt)
 │       ├── question_sets/default.json
 │       └── (비공개 배치) diseases_cleaned / symptom_index / embedding cache
@@ -87,6 +89,7 @@ backend/serverless/
 | `privacy.py` | 저장 전 가명처리·요약 helper |
 | `audio.py` | Transcribe Streaming presigned URL |
 | `pipeline_graph.py` / `pipeline_nodes.py` / `pipeline_state.py` / `pipeline_trace.py` | LangGraph 정의·처리·상태·trace |
+| `dialect_config.py` / `dialect_rag.py` / `dialect_normalization.py` | 강원 방언팩 로딩·검색·표준화 보조 |
 | `rag_context.py` | RAG 참고 문맥 검색 |
 | `langchain_prompting.py` / `llm.py` | Bedrock JSON chain / 호출 wrapper |
 | `extraction_prompts.py` / `extraction_schema.py` | Q별 prompt / extraction 보조 스키마 |
@@ -123,7 +126,7 @@ backend/serverless/
 
 ```text
 POST /process-answer
-  → input_transcript → quick_safety_flag → rag_context_retrieval
+  → input_transcript → quick_safety_flag → dialect_normalization → rag_context_retrieval
   → semantic_extraction → schema_quote_validation
   → (검증 실패 시 semantic_extraction으로 retry)
   → hybrid_ir_match → session_validation_save → onepaper_refresh → response_payload
@@ -200,7 +203,7 @@ DynamoDB `GetItem`/`PutItem`/`UpdateItem`/`Scan`, S3 artifact bucket `GetObject`
 # Python 문법
 python -m compileall src
 
-# 테스트 (25 케이스)
+# 테스트
 pip install -r src/requirements.txt pytest
 python -m pytest tests/ -q
 ```

@@ -180,7 +180,7 @@ IR은 내부 배포 환경의 비공개 런타임 데이터(`diseases_cleaned.js
 
 | 지표 | 값 | 측정 조건 |
 | --- | --- | --- |
-| 자동 테스트 | **25 passed** | `pytest` |
+| 자동 테스트 | **26 passed, 3 skipped** | `pytest` |
 | 프론트 빌드 | 통과 | `npm run build` |
 | SAM 템플릿 검증 | 통과 | `sam validate` |
 
@@ -228,7 +228,7 @@ sam deploy --guided   # ArtifactsBucketName 에 가명처리 산출물용 S3 버
 
 ```bash
 # 백엔드 테스트
-cd backend/serverless && python -m pytest tests/ -q     # 25 passed
+cd backend/serverless && python -m pytest tests/ -q     # 26 passed, 3 skipped
 # Python 문법
 python -m compileall backend/serverless/src
 # SAM 템플릿
@@ -281,8 +281,8 @@ munjin-talk-talk/
 - [x] DynamoDB TTL · S3 Lifecycle 3일 삭제 · Block Public Access · Macie 민감정보 탐지
 - [x] API Gateway throttling · Amplify WAF · CloudTrail · GuardDuty · Security Hub · CloudWatch 로그 단기 보존
 - [x] AWS AI Services opt-out 정책 적용
+- [x] **강원 방언 RAG** — 강원 방언팩 기반 로컬 검색과 Nova Lite 표준화 보조 단계 적용
 - [ ] 실제 EMR 연동 설계
-- [ ] **강원 방언 RAG** — 국립국어원/방언 사전 기반 retriever로 확장 (계획)
 - [ ] 병원 운영 기준에 맞춘 Cognito/SSO, 사용자별 권한, 감사 로그 고도화
 
 ---
