@@ -10,6 +10,7 @@ const ROLE_SESSION_STORAGE = {
 
 let authPromptHandler = null
 const pendingAuthRequests = []
+let activeAuthPrompt = null
 
 export function isRemoteApiEnabled() {
   return Boolean(API_BASE_URL)
@@ -24,10 +25,10 @@ export function ensureApiConfigured() {
 export function setAuthPromptHandler(handler) {
   authPromptHandler = handler
   if (!authPromptHandler) return
-  while (pendingAuthRequests.length) {
-    const { role, resolve, reject } = pendingAuthRequests.shift()
-    authPromptHandler({ role }).then(resolve).catch(reject)
-  }
+  const pending = pendingAuthRequests.splice(0)
+  pending.forEach(({ role, resolve, reject }) => {
+    requestRoleSession(role).then(resolve).catch(reject)
+  })
 }
 
 // Lambda 응답의 snake_case 필드를 화면에서 쓰는 camelCase 필드와 함께 맞춥니다.
@@ -148,7 +149,19 @@ async function roleSessionToken(role) {
 }
 
 function requestRoleSession(role) {
-  if (authPromptHandler) return authPromptHandler({ role })
+  if (activeAuthPrompt?.role === role) return activeAuthPrompt.promise
+  if (activeAuthPrompt) {
+    return activeAuthPrompt.promise.finally(() => requestRoleSession(role))
+  }
+
+  if (authPromptHandler) {
+    const promptPromise = authPromptHandler({ role }).finally(() => {
+      if (activeAuthPrompt?.promise === promptPromise) activeAuthPrompt = null
+    })
+    activeAuthPrompt = { role, promise: promptPromise }
+    return promptPromise
+  }
+
   return new Promise((resolve, reject) => {
     pendingAuthRequests.push({ role, resolve, reject })
   })
