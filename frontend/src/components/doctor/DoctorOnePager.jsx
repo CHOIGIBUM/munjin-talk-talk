@@ -4,6 +4,19 @@ import { normalizeOnePager } from '../../services/onepagerAdapter.js'
 import { CheckIcon, ClueChip, CopyIcon, clueKey, getCluesForSlot, getUnlinkedClues } from './DoctorOnePagerParts.jsx'
 import './DoctorOnePager.css'
 
+function getOnePagerStatusMessage(status) {
+  const messages = {
+    refreshing: '원페이퍼를 새로 불러오는 중입니다.',
+    reviewing: 'AI가 문진 결과를 다시 검토하고 있습니다.',
+    refreshed: '최신 원페이퍼가 반영되었습니다.',
+    reviewed: 'AI 재검토가 완료되었습니다.',
+    error: '요청 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.',
+    retrying: '문진 분석을 다시 실행하고 있습니다.',
+    queued: '문진 분석이 대기열에 등록되었습니다.',
+  }
+  return messages[status] || ''
+}
+
 // 의사가 실제로 보는 원페이퍼 본문입니다.
 // 백엔드 onepager JSON을 받아 증상, 문진 맥락, 확인 항목, EMR 문장을 한 화면에 배치합니다.
 
@@ -69,6 +82,7 @@ export default function DoctorOnePager({
   const analysisStatus = data.analysis?.status || ''
   const isAnalysisPending = ['pending', 'running'].includes(analysisStatus)
   const isAnalysisFailed = ['failed', 'enqueue_failed', 'analysis_failed'].includes(analysisStatus) || data.status === 'analysis_failed'
+  const statusNotice = getOnePagerStatusMessage(onepagerStatus)
 
   // EMR 복사용 문장을 클립보드에 복사합니다.
   const handleCopy = () => {
@@ -83,6 +97,12 @@ export default function DoctorOnePager({
 
   return (
     <div className={`onepaper-v4 ${themeClass}`}>
+      {statusNotice && (
+        <div className={`op-slide-toast ${onepagerStatus}`}>
+          <span>{statusNotice}</span>
+        </div>
+      )}
+
       {(isAnalysisPending || isAnalysisFailed) && (
         <div className={`op-analysis-banner ${isAnalysisFailed ? 'failed' : 'pending'}`}>
           <div>
@@ -130,7 +150,6 @@ export default function DoctorOnePager({
             <span className={`op-visit-badge ${data.patient.visit_type}`}>
               {isFollowup ? '재진' : '초진'}
             </span>
-            <span>접수 {data.patient.receivedAt}</span>
           </p>
         </div>
         {!isAnalysisPending && !isAnalysisFailed && (onRefresh || onAiReview) && (
@@ -154,17 +173,6 @@ export default function DoctorOnePager({
               >
                 AI 재검토
               </button>
-            )}
-            {onepagerStatus && (
-              <span className={`op-tool-status ${onepagerStatus}`}>
-                {onepagerStatus === 'refreshing' && '불러오는 중'}
-                {onepagerStatus === 'reviewing' && '재검토 중'}
-                {onepagerStatus === 'refreshed' && '최신 반영'}
-                {onepagerStatus === 'reviewed' && '재검토 완료'}
-                {onepagerStatus === 'error' && '실패'}
-                {onepagerStatus === 'retrying' && '분석 재실행 중'}
-                {onepagerStatus === 'queued' && '분석 대기열 등록'}
-              </span>
             )}
           </div>
         )}

@@ -186,15 +186,54 @@
 .op-tool-btn-primary:hover:not(:disabled) {
   background: #1d4ed8;
 }
-.op-tool-status {
-  min-width: 70px;
-  font-size: 11px;
-  font-weight: 900;
-  color: #64748b;
-  text-align: right;
+.op-slide-toast {
+  position: sticky;
+  top: 10px;
+  z-index: 20;
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  max-width: min(560px, 100%);
+  margin: -4px 0 10px auto;
+  padding: 11px 16px;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 1000;
+  line-height: 1.35;
+  box-shadow: 0 12px 26px rgba(15, 35, 71, 0.12);
+  animation: opSlideToastIn 180ms ease-out;
 }
-.op-tool-status.error {
-  color: #dc2626;
+.op-slide-toast.refreshed,
+.op-slide-toast.reviewed,
+.op-slide-toast.queued {
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+  color: #047857;
+}
+.op-slide-toast.error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+.op-slide-toast.retrying,
+.op-slide-toast.refreshing,
+.op-slide-toast.reviewing {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+@keyframes opSlideToastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .op-principles {
   display: flex;
@@ -266,7 +305,7 @@
 }
 .op-card-title h4 {
   margin: 0;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 800;
   color: #0f2347;
 }
@@ -282,13 +321,13 @@
   grid-template-columns: 1fr auto;
   grid-template-rows: auto auto;
   gap: 4px 12px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   background: #f8fafc;
   border-radius: 8px;
   border-left: 3px solid var(--visit-accent);
 }
 .slot-name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: #0f2347;
 }
@@ -311,7 +350,7 @@
 }
 .slot-quote {
   grid-column: 1 / -1;
-  font-size: 12px;
+  font-size: 13px;
   color: #475569;
   font-style: italic;
 }
@@ -328,12 +367,12 @@
   flex-wrap: wrap;
   gap: 5px;
   max-width: 100%;
-  padding: 3px 7px;
+  padding: 5px 9px;
   background: #eef6ff;
   border: 1px solid #dbeafe;
   border-radius: 6px;
   color: #1e3a5f;
-  font-size: 11.5px;
+  font-size: 12.5px;
   font-weight: 700;
   line-height: 1.35;
 }
@@ -349,7 +388,7 @@
 .slot-clue-chip small {
   width: 100%;
   color: #64748b;
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 700;
   line-height: 1.35;
 }
@@ -580,39 +619,39 @@
 .patient-summary-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 .patient-summary-row {
-  padding: 12px;
+  padding: 15px 16px;
   border-radius: 10px;
   background: #f8fafc;
   border: 1px solid #eef2f7;
 }
 .patient-summary-head {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   color: #0f2347;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 1000;
 }
 .patient-summary-original,
 .patient-summary-standard {
   display: grid;
-  grid-template-columns: 58px 1fr;
-  gap: 8px;
+  grid-template-columns: 68px 1fr;
+  gap: 10px;
   align-items: start;
 }
 .patient-summary-original + .patient-summary-standard {
-  margin-top: 6px;
+  margin-top: 8px;
 }
 .patient-summary-original span,
 .patient-summary-standard span {
   display: inline-flex;
   justify-content: center;
-  padding: 3px 7px;
+  padding: 5px 9px;
   border-radius: 6px;
   background: #dbeafe;
   color: #1d4ed8;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 900;
 }
 .patient-summary-standard span {
@@ -623,7 +662,7 @@
 .patient-summary-standard p {
   margin: 0;
   color: #29364a;
-  font-size: 12.5px;
+  font-size: 14.5px;
   font-weight: 700;
   line-height: 1.65;
   overflow-wrap: anywhere;
@@ -645,16 +684,16 @@
 }
 .emr-draft-title span {
   color: #0f2347;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 1000;
 }
 .transfer-text {
   margin: 0 0 12px 0;
-  padding: 12px;
+  padding: 14px;
   background: #f8fafc;
   border-radius: 8px;
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: 14px;
+  line-height: 1.75;
   color: #29364a;
   font-family: 'Noto Sans KR', sans-serif;
 }
