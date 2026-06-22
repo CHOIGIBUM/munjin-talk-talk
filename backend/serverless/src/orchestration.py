@@ -35,6 +35,7 @@ def process_answers(body):
         return None, response(400, {"error": "empty_answers"})
 
     results = []
+    failed_results = []
     for index, answer in enumerate(answers, start=1):
         if not isinstance(answer, dict):
             return None, response(400, {"error": "invalid_answer_item", "index": index})
@@ -43,15 +44,28 @@ def process_answers(body):
         payload, err = run_answer_pipeline(item)
         if err:
             status, err_body = unwrap_error_response(err)
-            return None, response(
-                status,
-                {
-                    **err_body,
-                    "batch_index": index,
-                    "question_id": item.get("question_id"),
-                    "processed_results": results,
+            failed = {
+                "question_id": item.get("question_id"),
+                "question_type": item.get("question_type"),
+                "transcript": item.get("transcript"),
+                "status": status,
+                "error": err_body.get("error") or "pipeline_error",
+                "details": err_body,
+                "batch_index": index,
+            }
+            failed_results.append(failed)
+            results.append({
+                "question_id": item.get("question_id"),
+                "question_type": item.get("question_type"),
+                "transcript": item.get("transcript"),
+                "result": {
+                    "validator_passed": False,
+                    "error": failed["error"],
+                    "details": err_body,
                 },
-            )
+            })
+            # 한 문항 분석 실패가 환자 문진 전체를 되감지 않도록 다음 문항 처리를 계속한다.
+            continue
 
         results.append({
             "question_id": item.get("question_id"),
@@ -60,14 +74,19 @@ def process_answers(body):
             "result": payload,
         })
 
+    successful_results = [row for row in results if not row.get("result", {}).get("error")]
     return {
-        "validator_passed": all(bool(row.get("result", {}).get("validator_passed")) for row in results),
-        "onepager_ready": bool(results[-1].get("result", {}).get("onepager_ready")) if results else False,
+        "validator_passed": bool(results) and not failed_results and all(
+            bool(row.get("result", {}).get("validator_passed")) for row in results
+        ),
+        "onepager_ready": any(bool(row.get("result", {}).get("onepager_ready")) for row in successful_results),
         "results": results,
+        "failed_results": failed_results,
         "pipeline": {
             "graph": PIPELINE_GRAPH["name"],
             "mode": "batch_after_patient_confirmation",
             "processed_question_count": len(results),
+            "failed_question_count": len(failed_results),
         },
     }, None
 
