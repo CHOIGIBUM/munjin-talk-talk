@@ -72,7 +72,7 @@ IR_QUERY_NOISE_PATTERNS = [
 def retrieve_symptom_docs(source_quote, normalized_text, span_name="", preferred_slot_id=""):
     """하나의 symptom span에 대해 BM25/vector/label 후보를 모아 상위 증상을 반환합니다."""
     docs, bm25 = get_ir_index()
-    query = normalize_text(" ".join([source_quote or "", normalized_text or "", span_name or ""]))
+    query = build_symptom_query(source_quote, normalized_text, span_name)
     if not query:
         return []
     preferred_name = preferred_canonical_name(preferred_slot_id, span_name, normalized_text, source_quote)

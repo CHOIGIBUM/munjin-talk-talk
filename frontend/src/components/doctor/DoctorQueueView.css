@@ -104,11 +104,17 @@
   white-space: nowrap;
 }
 .dq-status.completed,
+.dq-status.waiting_doctor,
 .dq-status.reviewed {
   background: #dcfce7;
   color: #15803d;
 }
+.dq-status.analysis_pending {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
 .dq-status.needs_priority,
+.dq-status.analysis_failed,
 .dq-status.staff_help {
   background: #ffedd5;
   color: #c2410c;

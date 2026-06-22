@@ -195,6 +195,12 @@ Resources:
             ApiId: !Ref MunjinHttpApi
             Path: /onepager/{session_id}/review
             Method: POST
+        RetryAnalysis:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /sessions/{session_id}/analysis/retry
+            Method: POST
         DoctorResponse:
           Type: HttpApi
           Properties:
@@ -207,6 +213,20 @@ Resources:
             ApiId: !Ref MunjinHttpApi
             Path: /guide/{session_id}
             Method: GET
+
+  MunjinApiSelfInvokePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: munjin-api-self-invoke
+      Roles:
+        - !Select [1, !Split ['/', !Ref LambdaRoleArn]]
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+            Resource: !GetAtt MunjinApiFunction.Arn
 
 Outputs:
   ApiEndpoint:

@@ -24,6 +24,7 @@ export {
 export {
   getOnePager,
   rerunOnePagerReview,
+  retryAnswerAnalysis,
   submitDoctorResponse,
   getPatientGuide,
 } from './api/doctor.js'

@@ -51,6 +51,41 @@
 }
 
 /* 환자 정보 바 */
+.op-analysis-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #0f2347;
+}
+.op-analysis-banner.failed {
+  border-color: #fdba74;
+  background: #fff7ed;
+}
+.op-analysis-banner b {
+  display: block;
+  font-size: 15px;
+  font-weight: 1000;
+  margin-bottom: 5px;
+}
+.op-analysis-banner p,
+.op-analysis-banner small {
+  display: block;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: #64748b;
+}
+.op-analysis-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .op-patient-bar {
   display: flex;
   align-items: center;

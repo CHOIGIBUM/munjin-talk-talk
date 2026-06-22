@@ -13,7 +13,7 @@ from urllib.parse import unquote_plus
 from audio import generate_streaming_transcribe_url
 from guide import get_guide, save_doctor_response
 from onepager import get_onepager_payload, rerun_onepager_review
-from orchestration import process_answer, process_answers
+from orchestration import handle_internal_event, process_answer, process_answers, retry_answer_analysis
 from question_sets import public_question_set
 from security import is_auth_configured, issue_role_token, require_patient_session, require_role, role_for_event, verify_access_code
 from sessions import create_session, get_session, list_sessions, public_session, save_patient_consent, update_session
@@ -22,6 +22,9 @@ from utils import parse_body, response, set_request_origin
 
 def handler(event, context):
     """Lambda가 처음 호출하는 함수. HTTP method/path를 꺼내 route()로 전달합니다."""
+    if event.get("source") == "munjin.analysis":
+        return handle_internal_event(event, context)
+
     method = event.get("requestContext", {}).get("http", {}).get("method") or event.get("httpMethod", "GET")
     path = event.get("rawPath") or event.get("path") or "/"
     path = path.rstrip("/") or "/"
@@ -179,6 +182,14 @@ def route(method, path, event):
         if auth_error:
             return auth_error
         payload, err = rerun_onepager_review(unquote_plus(match.group(1)))
+        return err or response(200, payload)
+
+    match = re.fullmatch(r"/sessions/([^/]+)/analysis/retry", path)
+    if method == "POST" and match:
+        auth_error = require_role(event, "staff", "doctor")
+        if auth_error:
+            return auth_error
+        payload, err = retry_answer_analysis(unquote_plus(match.group(1)))
         return err or response(200, payload)
 
     if method == "POST" and path == "/doctor-response":

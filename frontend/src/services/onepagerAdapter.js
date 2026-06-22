@@ -44,8 +44,14 @@ function normalizeCurrentBackend(raw) {
   const safetyFlag = normalizeSafetyFlag(safetyFlags[0])
   const clinicalClues = onepager.clinical_clues || []
   const doctorBrief = normalizeDoctorBrief(onepager.doctor_brief)
+  const analysis = onepager.analysis || session.analysis || raw.analysis || {
+    status: session.analysis_status || raw.analysis_status || '',
+    error: session.analysis_error || raw.analysis_error || '',
+  }
 
   return {
+    status: session.status || raw.status || '',
+    analysis,
     patient,
     agenda,
     full_q4_transcript: getResponseText(session.responses, 'Q4'),

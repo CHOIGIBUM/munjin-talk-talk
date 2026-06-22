@@ -25,6 +25,22 @@ export async function rerunOnePagerReview(sessionId) {
   return res.json()
 }
 
+// 저장된 Q1~Q4 원문을 기준으로 백그라운드 분석 전체를 다시 큐에 넣습니다.
+export async function retryAnswerAnalysis(sessionId) {
+  if (!sessionId) return null
+  ensureApiConfigured()
+
+  const res = await fetch(`${API_BASE_URL}/sessions/${encodeURIComponent(sessionId)}/analysis/retry`, {
+    method: 'POST',
+    headers: await apiHeaders({ role: 'doctor', json: true }),
+  })
+  const payload = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    throw new Error(payload?.message || payload?.error || '문진 분석 재실행에 실패했습니다.')
+  }
+  return payload
+}
+
 // 의료진이 환자 질문에 답변하고 강조사항을 저장합니다.
 export async function submitDoctorResponse({
   sessionId,

@@ -4,20 +4,23 @@ import { getDoctorQueue } from '../../services/api.js'
 import './DoctorQueueView.css'
 
 // 의사 대기열 화면입니다.
-// safety flag가 있는 환자는 우선순위가 높게 정렬되어 원페이퍼 확인이 먼저 가능하게 합니다.
+// 환자 문진 완료 직후에는 analysis_pending으로 올라오고,
+// 백그라운드 분석이 끝나면 waiting_doctor 상태로 전환됩니다.
 const statusLabel = {
   waiting_tablet: '문진 대기',
-  in_progress: '문진 진행중',
+  in_progress: '문진 진행 중',
   staff_help: '직원 도움 요청',
-  completed: '의사 답변 대기',
+  analysis_pending: 'AI 분석 중',
+  waiting_doctor: '의사 확인 대기',
+  analysis_failed: '분석 재실행 필요',
+  completed: '의사 확인 대기',
   needs_priority: '우선 확인 필요',
-  reviewed: '답변·안내 완료',
+  reviewed: '응답·안내 완료',
 }
 
 export default function DoctorQueueView() {
   const [sessions, setSessions] = useState([])
 
-  // 접수/문진 진행 상태가 바뀌는 동안 대기열을 주기적으로 갱신합니다.
   useEffect(() => {
     const refresh = async () => {
       try {
@@ -32,9 +35,18 @@ export default function DoctorQueueView() {
     return () => clearInterval(timer)
   }, [])
 
-  // 위험 플래그, 완료 상태, 접수 순번 순서로 진료 확인 우선순위를 정합니다.
   const sorted = useMemo(() => {
-    const priority = { needs_priority: 0, completed: 1, in_progress: 2, staff_help: 3, waiting_tablet: 4, reviewed: 5 }
+    const priority = {
+      needs_priority: 0,
+      waiting_doctor: 1,
+      completed: 1,
+      analysis_failed: 2,
+      analysis_pending: 3,
+      in_progress: 4,
+      staff_help: 5,
+      waiting_tablet: 6,
+      reviewed: 7,
+    }
     return [...sessions].sort((a, b) => {
       const pa = priority[a.status] ?? 9
       const pb = priority[b.status] ?? 9

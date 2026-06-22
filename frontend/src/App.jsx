@@ -58,7 +58,9 @@ export default function App() {
       }
     }
 
-    const doctor = sessions.find((session) => ['needs_priority', 'completed', 'reviewed'].includes(session.status))
+    const doctor = sessions.find((session) => (
+      ['needs_priority', 'waiting_doctor', 'completed', 'analysis_pending', 'analysis_failed', 'reviewed'].includes(session.status)
+    ))
       || sessions[0]
     return {
       patient: '/patient',

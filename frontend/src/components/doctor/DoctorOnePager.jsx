@@ -22,6 +22,7 @@ export default function DoctorOnePager({
   renderAgenda = true,
   onRefresh,
   onAiReview,
+  onAnalysisRetry,
   onepagerStatus,
 }) {
   const [apiData, setApiData] = useState(null)
@@ -64,6 +65,9 @@ export default function DoctorOnePager({
   const symptomSlots = data.symptomSlots || []
   const clinicalClues = data.clinicalClues || []
   const unlinkedClues = getUnlinkedClues(symptomSlots, clinicalClues)
+  const analysisStatus = data.analysis?.status || ''
+  const isAnalysisPending = ['pending', 'running'].includes(analysisStatus)
+  const isAnalysisFailed = ['failed', 'enqueue_failed', 'analysis_failed'].includes(analysisStatus) || data.status === 'analysis_failed'
 
   // EMR 복사용 문장을 클립보드에 복사합니다.
   const handleCopy = () => {
@@ -78,6 +82,31 @@ export default function DoctorOnePager({
 
   return (
     <div className={`onepaper-v4 ${themeClass}`}>
+      {(isAnalysisPending || isAnalysisFailed) && (
+        <div className={`op-analysis-banner ${isAnalysisFailed ? 'failed' : 'pending'}`}>
+          <div>
+            <b>{isAnalysisFailed ? '문진 분석을 다시 실행해 주세요' : '문진 분석 중입니다'}</b>
+            <p>
+              {isAnalysisFailed
+                ? '환자 문진은 완료되었습니다. 저장된 원문으로 분석을 다시 실행하거나 수동으로 확인할 수 있습니다.'
+                : '환자 문진은 완료되었습니다. 원페이퍼가 준비되면 새로고침 후 확인해 주세요.'}
+            </p>
+            {data.analysis?.error && <small>{data.analysis.error}</small>}
+          </div>
+          <div className="op-analysis-actions">
+            {onRefresh && (
+              <button type="button" className="op-tool-btn" onClick={onRefresh}>
+                새로고침
+              </button>
+            )}
+            {isAnalysisFailed && onAnalysisRetry && (
+              <button type="button" className="op-tool-btn op-tool-btn-primary" onClick={onAnalysisRetry}>
+                분석 다시 실행
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 위험 플래그 */}
       {data.safety_flag && data.safety_flag.severity === 'high' && (
@@ -103,13 +132,13 @@ export default function DoctorOnePager({
             <span>접수 {data.patient.receivedAt}</span>
           </p>
         </div>
-        {(onRefresh || onAiReview) && (
+        {(onRefresh || onAiReview || onAnalysisRetry) && (
           <div className="op-toolbar">
             <button
               type="button"
               className="op-tool-btn"
               onClick={onRefresh}
-              disabled={onepagerStatus === 'refreshing' || onepagerStatus === 'reviewing'}
+              disabled={onepagerStatus === 'refreshing' || onepagerStatus === 'reviewing' || onepagerStatus === 'retrying'}
             >
               새로고침
             </button>
@@ -117,10 +146,20 @@ export default function DoctorOnePager({
               type="button"
               className="op-tool-btn op-tool-btn-primary"
               onClick={onAiReview}
-              disabled={onepagerStatus === 'refreshing' || onepagerStatus === 'reviewing'}
+              disabled={onepagerStatus === 'refreshing' || onepagerStatus === 'reviewing' || onepagerStatus === 'retrying'}
             >
               AI 재검토
             </button>
+            {onAnalysisRetry && (
+              <button
+                type="button"
+                className="op-tool-btn"
+                onClick={onAnalysisRetry}
+                disabled={onepagerStatus === 'refreshing' || onepagerStatus === 'reviewing' || onepagerStatus === 'retrying'}
+              >
+                분석 다시 실행
+              </button>
+            )}
             {onepagerStatus && (
               <span className={`op-tool-status ${onepagerStatus}`}>
                 {onepagerStatus === 'refreshing' && '불러오는 중'}
@@ -128,6 +167,8 @@ export default function DoctorOnePager({
                 {onepagerStatus === 'refreshed' && '최신 반영'}
                 {onepagerStatus === 'reviewed' && '재검토 완료'}
                 {onepagerStatus === 'error' && '실패'}
+                {onepagerStatus === 'retrying' && '분석 재실행 중'}
+                {onepagerStatus === 'queued' && '분석 대기열 등록'}
               </span>
             )}
           </div>

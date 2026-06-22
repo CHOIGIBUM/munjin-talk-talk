@@ -194,12 +194,12 @@ export default function PatientFlow({
         visitType,
         answers: pendingAnswers.map(toBatchPayloadAnswer),
       })
-      const resultByQuestion = new Map(
-        (payload.results || []).map((row) => [row.question_id || row.questionId, row.result])
-      )
       const completedAnswers = pendingAnswers.map((answer) => ({
         ...answer,
-        result: resultByQuestion.get(answer.id) || resultByQuestion.get(answer.questionId) || answer.result || null,
+        result: answer.result || {
+          analysis_status: payload.analysis_status || 'pending',
+          analysis_queued: payload.analysis_queued !== false,
+        },
       }))
       setAnswers(completedAnswers)
       completedAnswers.forEach((answer) => onTranscriptConfirmed?.(answer))
@@ -221,8 +221,8 @@ export default function PatientFlow({
         result: answer.result || null,
       }))
 
-      // 최종 일괄 분석이 실패해도 환자 화면을 이전 질문으로 되돌리지 않는다.
-      // 이미 확인한 답변은 보존하고, 직원/의료진이 이어서 확인할 수 있게 완료 상태로 전환한다.
+      // 여기까지 오면 LLM 분석 실패가 아니라 Q1~Q4 원문 저장 자체가 실패한 상황이다.
+      // 환자를 이전 질문으로 되돌리지 않고 직원 도움 화면으로 고정해, 접수처에서 수기 확인하게 한다.
       setAnswers(completedAnswers)
       completedAnswers.forEach((answer) => onTranscriptConfirmed?.(answer))
       notifyStaff({
@@ -232,17 +232,11 @@ export default function PatientFlow({
         reason: 'batch_processing_failed',
         batchIndex: failedIndex + 1,
       })
-      onComplete?.({
-        sessionId: activeSessionId,
-        visitType,
-        answers: completedAnswers,
-        stopped: true,
-        processingError: err?.payload?.error || err?.message || 'batch_processing_failed',
-      })
       setTranscript('')
       setSafetyKeyword(null)
       setIntakeStopped(true)
-      setStep(STEPS.DONE)
+      setPrevStep(null)
+      setStep(STEPS.STAFF_CALL)
     } finally {
       setIsTranscribing(false)
     }

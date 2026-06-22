@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import PatientFlow from './PatientFlow.jsx'
 import { getIntakeSession, requestStaffHelp } from '../../services/api.js'
 import './PatientKioskView.css'
@@ -8,6 +8,7 @@ import './PatientKioskView.css'
 // 모든 답변 저장과 상태 변경은 백엔드 API를 통해 DynamoDB 세션에 반영됩니다.
 export default function PatientKioskView() {
   const { sessionId } = useParams()
+  const navigate = useNavigate()
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -56,6 +57,9 @@ export default function PatientKioskView() {
         requestStaffHelp(session.sessionId).catch((error) => {
           console.warn('staff call request failed:', error)
         })
+      }}
+      onComplete={() => {
+        window.setTimeout(() => navigate('/patient'), 3500)
       }}
     />
   )

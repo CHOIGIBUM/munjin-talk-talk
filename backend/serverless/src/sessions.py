@@ -208,6 +208,10 @@ def public_session(
         "risk": session.get("risk", "none"),
         "onepagerReady": bool(session.get("onepager_ready")),
         "guideReady": bool(session.get("guide_ready")),
+        "analysisStatus": session.get("analysis_status", ""),
+        "analysis_status": session.get("analysis_status", ""),
+        "analysisError": session.get("analysis_error", ""),
+        "analysis_error": session.get("analysis_error", ""),
         "patient": {
             "name": patient_name or "환자",
             "age": patient.get("age", ""),

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import {
   getOnePager,
   rerunOnePagerReview,
+  retryAnswerAnalysis,
   submitDoctorResponse
 } from '../../services/api.js'
 import DoctorOnePager from './DoctorOnePager.jsx'
@@ -77,6 +78,21 @@ export default function DoctorView() {
     }
   }
 
+  const handleAnalysisRetry = async () => {
+    if (!sessionId) return
+    setOnepagerStatus('retrying')
+    try {
+      await retryAnswerAnalysis(sessionId)
+      const data = await getOnePager(sessionId)
+      setSessionData(data)
+      setOnepagerStatus('queued')
+      setTimeout(() => setOnepagerStatus(null), 1800)
+    } catch (err) {
+      console.error('문진 분석 재실행 실패:', err)
+      setOnepagerStatus('error')
+    }
+  }
+
   // 의사가 작성한 답변과 강조사항을 저장하고 환자 안내문 생성 결과 상태를 표시합니다.
   const handleSubmitResponse = async ({ answers, additionalNotes }) => {
     if (!sessionId) {
@@ -113,6 +129,7 @@ export default function DoctorView() {
         sessionData={sessionData}
         onRefresh={refreshOnePager}
         onAiReview={handleAiReview}
+        onAnalysisRetry={handleAnalysisRetry}
         onepagerStatus={onepagerStatus}
         // Agenda + 답변 입력은 별도 우측 패널로 분리
         renderAgenda={false}

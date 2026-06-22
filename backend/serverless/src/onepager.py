@@ -110,7 +110,9 @@ def next_session_status(session: dict[str, Any], question_id: str, safety_flag: 
     """문항 저장 이후 DynamoDB session status를 결정합니다."""
     if safety_flag or session.get("risk") == "high" or session.get("status") == "needs_priority":
         return "needs_priority"
-    return "completed" if question_id == "Q4" else "in_progress"
+    if session.get("analysis_status") in {"pending", "running"}:
+        return session.get("status") or "analysis_pending"
+    return "waiting_doctor" if question_id == "Q4" else "in_progress"
 
 
 def scan_safety(transcript: str, matched_slots: list[dict[str, Any]]):
@@ -124,23 +126,63 @@ def get_onepager_payload(session: dict[str, Any]) -> dict[str, Any]:
     이미 S3에 저장된 onepaper artifact가 있으면 재사용하고, 과거 세션처럼
     artifact가 없을 때만 재조립합니다.
     """
+    responses = load_answers(session)
+    analysis = {
+        "status": session.get("analysis_status") or ("ready" if session.get("onepager_ready") else "not_started"),
+        "error": session.get("analysis_error") or "",
+        "requested_at": session.get("analysis_requested_at") or "",
+        "started_at": session.get("analysis_started_at") or "",
+        "completed_at": session.get("analysis_completed_at") or "",
+    }
+
     onepager = get_json(session, ONEPAPER_FILE, default=None)
     if not isinstance(onepager, dict) or not onepager:
-        onepager = build_onepager(session)
-        put_json(session, ONEPAPER_FILE, onepager)
-        update_session(session.get("session_id"), {
-            "onepager_ready": True,
-        })
+        # 분석이 백그라운드에서 돌고 있는 세션은 임시 onepaper를 만들지 않습니다.
+        # 의사 화면에는 “분석 중/재분석 필요” 상태만 보여 주어 환자 흐름과 분석 흐름을 분리합니다.
+        if analysis["status"] in {"pending", "running", "enqueue_failed", "failed", "partial_failed"} or session.get("status") in {"analysis_pending", "analysis_failed"}:
+            onepager = build_pending_onepager(session, responses, analysis)
+        else:
+            onepager = build_onepager(session)
+            put_json(session, ONEPAPER_FILE, onepager)
+            update_session(session.get("session_id"), {
+                "onepager_ready": True,
+            })
+    onepager["analysis"] = analysis
     onepager = prepare_artifact_payload(ONEPAPER_FILE, onepager)
-    responses = load_answers(session)
     return {
         "session": {
             "session_id": session.get("session_id"),
             "case_id": session.get("session_id"),
+            "status": session.get("status"),
+            "analysis": analysis,
             "visit_type": session.get("visit_type", "initial"),
             "responses": responses,
             "onepager": onepager,
         }
+    }
+
+
+def build_pending_onepager(session: dict[str, Any], responses: dict[str, Any], analysis: dict[str, Any]) -> dict[str, Any]:
+    """분석 대기/실패 상태에서 의사 화면이 깨지지 않도록 최소 onepaper 구조를 만듭니다."""
+    patient = session.get("patient", {})
+    visit_type = normalize_visit_type(session.get("visit_type"))
+    failed = analysis.get("status") in {"failed", "enqueue_failed"}
+    return {
+        "patient_summary": build_patient_summary(patient, session, visit_type),
+        "agenda": [],
+        "symptom_slots": [],
+        "clinical_clues": [],
+        "doctor_brief": {
+            "headline": "문진 분석을 다시 실행해 주세요" if failed else "문진 분석 중입니다",
+            "priority": "일반",
+            "sections": [],
+        },
+        "review_items": ["문진 분석 결과가 준비되면 다시 확인해 주세요."],
+        "transfer_text": "",
+        "safety_flags": [],
+        "unresolved_items": [],
+        "analysis": analysis,
+        "raw_answer_count": len(responses or {}),
     }
 
 
