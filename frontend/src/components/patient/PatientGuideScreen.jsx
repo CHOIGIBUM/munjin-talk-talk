@@ -133,7 +133,19 @@ export default function PatientGuideScreen() {
 
   // 인쇄 버튼은 별도 PDF 생성 없이 브라우저 print CSS를 사용합니다.
   const handlePrint = () => {
-    window.print()
+    const cleanupPrintMode = () => {
+      document.body.classList.remove('guide-printing')
+      window.removeEventListener('afterprint', cleanupPrintMode)
+    }
+
+    document.body.classList.add('guide-printing')
+    window.addEventListener('afterprint', cleanupPrintMode)
+
+    // 브라우저가 print 전용 클래스를 적용할 시간을 한 프레임 확보합니다.
+    window.requestAnimationFrame(() => {
+      window.print()
+      window.setTimeout(cleanupPrintMode, 500)
+    })
   }
 
   const items = guide ? normalizeGuideItems(guide) : []

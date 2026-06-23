@@ -234,34 +234,81 @@
 
 /* 인쇄 스타일 (종이 출력 시) */
 @media print {
-  body {
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  body.guide-printing,
+  body.guide-printing #root {
     background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
-  .mode-switcher,
-  .pg-action-bar,
-  .pg-tts-btn,
-  .no-print {
-    display: none;
+
+  body.guide-printing * {
+    visibility: hidden !important;
   }
-  .app-stage {
+
+  body.guide-printing .guide-print-page,
+  body.guide-printing .guide-print-page * {
+    visibility: visible !important;
+  }
+
+  body.guide-printing .mode-switcher,
+  body.guide-printing .pg-action-bar,
+  body.guide-printing .pg-tts-btn,
+  body.guide-printing .no-print {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  body.guide-printing .app-stage {
     padding: 0 !important;
     display: block !important;
+    min-height: 0 !important;
   }
-  .guide-print-page {
-    width: 100%;
-    margin: 0;
+
+  body.guide-printing .guide-print-page {
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
   }
-  .patient-guide-screen {
-    border: 0;
-    box-shadow: none;
-    padding: 0;
+
+  body.guide-printing .patient-guide-screen {
+    width: 100% !important;
+    min-height: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    gap: 18px !important;
   }
-  .pg-card {
+
+  body.guide-printing .pg-print-header {
+    padding-bottom: 14px !important;
+    break-inside: avoid;
+  }
+
+  body.guide-printing .pg-card {
     border-color: black !important;
     page-break-inside: avoid;
+    break-inside: avoid;
+    box-shadow: none !important;
   }
-  .pg-sentence {
-    font-size: 16pt;
+
+  body.guide-printing .pg-action-bar,
+  body.guide-printing .pg-footer {
+    display: none !important;
+  }
+
+  body.guide-printing .pg-sentence {
+    font-size: 15pt;
+    line-height: 1.5;
   }
 }
 
