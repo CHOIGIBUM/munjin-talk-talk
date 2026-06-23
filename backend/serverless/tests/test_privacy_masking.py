@@ -16,6 +16,7 @@ from privacy import sanitize_reception_patient  # noqa: E402
 
 def test_mask_name_handles_two_three_and_four_character_names():
     """이름 길이가 달라도 첫 글자 외의 직접 노출을 최소화합니다."""
+    assert mask_name("김윤") == "김*"
     assert mask_name("공이") == "공*"
     assert mask_name("홍길동") == "홍*동"
     assert mask_name("최찬범길") == "최**길"
