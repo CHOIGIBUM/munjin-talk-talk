@@ -43,7 +43,7 @@
 - LLM extraction · Hybrid IR · final review · guide generation의 책임을 분리해 설명.
 - 환자 음성은 S3에 저장하지 않는다는 원칙을 명시.
 - 문진 원문·원페이퍼·안내문은 DynamoDB가 아니라 가명처리 S3 artifact로 저장한다는 원칙을 명시.
-- LLM extraction fallback이 제거되어 실패가 조용히 대체되지 않음을 명시.
+- LLM 검증 실패가 정상 결과처럼 저장되지 않음을 명시.
 - 실제 계정 ID·API endpoint·bucket 이름·access key는 문서에 고정하지 않음.
 - LangChain은 "LLM 호출 chain", LangGraph는 "문진 처리 흐름 graph"로 구분.
 
@@ -51,4 +51,4 @@
 
 ## 🔧 기준 구현
 
-이 문서들은 현재 저장소의 서버리스 MVP 구조를 기준으로 작성되었습니다. 다른 AWS 계정 · Amplify 앱 · 스테이징 환경으로 배포할 때는 대상 브랜치, API Gateway endpoint, DynamoDB table name, SAM stack name, artifact bucket 이름을 환경에 맞게 다시 확인해야 합니다.
+이 문서들은 현재 저장소의 서버리스 MVP 구조를 기준으로 작성되었습니다. 다른 AWS 계정이나 Amplify 앱으로 배포할 때는 API Gateway endpoint, DynamoDB table name, SAM stack name, artifact bucket 이름을 환경에 맞게 다시 확인해야 합니다.

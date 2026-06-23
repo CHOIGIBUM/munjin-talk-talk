@@ -14,7 +14,7 @@
 4. LLM/LangGraph/IR 추적은 `llm_trace.redacted.json` 하나에 최소 설명 단위로만 저장합니다.
 5. LLM 출력은 Pydantic schema와 source_quote 검증을 통과해야 저장됩니다.
 6. 증상 매칭은 LLM 단독 판단이 아니라 BM25 + Titan Vector Hybrid IR을 통과해야 합니다.
-7. rule-based extraction fallback으로 LLM 실패를 조용히 대체하지 않습니다.
+7. 검증 실패를 정상 결과처럼 조용히 대체하지 않습니다.
 8. 의료진 UI와 운영 artifact에는 내부 rank score를 숫자로 노출하지 않습니다.
 
 ---
@@ -93,7 +93,7 @@ backend/serverless/
 | `rag_context.py` | RAG 참고 문맥 검색 |
 | `langchain_prompting.py` / `llm.py` | Bedrock JSON chain / 호출 wrapper |
 | `extraction_prompts.py` / `extraction_schema.py` | Q별 prompt / extraction 보조 스키마 |
-| `domain_config.py` / `question_sets.py` | 도메인팩 로딩·질문 fallback / 질문셋 로딩 |
+| `domain_config.py` / `question_sets.py` | 도메인팩 로딩·기본 질문값 / 질문셋 로딩 |
 | `clinical_terms.py` / `clinical_state.py` | 임상 용어 / 임상 상태 helper |
 | `retrieval.py` (+ `_documents`/`_embeddings`/`_scoring`) | Hybrid IR |
 | `onepager.py` / `onepager_sections.py` / `onepager_review.py` | 원페이퍼 생성·섹션·리뷰 |

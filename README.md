@@ -11,15 +11,9 @@
 ![Backend](https://img.shields.io/badge/backend-AWS%20Lambda%20Python%203.12-ff9900)
 ![LLM](https://img.shields.io/badge/LLM-Bedrock%20Nova%20%2B%20Titan-232f3e)
 ![Pipeline](https://img.shields.io/badge/pipeline-LangGraph%20%2B%20LangChain-1c3c3c)
-![Tests](https://img.shields.io/badge/tests-25%20passed-success)
+![Tests](https://img.shields.io/badge/tests-26%20passed%2C%203%20skipped-success)
 
 </div>
-
-<!-- ───────────────────────────────────────────────
-  HERO: 데모 GIF 1장을 여기에. (태블릿 음성 문진 → 의료진 원페이퍼로 이어지는 10초 클립 권장)
-  docs/readme-assets/hero.gif 로 저장 후 아래 주석 해제
-─────────────────────────────────────────────── -->
-<!-- <div align="center"><img src="docs/readme-assets/hero.gif" width="760" alt="문진톡톡 데모"></div> -->
 
 > ⚠️ **문진톡톡은 진단·처방·질병 예측을 하지 않습니다.** 환자 발화를 의료진이 확인하기 쉬운 형태로 정리하는 *진료 보조 도구*이며, 모든 의료 판단은 의료진이 수행합니다.
 
@@ -83,7 +77,7 @@
 - 🔎 `source_quote`는 **환자 원문에 실제로 존재해야** 통과합니다. 없는 말을 지어내면 검증에서 걸립니다.
 - 📐 스키마에 없는 JSON 필드는 **거부**합니다 (Pydantic enum·필수 필드·extra field 검증).
 - 🧭 증상 매칭은 LLM 단독 판단이 아니라 **원천 JSON 기반 Hybrid IR**(BM25 + Titan Vector + label bridge)을 통과해야 합니다.
-- ❌ rule-based fallback으로 LLM 실패를 **조용히 덮지 않습니다.** validator 실패는 retry 후 실패로 *드러냅니다.*
+- ❌ 검증 실패를 정상 결과처럼 **조용히 덮지 않습니다.** validator 실패는 retry 후 실패로 *드러냅니다.*
 
 > 한 줄 요약: **AI는 받아쓰고 정리할 뿐, 판단의 권한은 의료진에게 남깁니다.**
 
@@ -270,20 +264,20 @@ munjin-talk-talk/
 
 ---
 
-## 🧭 제출 환경 보안 상태와 상용화 확장 계획
+## 🧭 제출 환경 보안 상태
 
 현재 저장소는 해커톤 시연과 구조 검증을 위한 MVP입니다. 코드에는 1차 접근 제어와 저장 최소화 장치가 들어가 있으며, 제출용 AWS 환경에는 WAF, CloudTrail, GuardDuty, Security Hub, Macie, S3 lifecycle, DynamoDB TTL 같은 운영 보안 설정을 함께 적용했습니다.
 
-다만 실제 의료기관 운영 전에는 병원 SSO/Cognito, 사용자별 감사 로그, 세부 IAM least privilege, 병원 개인정보 처리 기준 검토가 추가로 필요합니다.
-
-- [x] 직원/의사 접근 코드 로그인 + 만료 세션 토큰 + 환자 세션 토큰 기반 1차 접근 제어
-- [x] 음성 원본 미저장 Transcribe Streaming, S3 artifact 서버 측 암호화 코드, CORS origin 제한
-- [x] DynamoDB TTL · S3 Lifecycle 3일 삭제 · Block Public Access · Macie 민감정보 탐지
-- [x] API Gateway throttling · Amplify WAF · CloudTrail · GuardDuty · Security Hub · CloudWatch 로그 단기 보존
-- [x] AWS AI Services opt-out 정책 적용
-- [x] **강원 방언 RAG** — 강원 방언팩 기반 로컬 검색과 Nova Lite 표준화 보조 단계 적용
-- [ ] 실제 EMR 연동 설계
-- [ ] 병원 운영 기준에 맞춘 Cognito/SSO, 사용자별 권한, 감사 로그 고도화
+| 구분 | 적용 내용 |
+| --- | --- |
+| 접근 제어 | 직원/의사 접근 코드 로그인, 만료 세션 토큰, 환자 세션 토큰 |
+| 음성 처리 | 음성 원본 미저장 Transcribe Streaming |
+| 저장 최소화 | DynamoDB에는 상태와 S3 pointer만 저장, S3에는 가명처리 artifact 저장 |
+| 보관 기간 | DynamoDB TTL, S3 Lifecycle 3일 삭제 |
+| 경계 보안 | CORS origin 제한, API Gateway throttling, Amplify WAF |
+| 감사·탐지 | CloudTrail, GuardDuty, Security Hub, Macie |
+| AI 서비스 정책 | AWS AI Services opt-out 정책 적용 |
+| 방언 처리 | 강원 방언팩 기반 로컬 RAG와 Nova Lite 표준화 보조 단계 |
 
 ---
 

@@ -50,7 +50,7 @@ backend/
     │   ├── llm.py               # LLM 호출 wrapper + chain meta
     │   ├── extraction_prompts.py / extraction_schema.py
     │   ├── clinical_terms.py / clinical_state.py
-    │   ├── domain_config.py     # 도메인팩 로딩·기본 질문 fallback
+    │   ├── domain_config.py     # 도메인팩 로딩·기본 질문값
     │   ├── question_sets.py     # 질문셋 로딩
     │   ├── retrieval.py         # Hybrid IR 진입점
     │   ├── retrieval_documents.py / retrieval_embeddings.py / retrieval_scoring.py
@@ -114,7 +114,7 @@ input_transcript → quick_safety_flag → rag_context_retrieval
 
 ## 🛡️ LLM 사용 원칙
 
-- LLM extraction은 필수 경로입니다 (rule-based fallback으로 조용히 대체하지 않음).
+- LLM extraction은 필수 검증 경로이며, 실패 결과를 정상 결과처럼 저장하지 않습니다.
 - LLM JSON은 fixed schema를 통과해야 하고, `source_quote`·`original_quote`는 환자 원문에 존재해야 합니다.
 - enum은 미리 정의된 값만, schema에 없는 필드는 거부합니다.
 - LLM이 생성한 `score`·`confidence`·`probability`·`risk percentage`는 허용하지 않습니다.
@@ -162,7 +162,7 @@ input_transcript → quick_safety_flag → rag_context_retrieval
 | DynamoDB | `session_id`, queue_number, status, visit_type, **마스킹 환자 표시정보**, age_band, gender, department, doctor, receipt_id, risk, privacy_consent 요약, question_status, artifact key, onepager_ready, guide_ready | 실명·생년월일·연락처 원문, 문항 원문, 원페이퍼/안내문 전체 |
 | S3 | `sessions/YYYY-MM-DD/{session_id}/` 아래 consent·answers·onepaper·doctor_review·patient_guide·llm_trace 의 `.redacted.json` | 음성 원본, prompt 전문, LLM raw response, 전체 후보 목록 |
 
-S3는 `artifact_store.py`로만 읽고 씁니다. 저장 직전 `artifact_policy.py`가 운영 필드만 남기고 `privacy.py`가 연락처·주민번호·이메일·생년월일 형태 직접식별정보를 1차 마스킹합니다. 운영에서는 S3 Block Public Access · Lifecycle · KMS · Macie를 함께 적용해야 합니다.
+S3는 `artifact_store.py`로만 읽고 씁니다. 저장 직전 `artifact_policy.py`가 운영 필드만 남기고 `privacy.py`가 연락처·주민번호·이메일·생년월일 형태 직접식별정보를 1차 마스킹합니다. 제출 환경에는 S3 Block Public Access · Lifecycle · KMS · Macie를 함께 적용했습니다.
 
 ---
 
@@ -172,7 +172,7 @@ S3는 `artifact_store.py`로만 읽고 씁니다. 저장 직전 `artifact_policy
 # Python 문법
 python -m compileall backend/serverless/src
 
-# 테스트 (6 파일, 25 케이스)
+# 테스트
 cd backend/serverless
 pip install -r src/requirements.txt pytest
 python -m pytest tests/ -q

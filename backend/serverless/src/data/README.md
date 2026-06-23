@@ -9,8 +9,10 @@
 | `diseases_cleaned.json` | 질환 백과 원천 정리본 | 제외 |
 | `symptom_index.json` | 증상명과 질환 문서 연결 인덱스 | 제외 |
 | `symptom_embeddings_amazon.titan-embed-text-v2_0_512.json` | Titan 기반 표준 증상 문서 embedding cache | 제외 |
-| `domain_packs/respiratory.json` | 문진톡톡 호흡기 MVP 도메인 설정 | 포함 |
+| `domain_packs/respiratory.json` | 문진톡톡 호흡기 문진 도메인 설정 | 포함 |
 | `domain_packs/respiratory_fewshot.txt` | LLM extraction few-shot 예시 | 포함 |
+| `dialect_packs/dialect_kangwon.json` | 강원 방언 표현을 표준어 후보로 연결하는 로컬 RAG 참조 데이터 | 포함 |
+| `dialect_packs/dialect_kangwon.csv` | 방언팩 원본 관리용 표 형태 데이터 | 포함 |
 | `question_sets/default.json` | 초진/재진 문진 질문 세트 | 포함 |
 
 비공개 데이터 파일은 Lambda 패키징 전에 이 폴더에 위치해야 합니다. 파일이 없으면 Hybrid IR 문서 생성 단계가 실행되지 않으므로, SAM 배포 전 반드시 데이터 배치 여부를 확인합니다.
@@ -20,6 +22,7 @@ backend/serverless/src/data/
   diseases_cleaned.json
   symptom_index.json
   symptom_embeddings_amazon.titan-embed-text-v2_0_512.json
+  dialect_packs/
   domain_packs/
   question_sets/
 ```
