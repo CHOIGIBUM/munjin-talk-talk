@@ -21,6 +21,13 @@ def test_mask_name_handles_two_three_and_four_character_names():
     assert mask_name("최찬범길") == "최**길"
 
 
+def test_mask_name_keeps_existing_masked_display_names_stable():
+    """응답 직전 재마스킹을 해도 이미 마스킹된 표시명은 깨지지 않습니다."""
+    assert mask_name("공*") == "공*"
+    assert mask_name("홍*동") == "홍*동"
+    assert mask_name("최**길") == "최**길"
+
+
 def test_mask_name_removes_inner_spaces_before_masking():
     """접수 입력에 공백이 들어와도 동일한 마스킹 정책을 적용합니다."""
     assert mask_name("홍 길동") == "홍*동"

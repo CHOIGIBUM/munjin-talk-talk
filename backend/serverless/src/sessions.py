@@ -195,7 +195,9 @@ def public_session(
     상세가 필요한 API에서만 S3에 있는 가명처리 답변을 포함합니다.
     """
     patient = session.get("patient", {})
-    patient_name = patient.get("name") or mask_name(patient.get("full_name"))
+    # 과거 세션이나 다른 저장 경로에서 평문 이름이 섞여도 API 응답 직전에
+    # 다시 마스킹합니다. 이미 `김*동`처럼 마스킹된 값은 같은 형태로 유지됩니다.
+    patient_name = mask_name(patient.get("name") or patient.get("full_name"))
     payload = {
         "sessionId": session.get("session_id"),
         "session_id": session.get("session_id"),

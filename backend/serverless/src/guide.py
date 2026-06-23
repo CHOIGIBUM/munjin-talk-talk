@@ -17,7 +17,7 @@ from llm import call_bedrock_json_with_meta
 from schemas.guide import validate_guide_payload
 from sessions import get_session, update_session
 from settings import GUIDE_MAX_TOKENS, GUIDE_MODEL_ID
-from utils import clean_quote, compact_ir, json_default, normalize_text, now_iso, response
+from utils import clean_quote, compact_ir, json_default, mask_name, normalize_text, now_iso, response
 
 
 def save_doctor_response(body: dict[str, Any]):
@@ -236,7 +236,7 @@ def get_guide(session_id: str) -> dict[str, Any] | None:
     doctor_review = get_json(session, DOCTOR_REVIEW_FILE, default={}) or {}
     return {
         "session_id": session_id,
-        "patient_name_masked": (session.get("patient") or {}).get("name", "환자"),
+        "patient_name_masked": mask_name((session.get("patient") or {}).get("name")),
         "patient_guide": guide,
         "doctor_additional_notes": (
             doctor_review.get("patient_instruction")
