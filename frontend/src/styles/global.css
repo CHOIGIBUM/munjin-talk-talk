@@ -1168,20 +1168,22 @@ body {
   font-weight: 900 !important;
   margin-left: 4px;
 }
+.done-footer-v4 {
+  padding: 18px 24px max(22px, env(safe-area-inset-bottom));
+}
 .done-return-queue-button {
-  min-width: 280px;
-  min-height: 60px;
-  margin-top: 24px;
+  width: 100%;
+  min-height: 74px;
   padding: 0 24px;
   border: 0;
-  border-radius: 14px;
+  border-radius: 18px;
   background: linear-gradient(135deg, var(--blue), var(--teal));
   color: white;
   font: inherit;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 1000;
   cursor: pointer;
-  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.22);
+  box-shadow: 0 18px 36px rgba(37, 99, 235, 0.26);
 }
 .done-return-queue-button:active {
   transform: translateY(1px);

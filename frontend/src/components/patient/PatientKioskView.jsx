@@ -59,9 +59,6 @@ export default function PatientKioskView() {
         })
       }}
       onExitToQueue={() => navigate('/patient')}
-      onComplete={() => {
-        window.setTimeout(() => navigate('/patient'), 3500)
-      }}
     />
   )
 }

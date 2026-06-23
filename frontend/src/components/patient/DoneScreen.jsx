@@ -64,16 +64,19 @@ export default function DoneScreen({
           </span>
         </div>
 
-        {onExitToQueue && (
+      </div>
+
+      {onExitToQueue && (
+        <footer className="screen-footer done-footer-v4">
           <button
             type="button"
             className="done-return-queue-button"
             onClick={onExitToQueue}
           >
-            문진 대기열로 돌아가기
+            다음 환자 선택 화면으로 돌아가기
           </button>
-        )}
-      </div>
+        </footer>
+      )}
     </>
   )
 }
