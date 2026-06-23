@@ -98,12 +98,14 @@ def visit_label(value):
 
 
 def mask_name(name):
-    text = str(name or "").strip()
+    text = re.sub(r"\s+", "", str(name or "").strip())
     if not text:
         return "환자"
     if len(text) == 1:
-        return text
-    return f"{text[0]}*{text[-1]}"
+        return "*"
+    if len(text) == 2:
+        return f"{text[0]}*"
+    return f"{text[0]}{'*' * (len(text) - 2)}{text[-1]}"
 
 
 def calculate_age(birth_date):
