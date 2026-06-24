@@ -274,7 +274,11 @@ flowchart TB
 
 ## 🚀 빠른 시작
 
-### 프론트엔드
+### 1. 데모 확인
+
+배포된 서비스는 AWS Amplify URL에서 확인합니다. 배포 URL은 최종 제출 시 대회 제출 페이지와 발표자료에 함께 기재합니다.
+
+### 2. 프론트엔드 로컬 실행
 
 ```bash
 cd frontend
@@ -302,13 +306,15 @@ AWS 백엔드 연결 시 `frontend/.env.local`:
 VITE_API_BASE_URL=https://<api-id>.execute-api.<region>.amazonaws.com
 ```
 
-### 백엔드 (AWS SAM)
+### 3. 백엔드 배포
 
 ```bash
 cd backend/serverless
 sam build
 sam deploy --guided   # ArtifactsBucketName 에 가명처리 산출물용 S3 버킷명 입력
 ```
+
+### 4. 배포 시 필요한 비공개 데이터
 
 실제 배포 환경에서는 공개 저장소에 포함하지 않는 서울아산병원 질병백과 기반 IR 런타임 데이터(`diseases_cleaned.json`, `symptom_index.json`, embedding cache)를 팀 내부 비공개 경로에서 Lambda 패키지에 배치해야 합니다.
 
@@ -317,7 +323,7 @@ sam deploy --guided   # ArtifactsBucketName 에 가명처리 산출물용 S3 버
 ```text
 munjin-talk-talk/
 ├── frontend/              # React + Vite SPA (4개 화면)
-│   └── src/{components,hooks,services,config,styles}
+│   └── src/               # 화면 컴포넌트, API client, STT hook, 스타일
 ├── backend/serverless/
 │   ├── template.yaml      # SAM: API Gateway + Lambda
 │   └── src/
@@ -327,6 +333,7 @@ munjin-talk-talk/
 │       ├── retrieval*.py         # Hybrid IR
 │       ├── schemas/              # Pydantic 스키마
 │       └── data/                 # 공개 도메인팩 · 질문셋 / 비공개 IR 데이터 배치 위치
+├── evaluation/            # IR 성능 평가 스크립트와 평가 입력 형식
 └── docs/                  # 아키텍처 · 파이프라인 · 데이터 · 보안 문서
 ```
 
