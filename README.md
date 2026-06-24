@@ -198,7 +198,7 @@ IR은 내부 배포 환경의 비공개 런타임 데이터(`diseases_cleaned.js
 3. BM25가 표준 증상 문서와의 키워드 일치를 계산
 4. Titan embedding이 환자 표현과 표준 증상 문서의 의미 유사도를 계산
 5. 표준 증상명과 직접 가까운 표현은 label bridge로 보조 반영
-6. BM25 상위 후보, Titan vector 상위 후보, label 후보를 합친 뒤 내부 rank score로 재정렬
+6. BM25 상위 후보, Titan vector 상위 후보, label 후보를 합친 뒤 근거가 겹치는 후보를 우선 정리
 7. Titan 의미 신호와 BM25/label 근거를 함께 만족한 후보만 `matched_slots`로 확정
 8. 운영 산출물에는 임의 점수·전체 후보 목록·prompt 전문을 저장하지 않고, 원페이퍼에는 “매칭됨/우선 확인”처럼 의료진이 해석 가능한 상태만 표시
 
@@ -212,7 +212,7 @@ flowchart TB
   Titan["Titan Vector<br/>의미 유사도"]
   Label["Label Bridge<br/>표준명 보조"]
   Merge["후보 통합<br/>BM25 + Vector + Label"]
-  Rank["재정렬<br/>점수는 내부용"]
+  Rank["후보 정리<br/>근거 조합"]
   Gate{"근거 충분?"}
   Matched["matched_slots<br/>원페이퍼 표시"]
   Unmatched["unmatched_spans<br/>맥락 보존"]
@@ -236,7 +236,7 @@ flowchart TB
 | `BM25` | 서울아산병원 질병백과 기반 증상 문서와의 키워드 일치 |
 | `Titan Vector` | 환자 표현과 표준 증상 문서 사이의 의미 유사도 |
 | `Label Bridge` | 표준 증상명과 직접 가까운 표현을 보조 후보로 보존 |
-| `재정렬` | 후보를 내부 rank score로 정렬하되 운영 UI에는 숫자 점수를 노출하지 않음 |
+| `후보 정리` | BM25, Titan Vector, Label Bridge에서 근거가 함께 잡힌 후보를 우선 확인 |
 | `근거 충분?` | Titan 의미 신호와 BM25/label 근거가 함께 있을 때만 표준 증상으로 확정 |
 
 ### 예시
