@@ -15,9 +15,13 @@
 ![LLM](https://img.shields.io/badge/LLM-Bedrock%20Nova%20%2B%20Titan-232f3e)
 ![Pipeline](https://img.shields.io/badge/pipeline-LangGraph%20%2B%20LangChain-1c3c3c)
 
-[데모 URL](https://main.dv5herezqtt1t.amplifyapp.com)
+<br/>
 
-심사용 직원/의사 접근 코드는 최종 제출 자료에 별도로 기재합니다.
+<a href="https://main.dv5herezqtt1t.amplifyapp.com">
+  <img src="https://img.shields.io/badge/Demo-%EC%84%9C%EB%B9%84%EC%8A%A4%20%EB%B0%94%EB%A1%9C%EA%B0%80%EA%B8%B0-0ea5e9?style=for-the-badge" alt="데모 서비스 바로가기" />
+</a>
+
+<sub>심사용 직원/의사 접근 코드는 최종 제출 자료에 별도로 기재합니다.</sub>
 
 </div>
 
@@ -199,7 +203,7 @@ IR은 내부 배포 환경의 비공개 런타임 데이터(`diseases_cleaned.js
 4. Titan embedding이 환자 표현과 표준 증상 문서의 의미 유사도를 계산
 5. 표준 증상명과 직접 가까운 표현은 label bridge로 보조 반영
 6. BM25 상위 후보, Titan vector 상위 후보, label 후보를 합친 뒤 근거가 겹치는 후보를 우선 정리
-7. Titan 의미 신호와 BM25/label 근거를 함께 만족한 후보만 `matched_slots`로 확정
+7. Titan 의미 신호, BM25 키워드 신호, label 근거가 함께 잡히는 후보를 우선 확정하고, 근거가 부족한 후보는 문진 맥락으로 보존
 8. 운영 산출물에는 임의 점수·전체 후보 목록·prompt 전문을 저장하지 않고, 원페이퍼에는 “매칭됨/우선 확인”처럼 의료진이 해석 가능한 상태만 표시
 
 ### Hybrid IR 처리 흐름
@@ -276,7 +280,7 @@ flowchart TB
 
 ### 1. 데모 확인
 
-배포된 서비스는 AWS Amplify URL에서 확인합니다. 배포 URL은 최종 제출 시 대회 제출 페이지와 발표자료에 함께 기재합니다.
+배포된 서비스는 상단의 [데모 URL](https://main.dv5herezqtt1t.amplifyapp.com)에서 확인합니다. 심사용 직원/의사 접근 코드는 최종 제출 자료와 발표자료에 별도로 기재합니다.
 
 ### 2. 프론트엔드 로컬 실행
 
@@ -316,7 +320,7 @@ sam deploy --guided   # ArtifactsBucketName 에 가명처리 산출물용 S3 버
 
 ### 4. 배포 시 필요한 비공개 데이터
 
-실제 배포 환경에서는 공개 저장소에 포함하지 않는 서울아산병원 질병백과 기반 IR 런타임 데이터(`diseases_cleaned.json`, `symptom_index.json`, embedding cache)를 팀 내부 비공개 경로에서 Lambda 패키지에 배치해야 합니다.
+프론트엔드, Lambda 코드, SAM 템플릿, 스키마, 평가 스크립트는 공개 저장소에 포함되어 있습니다. 실제 배포 환경에서는 저작권과 보안 처리가 필요한 서울아산병원 질병백과 기반 IR 런타임 데이터(`diseases_cleaned.json`, `symptom_index.json`, embedding cache`)만 팀 내부 비공개 경로에서 Lambda 패키지에 배치합니다.
 
 ## 🗂️ 저장소 구조
 
