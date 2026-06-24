@@ -97,10 +97,16 @@ def visit_label(value):
     return "재진" if normalize_visit_type(value) == "followup" else "초진"
 
 
-def mask_name(name):
+def mask_name(name, *, repair_legacy_mask: bool = False):
     text = re.sub(r"\s+", "", str(name or "").strip())
     if not text:
         return "환자"
+    if repair_legacy_mask:
+        # 구버전 세션에는 두 글자 이름이 `김*윤`처럼 잘못 저장된 경우가 있습니다.
+        # 버전 정보가 없는 기존 데이터만 더 강하게 줄여서 직접 식별 가능성을 낮춥니다.
+        legacy_two_char_mask = re.fullmatch(r"([0-9A-Za-z가-힣])\*([0-9A-Za-z가-힣])", text)
+        if legacy_two_char_mask:
+            return f"{legacy_two_char_mask.group(1)}*"
     if len(text) == 1:
         return "*"
     if len(text) == 2:

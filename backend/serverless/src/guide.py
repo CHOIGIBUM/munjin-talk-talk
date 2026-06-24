@@ -234,9 +234,14 @@ def get_guide(session_id: str) -> dict[str, Any] | None:
         "generation_method": "not_generated",
     }
     doctor_review = get_json(session, DOCTOR_REVIEW_FILE, default={}) or {}
+    patient = session.get("patient") or {}
+    repair_legacy_name = patient.get("name_mask_version") != "v2"
     return {
         "session_id": session_id,
-        "patient_name_masked": mask_name((session.get("patient") or {}).get("name")),
+        "patient_name_masked": mask_name(
+            patient.get("name") or patient.get("full_name"),
+            repair_legacy_mask=repair_legacy_name,
+        ),
         "patient_guide": guide,
         "doctor_additional_notes": (
             doctor_review.get("patient_instruction")

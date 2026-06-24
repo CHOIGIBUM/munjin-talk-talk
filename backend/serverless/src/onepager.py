@@ -266,8 +266,12 @@ def collect_symptom_slots(q1: dict[str, Any], q3: dict[str, Any]) -> list[dict[s
 
 def build_patient_summary(patient: dict[str, Any], session: dict[str, Any], visit_type: str) -> dict[str, Any]:
     """원페이퍼 상단 환자 요약 카드를 만듭니다."""
+    repair_legacy_name = patient.get("name_mask_version") != "v2"
     return {
-        "display_name": mask_name(patient.get("name") or patient.get("full_name")),
+        "display_name": mask_name(
+            patient.get("name") or patient.get("full_name"),
+            repair_legacy_mask=repair_legacy_name,
+        ),
         "age_text": f"{patient.get('age') or '-'}세",
         "sex": patient.get("gender") or "-",
         "department": patient.get("department") or "이비인후과",

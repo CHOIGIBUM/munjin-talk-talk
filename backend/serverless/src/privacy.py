@@ -54,6 +54,7 @@ def sanitize_reception_patient(patient_input: dict[str, Any]) -> dict[str, Any]:
 
     return {
         "name": mask_name(full_name),
+        "name_mask_version": "v2",
         "age": age,
         "age_band": age_band(age),
         "gender": patient_input.get("gender") or "-",

@@ -29,6 +29,12 @@ def test_mask_name_keeps_existing_masked_display_names_stable():
     assert mask_name("최**길") == "최**길"
 
 
+def test_mask_name_repairs_legacy_two_character_display_names_when_requested():
+    """버전 없는 구세션에서 잘못 저장된 두 글자 표시명은 더 안전하게 보정합니다."""
+    assert mask_name("김*윤", repair_legacy_mask=True) == "김*"
+    assert mask_name("홍*동", repair_legacy_mask=False) == "홍*동"
+
+
 def test_mask_name_removes_inner_spaces_before_masking():
     """접수 입력에 공백이 들어와도 동일한 마스킹 정책을 적용합니다."""
     assert mask_name("홍 길동") == "홍*동"
@@ -40,5 +46,6 @@ def test_reception_patient_stores_masked_display_name_only():
     patient = sanitize_reception_patient({"full_name": "공이", "birth_date": "1950-01-01"})
 
     assert patient["name"] == "공*"
+    assert patient["name_mask_version"] == "v2"
     assert "full_name" not in patient
     assert "birth_date" not in patient

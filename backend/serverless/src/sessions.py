@@ -195,9 +195,14 @@ def public_session(
     상세가 필요한 API에서만 S3에 있는 가명처리 답변을 포함합니다.
     """
     patient = session.get("patient", {})
-    # 과거 세션이나 다른 저장 경로에서 평문 이름이 섞여도 API 응답 직전에
-    # 다시 마스킹합니다. 이미 `김*동`처럼 마스킹된 값은 같은 형태로 유지됩니다.
-    patient_name = mask_name(patient.get("name") or patient.get("full_name"))
+    # 과거 세션에는 두 글자 이름이 `김*윤`처럼 저장된 값이 있을 수 있습니다.
+    # 신규 세션에는 v2 태그를 붙여 정상 3글자 마스킹(`홍*동`)은 유지하고,
+    # 태그가 없는 기존 값만 더 엄격하게 보정합니다.
+    repair_legacy_name = patient.get("name_mask_version") != "v2"
+    patient_name = mask_name(
+        patient.get("name") or patient.get("full_name"),
+        repair_legacy_mask=repair_legacy_name,
+    )
     payload = {
         "sessionId": session.get("session_id"),
         "session_id": session.get("session_id"),
