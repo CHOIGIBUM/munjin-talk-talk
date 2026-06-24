@@ -5,7 +5,7 @@
   문진톡톡 · MunjinTalkTalk
 </h1>
 
-고령 환자의 음성 한마디를, 의료진이 30초 안에 읽는 진료 전 원페이퍼로.
+고령 환자의 음성 한마디를, 의료진이 진료 전 한눈에 읽는 원페이퍼로.
 
 말로 답한 문진을 → 구조화 → 표준 증상 매칭 → 검증을 거쳐, 진료 전엔 *의료진용 원페이퍼*로, 진료 후엔 *환자용 안내문*으로 바꿔주는 AI 문진 보조 MVP
 
@@ -16,6 +16,8 @@
 ![Pipeline](https://img.shields.io/badge/pipeline-LangGraph%20%2B%20LangChain-1c3c3c)
 
 [데모 URL](https://main.dv5herezqtt1t.amplifyapp.com)
+
+심사용 직원/의사 접근 코드는 최종 제출 자료에 별도로 기재합니다.
 
 </div>
 
@@ -248,6 +250,8 @@ sam build
 sam deploy --guided   # ArtifactsBucketName 에 가명처리 산출물용 S3 버킷명 입력
 ```
 
+실제 배포 환경에서는 공개 저장소에 포함하지 않는 IR 런타임 데이터(`diseases_cleaned.json`, `symptom_index.json`, embedding cache)를 팀 내부 비공개 경로에서 Lambda 패키지에 배치해야 합니다.
+
 ## 🗂️ 저장소 구조
 
 ```text
@@ -288,7 +292,7 @@ munjin-talk-talk/
 | 접근 제어 | 직원/의사 접근 코드 로그인, 만료 세션 토큰, 환자 세션 토큰 |
 | 음성 처리 | 음성 원본 미저장 Transcribe Streaming |
 | 저장 최소화 | DynamoDB에는 상태와 S3 pointer만 저장, S3에는 가명처리 artifact 저장 |
-| 보관 기간 | DynamoDB TTL, S3 Lifecycle 3일 삭제, CloudWatch Logs 단기 보존 |
+| 보관 기간 | DynamoDB TTL, S3 Lifecycle 3일 삭제, CloudWatch Logs 보존 기간 제한 설정 |
 | 경계 보안 | CORS origin 제한, API Gateway throttling, Amplify WAF |
 | 감사·탐지 | CloudTrail, GuardDuty, Security Hub, Macie |
 | AI 서비스 정책 | AWS AI Services opt-out 정책 적용 |
