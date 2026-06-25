@@ -1,0 +1,40 @@
+{
+  "version": "respiratory-semantic-unit-v1",
+  "stage": "semantic_unit",
+  "examples": [
+    {
+      "title": "split resolved and current symptoms",
+      "original": "열은 내렸는데 아직 목이 칼칼하고 기침이 나요.",
+      "standardized": "열은 내렸는데 아직 목이 칼칼하고 기침이 나요.",
+      "expected_json": {
+        "meaning_units": [
+          {"source_quote": "열은 내렸는데", "normalized_text": "열은 내렸습니다.", "role": "clinical_meaning"},
+          {"source_quote": "아직 목이 칼칼하고", "normalized_text": "아직 목이 칼칼합니다.", "role": "clinical_meaning"},
+          {"source_quote": "기침이 나요", "normalized_text": "기침이 납니다.", "role": "clinical_meaning"}
+        ]
+      }
+    },
+    {
+      "title": "split medication and patient question",
+      "original": "혈압약은 매일 먹고 감기약이랑 같이 먹어도 되는지 궁금해요.",
+      "standardized": "혈압약은 매일 먹고 감기약과 같이 먹어도 되는지 궁금합니다.",
+      "expected_json": {
+        "meaning_units": [
+          {"source_quote": "혈압약은 매일 먹고", "normalized_text": "혈압약을 매일 복용합니다.", "role": "medication"},
+          {"source_quote": "감기약이랑 같이 먹어도 되는지 궁금해요", "normalized_text": "감기약과 함께 복용해도 되는지 궁금합니다.", "role": "patient_question"}
+        ]
+      }
+    },
+    {
+      "title": "denial of agenda is context, not question",
+      "original": "따로 궁금한 건 없고 기침은 아직 조금 남았어요.",
+      "standardized": "따로 궁금한 것은 없고 기침은 아직 조금 남았습니다.",
+      "expected_json": {
+        "meaning_units": [
+          {"source_quote": "따로 궁금한 건 없고", "normalized_text": "추가 질문은 없습니다.", "role": "context"},
+          {"source_quote": "기침은 아직 조금 남았어요", "normalized_text": "기침은 아직 조금 남았습니다.", "role": "clinical_meaning"}
+        ]
+      }
+    }
+  ]
+}

@@ -11,6 +11,8 @@ import os
 import boto3
 from botocore.config import Config
 
+from data_sources import resolve_embedding_cache_path, resolve_ir_source_path
+
 
 # 배포 리전과 핵심 저장소 이름은 SAM template에서 환경 변수로 주입합니다.
 REGION = os.environ.get("AWS_REGION", "ap-northeast-2")
@@ -52,10 +54,10 @@ REVIEW_RETRY_ATTEMPTS = int(os.environ.get("REVIEW_RETRY_ATTEMPTS", "2"))
 
 # IR 검색에 필요한 원천 데이터와 사전 계산된 Titan embedding 파일 위치입니다.
 DATA_DIR = Path(__file__).resolve().parent / "data"
-DISEASES_PATH = DATA_DIR / "diseases_cleaned.json"
-SYMPTOM_INDEX_PATH = DATA_DIR / "symptom_index.json"
 EMBEDDING_MODEL_ID = os.environ.get("EMBEDDING_MODEL_ID", "amazon.titan-embed-text-v2:0")
 EMBEDDING_DIMENSIONS = int(os.environ.get("EMBEDDING_DIMENSIONS", "512"))
+DISEASES_PATH = resolve_ir_source_path("diseases_cleaned.json", "DISEASES_PATH", DOMAIN_PACK)
+SYMPTOM_INDEX_PATH = resolve_ir_source_path("symptom_index.json", "SYMPTOM_INDEX_PATH", DOMAIN_PACK)
 HYBRID_TOP_K = int(os.environ.get("HYBRID_TOP_K", "5"))
 HYBRID_CANDIDATE_K = int(os.environ.get("HYBRID_CANDIDATE_K", "24"))
 HYBRID_ACCEPT_THRESHOLD = float(os.environ.get("HYBRID_ACCEPT_THRESHOLD", "0.18"))
@@ -64,9 +66,7 @@ HYBRID_VECTOR_WEIGHT = float(os.environ.get("HYBRID_VECTOR_WEIGHT", "0.65"))
 HYBRID_MIN_VECTOR_SCORE = float(os.environ.get("HYBRID_MIN_VECTOR_SCORE", "0.12"))
 HYBRID_MIN_BM25_SCORE = float(os.environ.get("HYBRID_MIN_BM25_SCORE", "0.04"))
 HYBRID_MIN_LABEL_SCORE = float(os.environ.get("HYBRID_MIN_LABEL_SCORE", "0.55"))
-EMBEDDING_CACHE_PATH = DATA_DIR / (
-    f"symptom_embeddings_{EMBEDDING_MODEL_ID.replace(':', '_').replace('/', '_')}_{EMBEDDING_DIMENSIONS}.json"
-)
+EMBEDDING_CACHE_PATH = resolve_embedding_cache_path(EMBEDDING_MODEL_ID, EMBEDDING_DIMENSIONS, DOMAIN_PACK)
 
 # boto3 client/resource는 모듈 전역에서 생성해 Lambda cold start 비용을 줄입니다.
 ddb = boto3.resource("dynamodb", region_name=REGION)

@@ -1,0 +1,125 @@
+{
+  "version": "respiratory-extraction-v1",
+  "stage": "extraction",
+  "examples": [
+    {
+      "title": "split multiple current complaints and keep onset as clue",
+      "visit_type": "initial",
+      "question_id": "Q1",
+      "question_type": "chief_complaint",
+      "patient_answer": "어제부터 목이 칼칼하고 코가 맥혀요.",
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "목이 칼칼하고",
+            "type": "symptom",
+            "slot_ref": "throat_irritation",
+            "name": "목 칼칼함",
+            "normalized_text": "목이 칼칼합니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "목의 칼칼함을 현재 불편감으로 직접 말했습니다."
+          },
+          {
+            "source_quote": "코가 맥혀요",
+            "type": "symptom",
+            "slot_ref": "nasal_obstruction",
+            "name": "코막힘",
+            "normalized_text": "코가 막혀 있습니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "구어 표현 '맥혀요'는 코막힘 의미입니다."
+          }
+        ],
+        "structured": {
+          "standardized_text": "어제부터 목이 칼칼하고 코가 막혀 있습니다.",
+          "clinical_clues": [
+            {
+              "category": "증상맥락",
+              "label": "시작시점",
+              "summary": "어제부터 증상이 시작되었습니다.",
+              "source_quote": "어제부터",
+              "source_question": "Q1",
+              "priority": "일반",
+              "related_symptoms": ["목 칼칼함", "코막힘"]
+            }
+          ],
+          "questions": [],
+          "unresolved_items": []
+        }
+      }
+    },
+    {
+      "title": "patient has no agenda in Q4",
+      "visit_type": "initial",
+      "question_id": "Q4",
+      "question_type": "patient_questions",
+      "patient_answer": "따로 궁금한 건 없어요.",
+      "expected_json": {
+        "spans": [],
+        "structured": {
+          "standardized_text": "의사에게 추가로 묻고 싶은 점은 없다고 말했습니다.",
+          "clinical_clues": [],
+          "questions": [],
+          "unresolved_items": []
+        }
+      }
+    },
+    {
+      "title": "improved old symptom is not active but remaining dyspnea is active",
+      "visit_type": "followup",
+      "question_id": "Q1",
+      "question_type": "progress",
+      "patient_answer": "기침은 많이 줄었는데 밤에는 아직 숨이 차요.",
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "기침은 많이 줄었는데",
+            "type": "progress_improved",
+            "slot_ref": "other",
+            "name": "기침 호전",
+            "normalized_text": "기침은 이전보다 많이 줄었습니다.",
+            "status": "없음",
+            "alert": false,
+            "explain": "기침은 호전된 경과로, 현재 주된 불편감 카드가 아닙니다."
+          },
+          {
+            "source_quote": "밤에는 아직 숨이 차요",
+            "type": "progress_unchanged",
+            "slot_ref": "dyspnea",
+            "name": "야간 숨참",
+            "normalized_text": "밤에는 아직 숨이 찹니다.",
+            "status": "있음",
+            "alert": true,
+            "explain": "숨참이 현재 남아 있는 증상으로 언급되었습니다."
+          }
+        ],
+        "structured": {
+          "standardized_text": "기침은 많이 줄었지만 밤에는 아직 숨이 찹니다.",
+          "clinical_clues": [
+            {
+              "category": "재진경과",
+              "label": "호전",
+              "summary": "기침은 이전보다 많이 줄었습니다.",
+              "source_quote": "기침은 많이 줄었는데",
+              "source_question": "Q1",
+              "priority": "일반",
+              "related_symptoms": ["기침"]
+            },
+            {
+              "category": "증상맥락",
+              "label": "현재양상",
+              "summary": "밤에 숨참이 아직 남아 있습니다.",
+              "source_quote": "밤에는 아직 숨이 차요",
+              "source_question": "Q1",
+              "priority": "우선",
+              "related_symptoms": ["호흡곤란"]
+            }
+          ],
+          "questions": [],
+          "unresolved_items": []
+        }
+      }
+    }
+  ]
+}

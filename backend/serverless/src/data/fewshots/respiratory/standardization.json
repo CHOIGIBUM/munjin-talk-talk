@@ -1,0 +1,22 @@
+{
+  "version": "respiratory-standardization-v1",
+  "stage": "standardization",
+  "examples": [
+    {
+      "title": "normalize dialect while preserving symptom meaning",
+      "input": "마카 괜찮아졌는데 아직 코가 멕혀요.",
+      "expected_json": {
+        "standardized_text": "전부 괜찮아졌는데 아직 코가 막혀요.",
+        "normalization_notes": ["마카를 전부로 표준화", "멕혀요를 막혀요로 표준화"]
+      }
+    },
+    {
+      "title": "preserve negation",
+      "input": "기침은 안 나고 목만 좀 칼칼해요.",
+      "expected_json": {
+        "standardized_text": "기침은 나지 않고 목만 조금 칼칼해요.",
+        "normalization_notes": ["부정 의미를 유지"]
+      }
+    }
+  ]
+}

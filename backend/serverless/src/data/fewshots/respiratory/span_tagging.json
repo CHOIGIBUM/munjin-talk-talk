@@ -1,0 +1,60 @@
+{
+  "version": "respiratory-span-tagging-v1",
+  "stage": "span_tagging",
+  "examples": [
+    {
+      "title": "current symptom",
+      "meaning_units": [{"source_quote": "아직 목이 칼칼하고", "normalized_text": "아직 목이 칼칼합니다.", "role": "clinical_meaning"}],
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "아직 목이 칼칼하고",
+            "type": "symptom",
+            "slot_ref": "other",
+            "name": "목 칼칼함",
+            "normalized_text": "아직 목이 칼칼합니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "현재 남아 있는 증상입니다."
+          }
+        ]
+      }
+    },
+    {
+      "title": "absent symptom stays inactive",
+      "meaning_units": [{"source_quote": "기침은 안 나고", "normalized_text": "기침은 나지 않습니다.", "role": "clinical_meaning"}],
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "기침은 안 나고",
+            "type": "symptom_absent",
+            "slot_ref": "other",
+            "name": "기침 없음",
+            "normalized_text": "기침은 나지 않습니다.",
+            "status": "없음",
+            "alert": false,
+            "explain": "기침을 부정했습니다."
+          }
+        ]
+      }
+    },
+    {
+      "title": "improved symptom does not become active",
+      "meaning_units": [{"source_quote": "열은 내렸는데", "normalized_text": "열은 내렸습니다.", "role": "clinical_meaning"}],
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "열은 내렸는데",
+            "type": "progress_improved",
+            "slot_ref": "other",
+            "name": "열 호전",
+            "normalized_text": "열은 내렸습니다.",
+            "status": "없음",
+            "alert": false,
+            "explain": "이전 증상이 호전된 경과입니다."
+          }
+        ]
+      }
+    }
+  ]
+}

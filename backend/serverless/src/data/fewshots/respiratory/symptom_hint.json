@@ -1,0 +1,93 @@
+{
+  "version": "respiratory-symptom-hint-v1",
+  "stage": "symptom_hint",
+  "examples": [
+    {
+      "title": "sputum color is preserved",
+      "tagged_spans": [
+        {
+          "source_quote": "누런 가래가 나와요",
+          "type": "symptom",
+          "slot_ref": "other",
+          "name": "가래",
+          "normalized_text": "누런 가래가 나옵니다.",
+          "status": "있음",
+          "alert": false,
+          "explain": "현재 증상입니다."
+        }
+      ],
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "누런 가래가 나와요",
+            "type": "symptom",
+            "slot_ref": "sputum",
+            "name": "누런 가래",
+            "normalized_text": "누런 가래가 나옵니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "가래 색과 증상 표현을 검색 힌트에 보존했습니다."
+          }
+        ]
+      }
+    },
+    {
+      "title": "non-domain symptom keeps other",
+      "tagged_spans": [
+        {
+          "source_quote": "다리가 부었어요",
+          "type": "symptom",
+          "slot_ref": "other",
+          "name": "부기",
+          "normalized_text": "다리가 부었습니다.",
+          "status": "있음",
+          "alert": false,
+          "explain": "현재 증상입니다."
+        }
+      ],
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "다리가 부었어요",
+            "type": "symptom",
+            "slot_ref": "other",
+            "name": "다리 부기",
+            "normalized_text": "다리가 부었습니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "허용된 호흡기 slot이 명확하지 않아 other를 유지합니다."
+          }
+        ]
+      }
+    },
+    {
+      "title": "improved fever stays non-active",
+      "tagged_spans": [
+        {
+          "source_quote": "열은 내렸어요",
+          "type": "progress_improved",
+          "slot_ref": "other",
+          "name": "열",
+          "normalized_text": "열은 내렸습니다.",
+          "status": "없음",
+          "alert": false,
+          "explain": "호전된 증상입니다."
+        }
+      ],
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "열은 내렸어요",
+            "type": "progress_improved",
+            "slot_ref": "other",
+            "name": "열 호전",
+            "normalized_text": "열은 내렸습니다.",
+            "status": "없음",
+            "alert": false,
+            "explain": "호전된 증상을 active symptom으로 바꾸지 않습니다."
+          }
+        ]
+      }
+    }
+  ]
+}

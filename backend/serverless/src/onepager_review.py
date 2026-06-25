@@ -10,6 +10,7 @@ import json
 import re
 
 from domain_config import reviewer_domain_rules
+from fewshots import render_fewshot_block
 from llm import call_bedrock_json_with_meta
 from schemas.review import validate_review_payload
 from settings import REVIEWER_MODEL_ID, REVIEW_MAX_TOKENS, REVIEW_RETRY_ATTEMPTS
@@ -139,6 +140,7 @@ def merge_review_output(onepager, obj, raw_text, chain_meta, attempt):
 def build_onepager_review_prompt(session, onepager):
     """의사가 볼 다음 행동 checklist를 만들도록 Nova Pro에 주는 프롬프트입니다."""
     domain_rules = reviewer_domain_rules()
+    fewshot_block = render_fewshot_block("onepager_review")
     rule5 = domain_rules.get(
         "rule5",
         "5. Do NOT add fever/temperature tasks unless fever, heat, chill, high fever, antipyretic use, or body temperature appears in evidence.",
@@ -228,6 +230,8 @@ EMR transfer_text rules:
 7. Keep it concise and copyable. Good style:
    "S) 23세 남성 초진 / CC: 목통증, 콧물 / PI: 어제부터 시작 / Med: 복용약 없음 / Q: 매운 음식 섭취 가능 여부 / 확인: 지속기간, 발열 여부"
 8. If transfer_text mentions age or sex, copy them exactly from draft_onepager.patient_summary. Never change patient sex or age.
+
+{fewshot_block}
 
 Output quality target:
 - Ordinary low-risk cases: 2 to 5 review_items.

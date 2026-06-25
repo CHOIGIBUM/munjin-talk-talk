@@ -6,6 +6,7 @@
 """
 
 from domain_config import llm_symptom_slot_ids
+from fewshots import render_fewshot_block
 from question_sets import prompt_question_text
 from settings import LIGHT_MODEL_ID, STRONG_MODEL_ID
 from utils import visit_label
@@ -38,6 +39,12 @@ def build_extraction_prompt(
     question_text = str(server_text or question_text_override or "").strip()
     allowed_slots = ", ".join(llm_symptom_slot_ids() + ["other"])
     dialect_note = build_dialect_helper_note(dialect_standardized_text, dialect_replacements or [])
+    fewshot_block = render_fewshot_block(
+        "extraction",
+        visit_type=visit_type,
+        question_id=question_id,
+        question_type=question_type,
+    )
     if dialect_note:
         patient_answer_block = f"""Patient original answer:
 {transcript}
@@ -92,6 +99,8 @@ Critical rules:
 - clinical_clues.label MUST be exactly one of: 시작시점, 기간, 현재양상, 악화요인, 완화요인, 복용중, 처방약 없음, 건강보조제, 누락, 악화, 호전, 새 증상.
 - clinical_clues.source_quote MUST NOT be empty. If no exact quote exists, omit that clinical_clue.
 - The backend validates your output with a strict Pydantic schema. Missing required fields, invalid enum values, or extra fields will fail.
+
+{fewshot_block}
 
 Visit type: {visit}
 Question id: {question_id}
@@ -178,6 +187,12 @@ def build_standardization_prompt(
     """방언/구어체를 표준어 문장으로만 정리하는 첫 단계 prompt입니다."""
     visit = visit_label(visit_type)
     question_text = _prompt_question(visit_type, question_id, question_text_override, question_set_id)
+    fewshot_block = render_fewshot_block(
+        "standardization",
+        visit_type=visit_type,
+        question_id=question_id,
+        question_type=question_type,
+    )
     return f"""
 You are the Korean standardization LLM in a clinic intake pipeline.
 Your only job is to rewrite the patient answer into standard Korean while preserving meaning.
@@ -191,12 +206,7 @@ Hard rules:
 - If dialect reference context is provided, use it only for wording normalization.
 - If the answer is already standard Korean, keep it almost unchanged.
 
-Generic examples:
-Input: "마카 괜찮아졌는데 아직 코가 멕혀요."
-Output: {{"standardized_text":"전부 괜찮아졌는데 아직 코가 막혀요.","normalization_notes":["마카를 전부로 표준화"]}}
-
-Input: "기침은 안 나고 목만 좀 칼칼해요."
-Output: {{"standardized_text":"기침은 나지 않고 목만 조금 칼칼해요.","normalization_notes":["부정 의미를 유지"]}}
+{fewshot_block}
 
 Visit type: {visit}
 Question id: {question_id}
@@ -230,6 +240,12 @@ def build_semantic_unit_prompt(
     """표준화된 의미를 원문 quote 기준의 의미 단위로 나누는 prompt입니다."""
     visit = visit_label(visit_type)
     question_text = _prompt_question(visit_type, question_id, question_text_override, question_set_id)
+    fewshot_block = render_fewshot_block(
+        "semantic_unit",
+        visit_type=visit_type,
+        question_id=question_id,
+        question_type=question_type,
+    )
     return f"""
 You are the semantic segmentation LLM in a clinic intake pipeline.
 Your job is to split one patient answer into grounded meaning units.
@@ -247,31 +263,7 @@ Hard rules:
 - A denial such as "없어요" in Q4 is not a patient question.
 - Caregiver fear is context unless actual symptoms such as dyspnea, cyanosis, fainting, or chest pain are stated.
 
-Generic examples:
-Original: "열은 내렸는데 아직 목이 칼칼하고 기침이 나요."
-Standardized: "열은 내렸는데 아직 목이 칼칼하고 기침이 나요."
-Units:
-- source_quote "열은 내렸는데", normalized_text "열은 내렸습니다.", role "clinical_meaning"
-- source_quote "아직 목이 칼칼하고", normalized_text "아직 목이 칼칼합니다.", role "clinical_meaning"
-- source_quote "기침이 나요", normalized_text "기침이 납니다.", role "clinical_meaning"
-
-Original: "혈압약은 매일 먹고 감기약이랑 같이 먹어도 되는지 궁금해요."
-Standardized: "혈압약은 매일 먹고 감기약과 같이 먹어도 되는지 궁금합니다."
-Units:
-- source_quote "혈압약은 매일 먹고", normalized_text "혈압약을 매일 복용합니다.", role "medication"
-- source_quote "감기약이랑 같이 먹어도 되는지 궁금해요", normalized_text "감기약과 함께 복용해도 되는지 궁금합니다.", role "patient_question"
-
-Original: "약은 잘 먹고 있는데 물 마시면 계속 사레가 걸려요."
-Standardized: "약은 잘 복용하고 있는데 물을 마시면 계속 사레가 걸립니다."
-Units:
-- source_quote "약은 잘 먹고 있는데", normalized_text "약은 잘 복용하고 있습니다.", role "medication"
-- source_quote "물 마시면 계속 사레가 걸려요", normalized_text "물을 마시면 계속 사레가 걸립니다.", role "clinical_meaning"
-
-Original: "따로 궁금한 건 없고 기침은 아직 조금 남았어요."
-Standardized: "따로 궁금한 것은 없고 기침은 아직 조금 남았습니다."
-Units:
-- source_quote "따로 궁금한 건 없고", normalized_text "추가 질문은 없습니다.", role "context"
-- source_quote "기침은 아직 조금 남았어요", normalized_text "기침은 아직 조금 남았습니다.", role "clinical_meaning"
+{fewshot_block}
 
 Visit type: {visit}
 Question id: {question_id}
@@ -328,6 +320,12 @@ def build_span_tagging_prompt(
 ):
     """의미 단위에 type/status를 붙이는 prompt입니다."""
     visit = visit_label(visit_type)
+    fewshot_block = render_fewshot_block(
+        "span_tagging",
+        visit_type=visit_type,
+        question_id=question_id,
+        question_type=question_type,
+    )
     return f"""
 You are the clinical state tagging LLM in a clinic intake pipeline.
 Your job is to classify grounded meaning units into span type and current status.
@@ -348,14 +346,7 @@ Hard rules:
 - Do not mark medication, adherence, patient question, or general context as an active symptom even when symptom words appear in the sentence.
 - Active symptom `name` must be concrete enough for search. Avoid standalone "불편함", "증상", "통증", or "아픔" when the unit contains location or quality.
 
-Generic examples:
-- "아직 목이 칼칼합니다." -> type symptom, status 있음
-- "기침은 나지 않습니다." -> type symptom_absent, status 없음
-- "열은 내렸습니다." -> type progress_improved, status 없음
-- "항생제를 잘 먹고 있습니다." -> type medication, status 있음
-- "약을 자주 빼먹었습니다." -> type adherence_gap, status 있음
-- "열은 내렸고 기침만 남았습니다." -> do not make "열" active; if not split, use progress_improved or repair by splitting before tagging.
-- "어디가 불편한지는 잘 모르겠습니다." -> type context, status 확인필요, slot_ref other
+{fewshot_block}
 
 Visit type: {visit}
 Question id: {question_id}
@@ -402,6 +393,12 @@ def build_symptom_hint_prompt(
     """IR 검색에 들어갈 symptom name 힌트와 slot_ref를 보강하는 prompt입니다."""
     visit = visit_label(visit_type)
     allowed_slots = ", ".join(llm_symptom_slot_ids() + ["other"])
+    fewshot_block = render_fewshot_block(
+        "symptom_hint",
+        visit_type=visit_type,
+        question_id=question_id,
+        question_type=question_type,
+    )
     return f"""
 You are the symptom search-hint LLM in a clinic intake pipeline.
 Your job is to make each span easier for deterministic Hybrid IR to search.
@@ -420,13 +417,7 @@ Hard rules:
 - For symptom spans, slot_ref may be one of the allowed values only when it is explicit and obvious; otherwise use "other".
 - The backend IR/linker will decide the final standard symptom name from source JSON.
 
-Generic examples:
-- source_quote "누런 가래가 나와요" -> name "누런 가래 또는 객담", slot_ref "sputum" if available, status "있음"
-- source_quote "목이 칼칼해요" -> name "목 칼칼함 또는 인후 자극", slot_ref "sore_throat" if available, status "있음"
-- source_quote "다리가 부었어요" -> name "다리 부기", slot_ref "other" unless a matching allowed slot is obvious, status "있음"
-- source_quote "어깨에서 팔로 찌르르 뻗쳐요" -> name "팔로 뻗치는 통증", slot_ref "other" unless a matching allowed slot is obvious, status "있음"
-- source_quote "열은 내렸어요" -> name "열 호전", slot_ref "other", type "progress_improved", status "없음"
-- source_quote "궁금한 건 없어요" -> omit patient question agenda; do not create active symptom span.
+{fewshot_block}
 
 Visit type: {visit}
 Question id: {question_id}

@@ -11,7 +11,8 @@
 | 경로 | 용도 |
 | --- | --- |
 | `domain_packs/respiratory.json` | 호흡기 문진 도메인 설정, status enum 설명, 안전 플래그 기준 |
-| `domain_packs/respiratory_fewshot.txt` | 일반화된 extraction few-shot 예시 |
+| `domain_packs/respiratory_fewshot.txt` | 구버전 extraction few-shot 예시. 신규 관리는 `fewshots/` JSON을 사용 |
+| `fewshots/respiratory/*.json` | 도메인/단계별 few-shot 예시 |
 | `dialect_packs/dialect_kangwon.json` | 강원 방언 표현을 표준어 후보로 연결하는 RAG 참조 데이터 |
 | `dialect_packs/dialect_kangwon.csv` | 방언팩 원본 관리용 표 데이터 |
 | `question_sets/default.json` | 초진/재진 문진 질문 세트 |
@@ -66,6 +67,7 @@ Get-Item symptom_embeddings_amazon.titan-embed-text-v2_0_512.json
 backend/serverless/src/data/diseases_cleaned.json
 backend/serverless/src/data/symptom_index.json
 backend/serverless/src/data/symptom_embeddings_*.json
+backend/serverless/src/data/ir_sources/**
 ```
 
 커밋 전 확인:
@@ -81,8 +83,11 @@ git status --short --ignored -- backend/serverless/src/data
 ## 5. 서비스 내 참조 방식
 
 - 질문 세트는 `question_sets.py`가 `question_sets/default.json`을 읽습니다.
-- 도메인 설정과 few-shot은 `domain_config.py`가 `domain_packs/`에서 읽습니다.
+- 도메인 설정은 `domain_config.py`가 `domain_packs/`에서 읽습니다.
+- few-shot은 `fewshots.py`가 도메인팩의 `fewshot_sets` 또는 `fewshots/{fewshot_id}/`에서 읽습니다.
 - 방언 RAG는 `dialect_rag.py`가 `dialect_packs/dialect_kangwon.json`을 읽습니다.
-- 표준 증상 IR은 `retrieval_documents.py`, `retrieval_embeddings.py`, `retrieval.py`가 비공개 3개 파일을 읽습니다.
+- 표준 증상 IR은 `settings.py`/`data_sources.py`가 선택한 비공개 3개 파일을 읽습니다.
+  - 기본 호흡기 배포: `data/diseases_cleaned.json`, `data/symptom_index.json`, `data/symptom_embeddings_*.json`
+  - 도메인별 배포: `data/ir_sources/{ir_source_id}/diseases_cleaned.json`, `symptom_index.json`, `symptom_embeddings_*.json`
 
 따라서 공개 저장소 clone만으로는 코드 구조 검토와 기본 빌드는 가능하지만, 실제 운영 수준의 증상 매칭은 비공개 런타임 데이터 배치 후 확인해야 합니다.
