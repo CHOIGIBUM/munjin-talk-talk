@@ -24,7 +24,7 @@ def response(status, body):
         "headers": {
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": cors_allow_origin(),
-            "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+            "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
             "Access-Control-Allow-Headers": "Content-Type,Authorization,X-Munjin-Access-Token,X-Munjin-Patient-Token",
             "Vary": "Origin",
         },

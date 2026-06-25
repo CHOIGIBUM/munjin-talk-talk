@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createIntakeSession, deleteIntakeSession, getDoctorQueue, getIntakeSession, processTranscript } from '../../services/api.js'
+import {
+  createIntakeSession,
+  deleteIntakeSession,
+  getDoctorQueue,
+  getIntakeSession,
+  processTranscript,
+  updateIntakeSession,
+} from '../../services/api.js'
 import { QUESTIONS } from '../../config/questions.js'
 import { questionTextForBackend } from '../../config/questionText.js'
 import logoUrl from '../../assets/munjin-logo.svg'
@@ -21,6 +28,8 @@ export default function ReceptionView() {
   const [manualSession, setManualSession] = useState(null)
   const [manualTexts, setManualTexts] = useState({})
   const [manualOriginalTexts, setManualOriginalTexts] = useState({})
+  const [manualVisitType, setManualVisitType] = useState('initial')
+  const [manualOriginalVisitType, setManualOriginalVisitType] = useState('initial')
   const [manualStatus, setManualStatus] = useState('')
   const [manualSubmitting, setManualSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
@@ -84,7 +93,7 @@ export default function ReceptionView() {
     try {
       await deleteIntakeSession(session.sessionId)
       if (created?.sessionId === session.sessionId) setCreated(null)
-      if (manualSession?.sessionId === session.sessionId) setManualSession(null)
+      if (manualSession?.sessionId === session.sessionId) closeManualInput()
       await loadSessions()
     } catch (error) {
       console.error('delete session failed:', error)
@@ -96,47 +105,75 @@ export default function ReceptionView() {
     setManualStatus('문진 내용을 불러오는 중입니다.')
     const detail = await getIntakeSession(session.sessionId, { role: 'staff' })
     const nextSession = detail || session
-    const nextTexts = makeManualTextState(nextSession)
+    const nextVisitType = nextSession.visitType || 'initial'
+    const nextTexts = makeManualTextState(nextSession, nextVisitType)
     setManualSession(nextSession)
     setManualTexts(nextTexts)
     setManualOriginalTexts(nextTexts)
+    setManualVisitType(nextVisitType)
+    setManualOriginalVisitType(nextVisitType)
     setManualStatus('환자가 말한 내용을 직원이 대신 입력할 수 있습니다.')
+  }
+
+  const closeManualInput = () => {
+    setManualSession(null)
+    setManualTexts({})
+    setManualOriginalTexts({})
+    setManualVisitType('initial')
+    setManualOriginalVisitType('initial')
+    setManualStatus('')
+    setManualSubmitting(false)
   }
 
   const updateManualText = (questionId, value) => {
     setManualTexts((prev) => ({ ...prev, [questionId]: value }))
   }
 
+  const handleManualVisitTypeChange = (visitType) => {
+    setManualVisitType(visitType)
+    setManualStatus(
+      visitType === manualOriginalVisitType
+        ? '환자가 말한 내용을 직원이 대신 입력할 수 있습니다.'
+        : '문진 유형이 변경되었습니다. 저장하면 세션에 반영됩니다.'
+    )
+  }
+
   const handleManualSubmit = async (event) => {
     event.preventDefault()
     if (!manualSession || manualSubmitting) return
 
-    const filled = getChangedManualAnswers(manualSession, manualTexts, manualOriginalTexts)
-    if (!filled.length) {
+    const selectedVisitType = manualVisitType || manualSession.visitType || 'initial'
+    const visitTypeChanged = selectedVisitType !== manualOriginalVisitType
+    const filled = getChangedManualAnswers(manualSession, manualTexts, manualOriginalTexts, selectedVisitType)
+    if (!filled.length && !visitTypeChanged) {
       setManualStatus('새로 입력하거나 수정한 문진 내용이 없습니다.')
       return
     }
 
     setManualSubmitting(true)
-    setManualStatus('백엔드 LLM 분석과 검증을 진행하고 있습니다.')
+    setManualStatus('직원 입력을 저장하고 있습니다.')
     try {
+      let sessionForProcessing = manualSession
+      if (visitTypeChanged) {
+        sessionForProcessing = await updateIntakeSession(manualSession.sessionId, {
+          visit_type: selectedVisitType,
+          question_set_id: manualSession.questionSetId || 'default',
+        })
+      }
       for (const { question, transcript } of filled) {
         await processTranscript({
           sessionId: manualSession.sessionId,
           questionId: question.id,
           questionType: question.question_type,
           questionText: questionTextForBackend(question),
-          questionSetId: manualSession.questionSetId || 'default',
-          visitType: manualSession.visitType,
+          questionSetId: sessionForProcessing?.questionSetId || manualSession.questionSetId || 'default',
+          visitType: selectedVisitType,
           transcript,
           role: 'staff',
         })
       }
       await loadSessions()
-      const refreshed = await getIntakeSession(manualSession.sessionId, { role: 'staff' })
-      if (refreshed) setManualSession(refreshed)
-      setManualOriginalTexts(manualTexts)
-      setManualStatus('직원 입력이 저장되었습니다. 원페이퍼에서 결과를 확인할 수 있습니다.')
+      closeManualInput()
     } catch (error) {
       console.error('manual intake failed:', error)
       setManualStatus('저장 중 오류가 발생했습니다. 네트워크와 백엔드 상태를 확인해 주세요.')
@@ -184,27 +221,29 @@ export default function ReceptionView() {
         session={manualSession}
         manualTexts={manualTexts}
         manualStatus={manualStatus}
+        manualVisitType={manualVisitType}
         submitting={manualSubmitting}
         updateManualText={updateManualText}
+        onVisitTypeChange={handleManualVisitTypeChange}
         onSubmit={handleManualSubmit}
-        onClose={() => setManualSession(null)}
+        onClose={closeManualInput}
       />
     </div>
   )
 }
 
-function makeManualTextState(session) {
+function makeManualTextState(session, visitType = session.visitType || 'initial') {
   const responses = session.responses || {}
   return Object.fromEntries(
-    (QUESTIONS[session.visitType] || QUESTIONS.initial).map((question) => [
+    (QUESTIONS[visitType] || QUESTIONS.initial).map((question) => [
       question.id,
       responses[question.id]?.text || responses[question.id]?.transcript || '',
     ])
   )
 }
 
-function getChangedManualAnswers(session, manualTexts, originalTexts) {
-  const questions = QUESTIONS[session.visitType] || QUESTIONS.initial
+function getChangedManualAnswers(session, manualTexts, originalTexts, visitType = session.visitType || 'initial') {
+  const questions = QUESTIONS[visitType] || QUESTIONS.initial
   return questions
     .map((question) => ({ question, transcript: (manualTexts[question.id] || '').trim() }))
     .filter((item) => item.transcript && item.transcript !== (originalTexts[item.question.id] || '').trim())

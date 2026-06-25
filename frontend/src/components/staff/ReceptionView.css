@@ -307,6 +307,30 @@
   display: grid;
   gap: 11px;
 }
+.rp-manual-visit-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fafc;
+}
+.rp-manual-visit-switch button {
+  height: 38px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  cursor: pointer;
+}
+.rp-manual-visit-switch button.active {
+  background: var(--navy);
+  color: white;
+}
 .rp-manual-field {
   display: flex;
   flex-direction: column;

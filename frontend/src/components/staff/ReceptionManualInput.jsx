@@ -6,14 +6,17 @@ export default function ReceptionManualInput({
   session,
   manualTexts,
   manualStatus,
+  manualVisitType,
   submitting,
   updateManualText,
+  onVisitTypeChange,
   onSubmit,
   onClose,
 }) {
   if (!session) return null
 
-  const questions = QUESTIONS[session.visitType] || QUESTIONS.initial
+  const selectedVisitType = manualVisitType || session.visitType || 'initial'
+  const questions = QUESTIONS[selectedVisitType] || QUESTIONS.initial
 
   return (
     <section className="rp-panel rp-manual-panel" aria-live="polite">
@@ -21,13 +24,30 @@ export default function ReceptionManualInput({
         <div>
           <h2>직원 대리 문진 입력</h2>
           <span>
-            {session.patient.name} · #{session.patient.receiptId} · {session.visitType === 'initial' ? '초진' : '재진'}
+            {session.patient.name} · #{session.patient.receiptId} · {selectedVisitType === 'initial' ? '초진' : '재진'}
           </span>
         </div>
         <button className="rp-ghost" type="button" onClick={onClose}>닫기</button>
       </div>
 
       <form className="rp-manual-form" onSubmit={onSubmit}>
+        <div className="rp-manual-visit-switch" role="group" aria-label="문진 유형 선택">
+          <button
+            type="button"
+            className={selectedVisitType === 'initial' ? 'active' : ''}
+            onClick={() => onVisitTypeChange('initial')}
+          >
+            초진
+          </button>
+          <button
+            type="button"
+            className={selectedVisitType === 'followup' ? 'active' : ''}
+            onClick={() => onVisitTypeChange('followup')}
+          >
+            재진
+          </button>
+        </div>
+
         {questions.map((question) => (
           <label key={question.id} className="rp-manual-field">
             <span>

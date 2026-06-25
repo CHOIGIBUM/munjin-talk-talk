@@ -17,7 +17,7 @@ from orchestration import handle_internal_event, process_answer, process_answers
 from question_sets import public_question_set
 from security import is_auth_configured, issue_role_token, require_patient_session, require_role, role_for_event, verify_access_code
 from sessions import create_session, delete_session, get_session, list_sessions, public_session, save_patient_consent, update_session
-from utils import parse_body, response, set_request_origin
+from utils import normalize_visit_type, parse_body, response, set_request_origin
 
 
 def handler(event, context):
@@ -97,6 +97,22 @@ def route(method, path, event):
             return auth_error
         include_token = role_for_event(event) == "staff"
         return response(200, public_session(session, include_artifacts=True, include_patient_token=include_token))
+
+    if method == "PATCH" and match:
+        auth_error = require_role(event, "staff")
+        if auth_error:
+            return auth_error
+        session_id = unquote_plus(match.group(1))
+        current = get_session(session_id)
+        if not current:
+            return response(404, {"error": "session_not_found"})
+        updates = {}
+        if "visit_type" in body or "visitType" in body:
+            updates["visit_type"] = normalize_visit_type(body.get("visit_type") or body.get("visitType"))
+        if "question_set_id" in body or "questionSetId" in body:
+            updates["question_set_id"] = str(body.get("question_set_id") or body.get("questionSetId") or "default")
+        session = update_session(session_id, updates) or current
+        return response(200, public_session(session, include_artifacts=True, include_patient_token=True))
 
     if method == "DELETE" and match:
         auth_error = require_role(event, "staff")

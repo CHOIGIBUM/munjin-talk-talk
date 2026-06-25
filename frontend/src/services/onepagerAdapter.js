@@ -39,9 +39,13 @@ function normalizeCurrentBackend(raw) {
   const visitType = normalizeVisitType(session.visit_type || raw.visit_type || onepager.patient_summary?.visit_type)
   const patient = normalizePatientSummary(onepager.patient_summary, visitType)
   const agenda = normalizeAgenda(onepager.agenda || [])
-  const symptomSlots = normalizeSymptomSlots(onepager.symptom_slots || [])
-  const safetyFlags = onepager.safety_flags || []
-  const safetyFlag = normalizeSafetyFlag(safetyFlags[0])
+  const safetyFlags = Array.isArray(onepager.safety_flags) ? onepager.safety_flags : []
+  const normalizedSafetyFlags = safetyFlags.map(normalizeSafetyFlag).filter(Boolean)
+  const safetyFlag = normalizedSafetyFlags[0] || null
+  const symptomSlots = mergeSafetyFlagsIntoSymptomSlots(
+    normalizeSymptomSlots(onepager.symptom_slots || []),
+    normalizedSafetyFlags
+  )
   const clinicalClues = onepager.clinical_clues || []
   const doctorBrief = normalizeDoctorBrief(onepager.doctor_brief)
   const analysis = onepager.analysis || session.analysis || raw.analysis || {
@@ -63,7 +67,7 @@ function normalizeCurrentBackend(raw) {
     reviewItems: normalizeReviewItems(onepager.review_items || []),
     transferText: onepager.transfer_text || '',
     safety_flag: safetyFlag,
-    safety_flags: safetyFlags,
+    safety_flags: normalizedSafetyFlags,
     unresolvedItems: onepager.unresolved_items || [],
   }
 }
@@ -106,6 +110,57 @@ function normalizeSymptomSlots(slots) {
     explain: slot.explain || '',
     alert: Boolean(slot.alert),
   }))
+}
+
+// rule-base 안전 플래그는 별도 경고 배너로만 보이면 의사가 증상 목록에서 놓칠 수 있습니다.
+// 그래서 flag 표현을 "오늘 말한 불편함"에도 우선 확인 카드로 합칩니다.
+function mergeSafetyFlagsIntoSymptomSlots(slots, flags) {
+  const normalizedSlots = (slots || []).map(slot => {
+    const matchedFlag = findMatchingSafetyFlag(slot, flags)
+    if (!matchedFlag) return slot
+
+    return {
+      ...slot,
+      sourceQuote: slot.sourceQuote || matchedFlag.matched_pattern || '',
+      normalizedText: slot.normalizedText || matchedFlag.message || '',
+      explain: slot.explain || matchedFlag.message || '문진 중 우선 확인이 필요한 표현으로 감지되었습니다.',
+      alert: true,
+    }
+  })
+  const flagSlots = (flags || [])
+    .map(flag => safetyFlagToSymptomSlot(flag, normalizedSlots))
+    .filter(Boolean)
+  return [...normalizedSlots, ...flagSlots]
+}
+
+function findMatchingSafetyFlag(slot, flags) {
+  return (flags || []).find(flag => {
+    const flagQuote = flag.matched_pattern || ''
+    const flagName = flag.label || flag.category || ''
+    const sameQuote = flagQuote && slot.sourceQuote && slot.sourceQuote.includes(flagQuote)
+    const sameName = flagName && slot.name && (slot.name === flagName || flagName.includes(slot.name) || slot.name.includes(flagName))
+    return sameQuote || sameName
+  })
+}
+
+function safetyFlagToSymptomSlot(flag, existingSlots) {
+  const sourceQuote = flag.matched_pattern || ''
+  const name = flag.label || flag.category || '우선 확인 필요'
+  if (!sourceQuote && !name) return null
+
+  const alreadyShown = (existingSlots || []).some(slot => findMatchingSafetyFlag(slot, [flag]))
+  if (alreadyShown) return null
+
+  return {
+    name,
+    sub: flag.category || '안전 확인',
+    sourceQuote,
+    sourceQuestion: flag.source_question || '',
+    normalizedText: flag.message || '',
+    status: 'safety_flag',
+    explain: flag.message || '문진 중 우선 확인이 필요한 표현으로 감지되었습니다.',
+    alert: true,
+  }
 }
 
 function normalizeReviewItems(items) {

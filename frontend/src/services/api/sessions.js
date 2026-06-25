@@ -47,6 +47,22 @@ export async function deleteIntakeSession(sessionId) {
   return res.json()
 }
 
+// 직원 대리 입력 중 문진 유형처럼 세션 메타데이터를 수정합니다.
+// 환자가 직접 쓰는 API가 아니므로 직원 권한 토큰이 있을 때만 호출됩니다.
+export async function updateIntakeSession(sessionId, updates) {
+  ensureApiConfigured()
+
+  const res = await fetch(`${API_BASE_URL}/sessions/${encodeURIComponent(sessionId)}`, {
+    method: 'PATCH',
+    headers: await apiHeaders({ role: 'staff', json: true }),
+    body: JSON.stringify(updates || {}),
+  })
+  if (!res.ok) throw new Error('문진 세션 수정 실패')
+  const session = normalizeSession(await res.json())
+  rememberPatientToken(session.sessionId, session.patientToken)
+  return session
+}
+
 // 직원/의료진 대기열을 조회합니다.
 // 직원 화면은 환자 태블릿 URL 생성이 필요하므로 환자 토큰을 포함해 받습니다.
 export async function getDoctorQueue({ role = 'doctor' } = {}) {

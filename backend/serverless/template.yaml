@@ -125,6 +125,8 @@ Resources:
         AllowMethods:
           - GET
           - POST
+          - PATCH
+          - DELETE
           - OPTIONS
 
   # 모든 REST endpoint를 하나의 Lambda handler.py로 라우팅합니다.
@@ -153,6 +155,12 @@ Resources:
             ApiId: !Ref MunjinHttpApi
             Path: /sessions/{session_id}
             Method: GET
+        UpdateSession:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /sessions/{session_id}
+            Method: PATCH
         DeleteSession:
           Type: HttpApi
           Properties:

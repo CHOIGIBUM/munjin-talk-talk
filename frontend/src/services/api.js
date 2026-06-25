@@ -11,6 +11,7 @@ export {
   getIntakeSession,
   recordPatientConsent,
   requestStaffHelp,
+  updateIntakeSession,
 } from './api/sessions.js'
 
 export {
