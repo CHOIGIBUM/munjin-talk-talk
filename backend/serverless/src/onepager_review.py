@@ -65,12 +65,45 @@ def apply_bedrock_onepager_review(session, onepager):
         last_error = "review_items_empty_or_ungrounded"
 
     reviewed = dict(onepager)
+    fallback_items = build_fallback_review_items(onepager)
+    if fallback_items:
+        reviewed["review_items"] = fallback_items
+        reviewed["review_item_generation"] = {
+            "method": "rule_based_fallback",
+            "reason": last_error or "review_failed",
+        }
     reviewed["llm_review"] = {
         "model_id": REVIEWER_MODEL_ID,
         "error": last_error or "review_failed",
         "attempts": attempts,
     }
     return reviewed
+
+
+def build_fallback_review_items(onepager):
+    """Create a minimum doctor checklist when final LLM review is unavailable."""
+    items = []
+    for flag in onepager.get("safety_flags", []) or []:
+        label = clean_quote(flag.get("label") or flag.get("category") or flag.get("matched_pattern") or "우선 확인 표현")
+        if label:
+            items.append(f"[우선] {label} 관련 위험 신호와 우선 진료 필요성 확인")
+
+    for slot in onepager.get("symptom_slots", []) or []:
+        name = clean_quote(slot.get("name") or slot.get("display_text") or slot.get("normalized_text") or "")
+        if name:
+            items.append(f"{name}의 지속 시간, 악화 정도, 동반 증상 확인")
+
+    for clue in onepager.get("clinical_clues", []) or []:
+        hint = clean_quote(clue.get("action_hint") or clue.get("summary") or clue.get("source_quote") or "")
+        if hint:
+            items.append(hint if hint.endswith("확인") else f"{hint} 확인")
+
+    for agenda in onepager.get("agenda", []) or []:
+        question = clean_quote(agenda.get("summary") or agenda.get("original_quote") or agenda.get("display_text") or "")
+        if question:
+            items.append(f"환자 질문 답변: {question}")
+
+    return unique(items)[:6]
 
 
 def merge_review_output(onepager, obj, raw_text, chain_meta, attempt):

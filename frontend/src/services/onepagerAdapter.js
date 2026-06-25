@@ -64,7 +64,7 @@ function normalizeCurrentBackend(raw) {
     symptomSlots,
     clinicalClues,
     doctorBrief,
-    reviewItems: normalizeReviewItems(onepager.review_items || []),
+    reviewItems: normalizeReviewItems(onepager.review_items || [], onepager),
     transferText: onepager.transfer_text || '',
     safety_flag: safetyFlag,
     safety_flags: normalizedSafetyFlags,
@@ -163,13 +163,55 @@ function safetyFlagToSymptomSlot(flag, existingSlots) {
   }
 }
 
-function normalizeReviewItems(items) {
-  return (items || []).map(item => {
+function normalizeReviewItems(items, onepager = {}) {
+  const normalized = (items || []).map(item => {
     if (typeof item === 'string') return item
     const text = item.text || item.summary || ''
     if (item.priority === '우선' && text && !text.startsWith('[우선]')) return `[우선] ${text}`
     return text
   }).filter(Boolean)
+  return normalized.length ? normalized : buildFallbackReviewItems(onepager)
+}
+
+function buildFallbackReviewItems(onepager = {}) {
+  const items = []
+  const safetyFlags = Array.isArray(onepager.safety_flags) ? onepager.safety_flags : []
+  const symptomSlots = Array.isArray(onepager.symptom_slots) ? onepager.symptom_slots : []
+  const clinicalClues = Array.isArray(onepager.clinical_clues) ? onepager.clinical_clues : []
+  const agenda = Array.isArray(onepager.agenda) ? onepager.agenda : []
+
+  safetyFlags.forEach(flag => {
+    const label = cleanText(flag.label || flag.category || flag.matched_pattern || '우선 확인 표현')
+    if (label) items.push(`[우선] ${label} 관련 위험 신호와 우선 진료 필요성 확인`)
+  })
+  symptomSlots.forEach(slot => {
+    const name = cleanText(slot.name || slot.display_text || slot.normalized_text)
+    if (name) items.push(`${name}의 지속 시간, 악화 정도, 동반 증상 확인`)
+  })
+  clinicalClues.forEach(clue => {
+    const hint = cleanText(clue.action_hint || clue.summary || clue.source_quote)
+    if (hint) items.push(hint.endsWith('확인') ? hint : `${hint} 확인`)
+  })
+  agenda.forEach(item => {
+    const question = cleanText(item.summary || item.original_quote || item.display_text)
+    if (question) items.push(`환자 질문 답변: ${question}`)
+  })
+
+  return uniqueTexts(items).slice(0, 6)
+}
+
+function cleanText(value) {
+  return String(value || '').replace(/\s+/g, ' ').trim()
+}
+
+function uniqueTexts(items) {
+  const seen = new Set()
+  return items.filter(item => {
+    const key = cleanText(item)
+    if (!key || seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
 }
 
 function normalizeDoctorBrief(brief) {
