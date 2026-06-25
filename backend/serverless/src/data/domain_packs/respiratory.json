@@ -3,7 +3,6 @@
   "description": "문진톡톡 MVP에서 사용하는 호흡기계 문진 도메인 설정입니다. 환자 발화 추출은 LLM이 수행하고, 이 파일은 허용 slot, alias hint, 안전 플래그, 기본 질문 문구를 정의합니다.",
   "ir_source_id": "respiratory",
   "fewshot_id": "respiratory",
-  "symptom_alias_set": "symptom_aliases/respiratory.json",
   "fewshot_sets": {
     "extraction": "fewshots/respiratory/extraction.json",
     "standardization": "fewshots/respiratory/standardization.json",

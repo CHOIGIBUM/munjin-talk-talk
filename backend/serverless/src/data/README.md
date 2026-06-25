@@ -13,7 +13,6 @@
 | `domain_packs/respiratory.json` | 호흡기 문진 도메인 설정, status enum 설명, 안전 플래그 기준 |
 | `domain_packs/respiratory_fewshot.txt` | 구버전 extraction few-shot 예시. 신규 관리는 `fewshots/` JSON을 사용 |
 | `fewshots/respiratory/*.json` | 도메인/단계별 few-shot 예시 |
-| `symptom_aliases/respiratory.json` | 구어체/사투리 증상 표현을 표준 증상 후보 검색어로 확장하는 공개 alias bridge |
 | `dialect_packs/dialect_kangwon.json` | 강원 방언 표현을 표준어 후보로 연결하는 RAG 참조 데이터 |
 | `dialect_packs/dialect_kangwon.csv` | 방언팩 원본 관리용 표 데이터 |
 | `question_sets/default.json` | 초진/재진 문진 질문 세트 |
@@ -86,8 +85,8 @@ git status --short --ignored -- backend/serverless/src/data
 - 질문 세트는 `question_sets.py`가 `question_sets/default.json`을 읽습니다.
 - 도메인 설정은 `domain_config.py`가 `domain_packs/`에서 읽습니다.
 - few-shot은 `fewshots.py`가 도메인팩의 `fewshot_sets` 또는 `fewshots/{fewshot_id}/`에서 읽습니다.
-- 증상 alias는 `symptom_aliases.py`가 도메인팩의 `symptom_alias_set` 또는 `symptom_aliases/{ir_source_id}.json`에서 읽습니다.
-  - 이 alias는 환자 사실을 새로 만들지 않고, RAG 힌트와 IR query expansion에만 쓰입니다.
+- 구어체/사투리 확장은 현재 도메인팩의 `ir_text_aliases`, `symptom_rules`, dialect RAG 자료 안에서만 관리합니다.
+  - 별도 symptom alias bridge와 query expansion 파일은 clean 평가 재구축을 위해 제거했습니다.
   - 도메인을 바꿀 때는 도메인팩과 함께 이 파일을 교체하거나 추가하면 됩니다.
 - 방언 RAG는 `dialect_rag.py`가 `dialect_packs/dialect_kangwon.json`을 읽습니다.
 - 표준 증상 IR은 `settings.py`/`data_sources.py`가 선택한 비공개 3개 파일을 읽습니다.

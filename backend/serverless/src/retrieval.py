@@ -27,7 +27,6 @@ from settings import (
 )
 from domain_config import excluded_ir_symptom_names
 from retrieval_documents import get_ir_index, get_symptom_name_by_id, preferred_canonical_name
-from symptom_aliases import expand_query_with_symptom_aliases
 from retrieval_embeddings import embed_text, get_doc_embeddings
 from retrieval_scoring import cosine, direct_label_score, minmax_norm
 from utils import (
@@ -305,12 +304,12 @@ def build_symptom_query(source_quote, normalized_text, span_name=""):
     normalized = clean_ir_query_component(normalized_text)
     hint = clean_ir_query_component(span_name)
     if normalized and hint and not is_generic_symptom_hint(hint):
-        return expand_query_with_symptom_aliases(normalize_text(f"{normalized} {hint}"))
+        return normalize_text(f"{normalized} {hint}")
     if normalized:
-        return expand_query_with_symptom_aliases(normalized)
+        return normalized
     if hint and not is_generic_symptom_hint(hint):
-        return expand_query_with_symptom_aliases(hint)
-    return expand_query_with_symptom_aliases(clean_ir_query_component(source_quote))
+        return hint
+    return clean_ir_query_component(source_quote)
 
 
 def clean_ir_query_component(value):

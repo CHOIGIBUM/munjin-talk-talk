@@ -1,0 +1,33 @@
+{
+  "case_count": 30,
+  "validator_pass_rate": 1.0,
+  "pipeline_error_rate": 0.0,
+  "span_extracted_case_rate": 0.9667,
+  "active_span_case_rate": 0.9667,
+  "matched_case_rate": 0.8,
+  "avg_span_count": 1.4,
+  "avg_active_span_count": 1.233,
+  "avg_matched_slot_count": 1.0,
+  "failure_type_counts": {
+    "false_positive": 1,
+    "ir_no_match_after_active_span": 5,
+    "no_extracted_spans": 1,
+    "ok": 19,
+    "partial_miss_with_false_positive": 4
+  },
+  "error_code_counts": {
+    "none": 30
+  },
+  "span_status_counts": {
+    "없음": 4,
+    "있음": 38
+  },
+  "span_type_counts": {
+    "context": 1,
+    "new": 2,
+    "progress_improved": 4,
+    "progress_unchanged": 3,
+    "progress_worsened": 3,
+    "symptom": 29
+  }
+}

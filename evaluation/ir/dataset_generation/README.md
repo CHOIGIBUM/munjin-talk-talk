@@ -6,13 +6,13 @@ The generated cases are not real patient data.  The seed file is the public 100-
 
 ## Why This Exists
 
-The original 100 cases are useful for development, but once failures are inspected and aliases/few-shots are improved, that set becomes a tuning set.  To avoid reporting tuned-set performance as final performance, the generator creates a larger public synthetic set with fixed splits:
+The original 100 cases are useful for development, but once failures are inspected and aliases/few-shots are improved, that set becomes a tuning set.  The generated 1000-case set is also public development/regression data once its failures have been inspected.  A true blind benchmark must be generated after code, prompt, alias, and few-shot files are frozen.
 
 | Split | Count | Intended use |
 | --- | ---: | --- |
 | `dev` | 300 | Alias/few-shot/domain-pack tuning is allowed |
 | `validation` | 200 | Midpoint checks; avoid using individual misses as direct rules |
-| `locked_holdout` | 500 | Final reporting only; do not use for tuning |
+| `locked_holdout` | 500 | Historical holdout split; final only if it has not been inspected |
 
 ## Design
 
@@ -58,7 +58,7 @@ Main files:
 | `synthetic_1000.json` | Full generated dataset |
 | `synthetic_dev_300.json` | Tuning split |
 | `synthetic_validation_200.json` | Validation split |
-| `synthetic_locked_holdout_500.json` | Locked final evaluation split |
+| `synthetic_locked_holdout_500.json` | Historical holdout split |
 | `synthetic_summary.json` | Distribution summary |
 | `validation_summary_1000.json` | Output from `validate_eval_data.py` |
 

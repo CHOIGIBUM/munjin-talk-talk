@@ -16,7 +16,6 @@ from clinical_terms import (
 )
 from domain_config import get_domain_pack
 from settings import DISEASES_PATH, SYMPTOM_INDEX_PATH
-from symptom_aliases import aliases_for_name
 from retrieval_scoring import BM25Index
 from utils import (
     load_json_file,
@@ -65,7 +64,6 @@ def _aliases_for_domain_name(symptom_name):
     for pattern, canonical_name in IR_TEXT_ALIASES:
         if canonical_name == symptom_name:
             aliases.append(pattern)
-    aliases.extend(aliases_for_name(symptom_name))
     return sorted({normalize_text(alias) for alias in aliases if normalize_text(alias)})
 
 
@@ -101,7 +99,7 @@ def build_symptom_docs_from_domain_pack():
                 {
                     "content_id": pack.get("version", "domain_pack"),
                     "disease_name": "domain_pack",
-                    "section": "symptom_alias",
+                    "section": "domain_alias",
                     "text": normalize_text(" ".join([symptom_name, alias_text])),
                 }
             ],

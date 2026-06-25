@@ -40,7 +40,8 @@
 | `run_baseline.ps1` | 데이터 검증, 빠른 IR baseline, 선택적 전체 파이프라인 baseline을 한 번에 실행 |
 | `validate_eval_data.py` | gold/negative 증상명과 방문유형-문항 조합 검증 |
 | `data/eval_cases.sample.jsonl` | 공개 가능한 샘플 평가 데이터 |
-| `data/eval_cases.json` | 현재 baseline 평가에 사용하는 100건 합성 데이터셋 |
+| `data/eval_cases.json` | 사람이 검토해 정리한 100건 공개 개발 데이터셋 |
+| `data/synthetic/` | 1000건 공개 합성 회귀 데이터셋 |
 | `outputs/` | 실행 결과. baseline 비교가 필요하면 함께 커밋 가능 |
 | `cache/` | embedding cache. Git 관리 대상 아님 |
 
@@ -63,6 +64,12 @@
 ```
 
 `gold_symptoms`와 `negative_symptoms`는 운영 `symptom_index.json`에 존재하는 표준 증상명이어야 합니다.
+
+### 데이터셋 역할
+
+현재 `eval_cases.json`과 `data/synthetic/synthetic_1000.json`은 모두 공개 개발/회귀 테스트 데이터입니다. 이미 실패 분석에 노출된 데이터이므로 최종 blind 성능으로 보고하지 않습니다.
+
+최종 보고용 평가는 prompts, few-shots, aliases, matcher code를 freeze한 뒤 새 holdout을 생성하고, 개별 실패를 열어보기 전에 end-to-end F1을 산출합니다.
 
 ---
 

@@ -7,7 +7,6 @@ LLM/IR이 공유하는 증상 slot, alias, 안전 플래그 후보를 모아둡�
 import re
 
 from domain_config import alert_slot_ids, get_domain_pack
-from symptom_aliases import iter_text_alias_patterns
 from utils import clean_quote, find_keyword_quote
 
 _DOMAIN_PACK = get_domain_pack()
@@ -50,7 +49,6 @@ IR_TEXT_ALIASES = [
     for item in _DOMAIN_PACK.get("ir_text_aliases", [])
     if isinstance(item, dict) and item.get("pattern") and item.get("canonical_name")
 ]
-IR_TEXT_ALIASES.extend(iter_text_alias_patterns())
 IR_RED_FLAG_NAMES = {str(item) for item in _DOMAIN_PACK.get("ir_red_flag_names", [])}
 ALERT_SLOT_IDS = alert_slot_ids()
 

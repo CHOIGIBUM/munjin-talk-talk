@@ -1,0 +1,15 @@
+{
+  "case_count": 30,
+  "micro_f1": 0.7302,
+  "macro_f1": 0.6556,
+  "exact_match_rate": 0.6333,
+  "false_positive_rate": 0.2333,
+  "false_negative_rate": 0.303,
+  "negative_hit_rate": 0.0,
+  "validator_pass_rate": 1.0,
+  "error_rate": 0.0,
+  "avg_extraction_attempts": 1.167,
+  "total_tp": 23,
+  "total_fp": 7,
+  "total_fn": 10
+}

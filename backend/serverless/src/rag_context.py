@@ -19,7 +19,6 @@ from clinical_terms import IR_TEXT_ALIASES
 from domain_config import excluded_ir_symptom_names, selected_domain_pack_id
 from retrieval_documents import get_ir_index
 from settings import DATA_DIR, DISEASES_PATH, SYMPTOM_INDEX_PATH
-from symptom_aliases import symptom_alias_source_files
 from utils import clean_quote, normalize_text
 
 
@@ -28,10 +27,9 @@ EXCLUDED_IR_SYMPTOM_NAMES = excluded_ir_symptom_names()
 
 def rag_source_files() -> list[str]:
     """현재 배포 패키지에 맞는 RAG 참조 출처를 trace에 남깁니다."""
-    alias_files = symptom_alias_source_files()
     if DISEASES_PATH.exists() and SYMPTOM_INDEX_PATH.exists():
-        return [_source_label(DISEASES_PATH), _source_label(SYMPTOM_INDEX_PATH), "clinical_terms.IR_TEXT_ALIASES"] + alias_files
-    return [f"domain_packs/{selected_domain_pack_id()}.json", "clinical_terms.IR_TEXT_ALIASES"] + alias_files
+        return [_source_label(DISEASES_PATH), _source_label(SYMPTOM_INDEX_PATH), "clinical_terms.IR_TEXT_ALIASES"]
+    return [f"domain_packs/{selected_domain_pack_id()}.json", "clinical_terms.IR_TEXT_ALIASES"]
 
 
 def _source_label(path) -> str:
