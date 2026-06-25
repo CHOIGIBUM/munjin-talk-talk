@@ -29,9 +29,12 @@ Controlled dimensions:
 - multi-symptom cases: 400
 - negative/absent symptom context: 250
 
-The renderer keeps the main utterance symptom-focused.  If an exact duplicate
-text is detected, the validator appends a short natural context phrase to that
-duplicate only.
+The renderer keeps the main utterance symptom-focused and uses casual spoken
+Korean rather than formal `-습니다` style.  Dialect cases also receive selected
+surface forms from `backend/serverless/src/data/dialect_packs/dialect_kangwon.csv`
+so the synthetic data exercises the same dialect RAG vocabulary used by the
+runtime.  If an exact duplicate text is detected, the validator appends a short
+natural context phrase to that duplicate only.
 
 ## Generate
 

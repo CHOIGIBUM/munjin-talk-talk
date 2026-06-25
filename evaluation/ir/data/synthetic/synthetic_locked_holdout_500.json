@@ -17,7 +17,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "기침은 좀 나아졌어요 근데 어제부터 머리가 지끈지끈해요.",
+      "text": "기침은 좀 나아졌어 근데 어제부터 머리깽이가 지끈지끈해.",
       "gold_symptoms": [
         "두통"
       ],
@@ -36,7 +36,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "현재 복용 중인 약은 없고 쉬어도 피곤합니다.",
+      "text": "지금 먹는 약은 없고 쉬어도 피곤해.",
       "gold_symptoms": [
         "피로감"
       ],
@@ -53,7 +53,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "검은색 가래가 나옵니다 그래서 진료를 보러 왔습니다.",
+      "text": "검은색 가래가 나와 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "검은색 가래"
       ],
@@ -70,7 +70,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "피부가 달아오르는 느낌입니다 그래서 진료를 보러 왔습니다. 최근 들어 더 잦아졌습니다.",
+      "text": "피부가 달아오르는 느낌이야 그래서 진료 보러 왔어. 요즘 들어 더 잦아졌어.",
       "gold_symptoms": [
         "피부홍조"
       ],
@@ -87,7 +87,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "가슴 두근거림은 호전되었습니다 그러나 온몸 근육이 쑤십니다 그래서 진료를 보러 왔습니다.",
+      "text": "가슴 두근거림은 나아졌어 근데 온몸 근육이 쑤셔 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "근육통"
       ],
@@ -106,7 +106,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "먹을 때 사래가 자주 걸립니다 그래서 진료를 보러 왔습니다. 물을 마셔도 크게 달라지지 않습니다.",
+      "text": "먹을 때 사래가 자주 걸려 그래서 진료 보러 왔어. 물 마셔도 크게 안 달라져.",
       "gold_symptoms": [
         "사래걸림"
       ],
@@ -123,7 +123,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "며칠 전부터 진한 노란 가래가 계속 나옵니다 그리고 코막힘이 계속됩니다.",
+      "text": "며칠 전부터 진한 노란 가래가 계속 나와 그리고 코막힘이 계속돼.",
       "gold_symptoms": [
         "화농성 객담",
         "코막힘"
@@ -141,7 +141,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "최근에 안색이 창백합니다 그리고 목에 가래가 걸립니다.",
+      "text": "최근에 안색이 창백해 그리고 목에 가래가 걸려.",
       "gold_symptoms": [
         "창백",
         "가래"
@@ -159,7 +159,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "검은색 가래은 호전되었습니다 그러나 가슴이 막힌 듯 답답합니다 그리고 심장이 빨리 뛰는 느낌입니다 그래서 진료를 보러 왔습니다.",
+      "text": "검은색 가래는 나아졌어 근데 가슴이 막힌 듯 답답해 그리고 심장이 빨리 뛰는 느낌이야 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "가슴 답답",
         "가슴 두근거림"
@@ -179,7 +179,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "어제부터 괜히 불안해요 그리고 눈이 벌겋게 됐어요 그리고 힘이 부쩍 약해진 거 같아요.",
+      "text": "어제부터 괜히 불안해 그리고 눈이 벌겋게 됐어 그리고 힘이 부쩍 약해진 거 같아.",
       "gold_symptoms": [
         "불안",
         "눈의 충혈",
@@ -198,7 +198,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "최근에 심장이 엇박자로 뛰는 거 같아요.",
+      "text": "최근에 심장이 엇박자로 뛰는 거 같아.",
       "gold_symptoms": [
         "부정맥"
       ],
@@ -215,7 +215,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 맥이 너무 빨리 뛰어요.",
+      "text": "치료하고 나서도 맥이 너무 빨리 뛰어.",
       "gold_symptoms": [
         "빈맥"
       ],
@@ -232,7 +232,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "복부팽만감은 지금은 괜찮아요 근데 집에 있던 약 조금 먹었는데도 괜히 몸이 무겁고 처져요.",
+      "text": "복부팽만감은 지금은 괜찮아 근데 집에 있던 약 조금 먹었는데도 괜히 몸땡이가 무겁고 처져.",
       "gold_symptoms": [
         "권태감"
       ],
@@ -251,7 +251,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 눈이 무거워요. 왔다 갔다 반복돼요.",
+      "text": "치료하고 나서도 눈이 무거워. 왔다 갔다 반복돼.",
       "gold_symptoms": [
         "눈이 무거운 느낌"
       ],
@@ -268,7 +268,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 복용하는 중에 삼키기가 어렵습니다.",
+      "text": "약 먹는 중에 삼키기가 어려워.",
       "gold_symptoms": [
         "삼키기 곤란"
       ],
@@ -285,7 +285,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 재채기가 자주 납니다.",
+      "text": "지난 진료 이후 재채기가 자주 나.",
       "gold_symptoms": [
         "재채기"
       ],
@@ -302,7 +302,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "빈맥은 지금은 괜찮아요 근데 식은땀이 흘러요 그리고 배가 아프고 설사를 해요.",
+      "text": "빈맥은 지금은 괜찮아 근데 식은땀이 흘러 그리고 배가 아프고 설사를 해.",
       "gold_symptoms": [
         "발한",
         "설사"
@@ -322,7 +322,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "어제부터 감기 증상이 이어집니다 그리고 배가 더부룩하고 부풀어 있습니다.",
+      "text": "어제부터 감기 증상이 이어져 그리고 배가 더부룩하고 부풀어 있어.",
       "gold_symptoms": [
         "감기 증상",
         "복부팽만감"
@@ -340,7 +340,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 추워가 몸이 떨려요 그리고 손발이 자꾸 부어요.",
+      "text": "약 먹는 중인데 추워가 몸땡이가 떨려 그리고 손발이 자꾸 부어.",
       "gold_symptoms": [
         "오한",
         "사지 부종"
@@ -358,7 +358,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 코가 꽉 막혀요 그리고 속이 울렁거려 토할 거 같아요 그리고 가슴 한쪽이 찌릿해요.",
+      "text": "지난번보다 코가 꽉 막혀 그리고 속이 울렁거려 토할 거 같아 그리고 가슴 한쪽이 찌릿해.",
       "gold_symptoms": [
         "코막힘",
         "구토",
@@ -377,7 +377,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "방사통은 지금은 괜찮습니다 그러나 아직 목에 가래가 걸립니다.",
+      "text": "방사통은 지금은 괜찮아 근데 아직 목에 가래가 걸려.",
       "gold_symptoms": [
         "가래"
       ],
@@ -396,7 +396,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 심장이 쿵쿵 뛰는 거 같아요.",
+      "text": "약 먹는 중인데 심장이 쿵쿵 뛰는 거 같아.",
       "gold_symptoms": [
         "가슴 두근거림"
       ],
@@ -413,7 +413,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "눈이 빨갛게 충혈됐습니다 그래서 진료를 보러 왔습니다.",
+      "text": "눈이 빨갛게 충혈됐어 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "눈의 충혈"
       ],
@@ -430,7 +430,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "배가 아픕니다 그래서 진료를 보러 왔습니다. 가끔 심해졌다가 조금 줄어듭니다.",
+      "text": "배가 아파 그래서 진료 보러 왔어. 가끔 심해졌다가 조금 줄어.",
       "gold_symptoms": [
         "복부 통증"
       ],
@@ -447,7 +447,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가래은 이제 거의 없어요 근데 며칠 전부터 목이 칼칼하고 아파요.",
+      "text": "가래는 이제 거의 없어 근데 며칠 전부터 목이 칼칼하고 아파.",
       "gold_symptoms": [
         "목의 통증"
       ],
@@ -466,7 +466,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "최근에 가만히 있어도 숨쉬기가 불편합니다.",
+      "text": "최근에 가만히 있어도 숨쉬기가 불편해.",
       "gold_symptoms": [
         "호흡곤란"
       ],
@@ -483,7 +483,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "머리가 어지럽습니다 그리고 가슴 통증이 팔로 퍼집니다 그래서 진료를 보러 왔습니다.",
+      "text": "머리가 어지러워 그리고 가슴 통증이 팔로 퍼져 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "어지러움",
         "방사통"
@@ -501,7 +501,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "가슴을 꽉 누르는 느낌입니다 그리고 마른기침이 반복됩니다 그래서 진료를 보러 왔습니다.",
+      "text": "가슴을 꽉 누르는 느낌이야 그리고 마른기침이 반복돼 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "흉부압박감",
         "기침"
@@ -519,7 +519,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "피로감은 지금은 괜찮습니다 그러나 아직 몸에 힘이 잘 들어가지 않습니다 그리고 기침할 때 피가 보입니다.",
+      "text": "피로감은 지금은 괜찮아 근데 아직 몸에 힘이 잘 들어가지 않아 그리고 기침할 때 피가 보여.",
       "gold_symptoms": [
         "기운없음",
         "객혈"
@@ -539,7 +539,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "오늘 아침부터 설사가 계속됩니다 그리고 숨쉴 때 쌕쌕거리는 소리가 납니다 그리고 가슴이 답답합니다.",
+      "text": "오늘 아침부터 설사가 계속돼 그리고 숨쉴 때 쌕쌕거리는 소리가 나 그리고 가슴이 답답해.",
       "gold_symptoms": [
         "설사",
         "천명음",
@@ -558,7 +558,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 먹어도 복부가 팽팽한 느낌입니다.",
+      "text": "약을 먹어도 복부가 팽팽한 느낌이야.",
       "gold_symptoms": [
         "복부팽만감"
       ],
@@ -575,7 +575,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "팔다리가 붓는 느낌입니다 그래서 진료를 보러 왔습니다.",
+      "text": "팔다리가 붓는 느낌이야 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "사지 부종"
       ],
@@ -592,7 +592,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "설사은 좀 나아졌어요 근데 아직 토를 했어요.",
+      "text": "설사는 좀 나아졌어 근데 아직 토를 했어.",
       "gold_symptoms": [
         "구토"
       ],
@@ -611,7 +611,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 몸무게가 좀 줄었어요.",
+      "text": "이번에 새로 몸무게가 좀 줄었어.",
       "gold_symptoms": [
         "체중감소"
       ],
@@ -628,7 +628,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 다리가 퉁퉁 부어요.",
+      "text": "지난번보다 다리깽이가 퉁퉁 부어.",
       "gold_symptoms": [
         "하지부종"
       ],
@@ -645,7 +645,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 힘이 부쩍 약해진 거 같아요.",
+      "text": "약 먹는 중인데 힘이 부쩍 약해진 거 같아.",
       "gold_symptoms": [
         "근력 약화"
       ],
@@ -662,7 +662,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "부정맥은 이제 거의 없어요 근데 어제부터 콧물이 줄줄 나와요 그리고 거무스름한 가래가 나와요.",
+      "text": "부정맥은 이제 거의 없어 근데 어제부터 콧물이 줄줄 나와 그리고 거무스름한 가래가 나와.",
       "gold_symptoms": [
         "콧물",
         "검은색 가래"
@@ -682,7 +682,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "온몸이 덜덜 떨려요 그리고 피부가 빨개져요 그래서 좀 불편해요.",
+      "text": "온몸가 덜덜 떨려 그리고 피부가 빨개져 그래서 좀 불편해.",
       "gold_symptoms": [
         "온몸이 떨림",
         "피부홍조"
@@ -700,7 +700,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 거품 섞인 가래가 나옵니다 그리고 몸살처럼 근육통이 있습니다.",
+      "text": "이번에는 새로 거품 섞인 가래가 나와 그리고 몸살처럼 근육통이 있어.",
       "gold_symptoms": [
         "거품이 섞인 가래",
         "근육통"
@@ -718,7 +718,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "가슴 통증이 팔로 퍼집니다 그리고 물을 마시면 자주 사레가 듭니다 그리고 오한이 있습니다 그래서 진료를 보러 왔습니다.",
+      "text": "가슴 통증이 팔로 퍼져 그리고 물을 마시면 자주 사레가 들어 그리고 오한이 있어 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "방사통",
         "사래걸림",
@@ -737,7 +737,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "거품이 섞인 가래은 현재 없습니다 그러나 마른기침이 반복됩니다 그래서 진료를 보러 왔습니다.",
+      "text": "거품이 섞인 가래는 지금 없어 근데 마른기침이 반복돼 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "기침"
       ],
@@ -756,7 +756,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 가래에 피가 좀 묻어 나와요.",
+      "text": "이번에 새로 가래에 피가 좀 묻어 나와.",
       "gold_symptoms": [
         "객혈"
       ],
@@ -773,7 +773,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 숨 쉴 때 쌕쌕거려요.",
+      "text": "이번에 새로 숨 쉴 때 쌕쌕거려.",
       "gold_symptoms": [
         "천명음"
       ],
@@ -790,7 +790,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "목소리가 잘 안 나와요 그래서 좀 불편해요. 아침에 더 그래요.",
+      "text": "목소리가 잘 안 나와 그래서 좀 불편해. 아침에 더 그래.",
       "gold_symptoms": [
         "목소리 변화"
       ],
@@ -807,7 +807,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "코막힘은 현재 없습니다 그러나 아직 계단을 오르면 숨이 많이 찹니다.",
+      "text": "코막힘은 지금 없어 근데 아직 계단을 오르면 숨이 많이 차.",
       "gold_symptoms": [
         "운동 시 호흡곤란"
       ],
@@ -826,7 +826,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 가슴이 찌르듯 아픕니다.",
+      "text": "지난 진료 이후 가슴이 찌르듯 아파.",
       "gold_symptoms": [
         "흉통"
       ],
@@ -843,7 +843,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "오늘 아침부터 눈꼽이 자꾸 껴요 그리고 몸이 축 처져요.",
+      "text": "오늘 아침부터 눈꼽이 자꾸 껴 그리고 몸땡이가 축 처져.",
       "gold_symptoms": [
         "눈꼽",
         "권태감"
@@ -861,7 +861,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "어제부터 머리가 깨질 듯 아파요 그리고 눈이 무거워요.",
+      "text": "어제부터 머리깽이가 깨질 듯 아파 그리고 눈이 무거워.",
       "gold_symptoms": [
         "두통",
         "눈이 무거운 느낌"
@@ -879,7 +879,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "두통은 지금은 괜찮아요 근데 지난번보다 자도자도 피곤해요 그리고 삼키기가 힘들어요.",
+      "text": "두통은 지금은 괜찮아 근데 지난번보다 자도자도 피곤해 그리고 삼키기가 힘들어.",
       "gold_symptoms": [
         "피로감",
         "삼키기 곤란"
@@ -899,7 +899,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 거무스름한 가래가 나와요 그리고 재채기가 자꾸 나와요 그리고 기운이 하나도 없어요.",
+      "text": "치료하고 나서도 거무스름한 가래가 나와 그리고 재채기가 자꾸 나와 그리고 기운이 하나도 없어.",
       "gold_symptoms": [
         "검은색 가래",
         "재채기",
@@ -918,7 +918,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약은 아직 따로 안 먹고 있고 얼굴이 확 달아올라요.",
+      "text": "약은 아직 따로 안 먹고 있고 얼굴이 확 달아올라.",
       "gold_symptoms": [
         "피부홍조"
       ],
@@ -935,7 +935,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 근육이 욱신거려요.",
+      "text": "이번에 새로 근육이 욱신거려.",
       "gold_symptoms": [
         "근육통"
       ],
@@ -952,7 +952,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "기운없음은 현재 없습니다 그러나 물을 마시면 자주 사레가 듭니다 그래서 진료를 보러 왔습니다.",
+      "text": "기운없음은 지금 없어 근데 물을 마시면 자주 사레가 들어 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "사래걸림"
       ],
@@ -971,7 +971,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 진한 노란 가래가 계속 나옵니다.",
+      "text": "지난 진료 이후 진한 노란 가래가 계속 나와.",
       "gold_symptoms": [
         "화농성 객담"
       ],
@@ -988,7 +988,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 얼굴이 창백해졌습니다. 최근 들어 더 잦아졌습니다.",
+      "text": "지난 진료 이후 얼굴이 창백해졌어. 요즘 들어 더 잦아졌어.",
       "gold_symptoms": [
         "창백"
       ],
@@ -1005,7 +1005,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "가슴이 답답합니다 그래서 진료를 보러 왔습니다. 오전보다 오후에 더 뚜렷합니다.",
+      "text": "가슴이 답답해 그래서 진료 보러 왔어. 오전보다 오후에 더 뚜렷해.",
       "gold_symptoms": [
         "가슴 답답"
       ],
@@ -1022,7 +1022,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "부정맥은 호전되었습니다 그러나 며칠 전부터 불안감이 계속됩니다 그리고 눈이 붉어졌습니다.",
+      "text": "부정맥은 나아졌어 근데 며칠 전부터 불안감이 계속돼 그리고 눈이 붉어졌어.",
       "gold_symptoms": [
         "불안",
         "눈의 충혈"
@@ -1042,7 +1042,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 맥이 들쑥날쑥해요 그리고 배가 콕콕 아파요.",
+      "text": "치료하고 나서도 맥이 들쑥날쑥해 그리고 배가 콕콕 아파.",
       "gold_symptoms": [
         "부정맥",
         "복부 통증"
@@ -1060,7 +1060,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "맥이 너무 빨리 뛰어요 그리고 목이 따가워요 그래서 좀 불편해요.",
+      "text": "맥이 너무 빨리 뛰어 그리고 목이 따가워 그래서 좀 불편해.",
       "gold_symptoms": [
         "빈맥",
         "목의 통증"
@@ -1078,7 +1078,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "괜히 몸이 무겁고 처져요 그리고 숨이 잘 안 쉬어지는 느낌이에요 그리고 가래가 거품처럼 올라와요 그래서 좀 불편해요.",
+      "text": "괜히 몸땡이가 무겁고 처져 그리고 숨이 잘 안 쉬어지는 느낌이야 그리고 가래가 거품처럼 올라와 그래서 좀 불편해.",
       "gold_symptoms": [
         "권태감",
         "호흡곤란",
@@ -1097,7 +1097,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "온몸이 떨림은 좀 나아졌어요 근데 눈이 무거워요 그래서 좀 불편해요.",
+      "text": "온몸가 떨림은 좀 나아졌어 근데 눈이 무거워 그래서 좀 불편해.",
       "gold_symptoms": [
         "눈이 무거운 느낌"
       ],
@@ -1116,7 +1116,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 음식이 잘 넘어가지 않습니다.",
+      "text": "지난 진료 이후 음식이 잘 넘어가지 않아.",
       "gold_symptoms": [
         "삼키기 곤란"
       ],
@@ -1133,7 +1133,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 재채기가 자주 납니다.",
+      "text": "치료 후에도 재채기가 자주 나.",
       "gold_symptoms": [
         "재채기"
       ],
@@ -1150,7 +1150,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "오늘 아침부터 땀이 많이 납니다.",
+      "text": "오늘 아침부터 땀이 많이 나.",
       "gold_symptoms": [
         "발한"
       ],
@@ -1167,7 +1167,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "오한은 호전되었습니다 그러나 오늘 아침부터 감기 증상이 이어집니다.",
+      "text": "오한은 나아졌어 근데 오늘 아침부터 감기 증상이 이어져.",
       "gold_symptoms": [
         "감기 증상"
       ],
@@ -1186,7 +1186,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "추워가 몸이 떨려요 그래서 좀 불편해요. 점점 더 신경 쓰여요.",
+      "text": "추워가 몸땡이가 떨려 그래서 좀 불편해. 점점 더 신경 쓰여.",
       "gold_symptoms": [
         "오한"
       ],
@@ -1203,7 +1203,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "코막힘이 계속됩니다 그리고 토할 것 같습니다 그래서 진료를 보러 왔습니다.",
+      "text": "코막힘이 계속돼 그리고 토할 것 같아 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "코막힘",
         "구토"
@@ -1221,7 +1221,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 목에 가래가 걸립니다 그리고 체중이 줄었습니다. 일상생활 중에도 느껴집니다.",
+      "text": "지난 진료 이후 목에 가래가 걸려 그리고 체중이 줄었어. 평소에도 느껴져.",
       "gold_symptoms": [
         "가래",
         "체중감소"
@@ -1239,7 +1239,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "눈꼽은 지금은 괜찮습니다 그러나 며칠 전부터 심장이 빨리 뛰는 느낌입니다 그리고 다리가 붓습니다.",
+      "text": "눈꼽은 지금은 괜찮아 근데 며칠 전부터 심장이 빨리 뛰는 느낌이야 그리고 다리가 부어.",
       "gold_symptoms": [
         "가슴 두근거림",
         "하지부종"
@@ -1259,7 +1259,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "눈이 벌겋게 됐어요 그리고 힘이 부쩍 약해진 거 같아요 그리고 자도자도 피곤해요 그래서 좀 불편해요.",
+      "text": "눈이 벌겋게 됐어 그리고 힘이 부쩍 약해진 거 같아 그리고 자도자도 피곤해 그래서 좀 불편해.",
       "gold_symptoms": [
         "눈의 충혈",
         "근력 약화",
@@ -1278,7 +1278,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "최근에 배가 아픕니다.",
+      "text": "최근에 배가 아파.",
       "gold_symptoms": [
         "복부 통증"
       ],
@@ -1295,7 +1295,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 목이 칼칼하고 아파요.",
+      "text": "이번에 새로 목이 칼칼하고 아파.",
       "gold_symptoms": [
         "목의 통증"
       ],
@@ -1312,7 +1312,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "흉부압박감은 현재 없습니다 그러나 복용 중에도 가만히 있어도 숨쉬기가 불편합니다.",
+      "text": "흉부압박감은 지금 없어 근데 약 먹는 중에도 가만히 있어도 숨쉬기가 불편해.",
       "gold_symptoms": [
         "호흡곤란"
       ],
@@ -1331,7 +1331,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 머리가 핑 돌아요.",
+      "text": "지난번보다 머리깽이가 핑 돌아.",
       "gold_symptoms": [
         "어지러움"
       ],
@@ -1348,7 +1348,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "최근에 가슴이 꽉 눌리는 느낌이에요.",
+      "text": "최근에 가슴이 꽉 눌리는 느낌이야.",
       "gold_symptoms": [
         "흉부압박감"
       ],
@@ -1365,7 +1365,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "몸에 힘이 잘 들어가지 않습니다 그래서 진료를 보러 왔습니다.",
+      "text": "몸에 힘이 잘 들어가지 않아 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "기운없음"
       ],
@@ -1382,7 +1382,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "가슴 답답은 현재 없습니다 그러나 설사가 계속됩니다 그리고 가슴에서 쌕쌕 소리가 납니다 그래서 진료를 보러 왔습니다.",
+      "text": "가슴 답답은 지금 없어 근데 설사가 계속돼 그리고 가슴에서 쌕쌕 소리가 나 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "설사",
         "천명음"
@@ -1402,7 +1402,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "배가 빵빵해요 그리고 목소리가 잘 안 나와요 그래서 좀 불편해요.",
+      "text": "배가 빵빵해 그리고 목소리가 잘 안 나와 그래서 좀 불편해.",
       "gold_symptoms": [
         "복부팽만감",
         "목소리 변화"
@@ -1420,7 +1420,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "손발이 자꾸 부어요 그리고 조금만 걸어도 숨이 차요 그래서 좀 불편해요.",
+      "text": "손발이 자꾸 부어 그리고 조금만 걸어도 숨이 차 그래서 좀 불편해.",
       "gold_symptoms": [
         "사지 부종",
         "운동 시 호흡곤란"
@@ -1438,7 +1438,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "며칠 전부터 속이 울렁거려 토할 거 같아요 그리고 가슴 한쪽이 찌릿해요 그리고 심장이 빠르게 뛰는 느낌이에요.",
+      "text": "며칠 전부터 속이 울렁거려 토할 거 같아 그리고 가슴 한쪽이 찌릿해 그리고 심장이 빠르게 뛰는 느낌이야.",
       "gold_symptoms": [
         "구토",
         "흉통",
@@ -1457,7 +1457,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "콧물은 현재 없습니다 그러나 복용 중에도 최근 살이 많이 빠졌습니다.",
+      "text": "콧물은 지금 없어 근데 약 먹는 중에도 최근 살이 많이 빠졌어.",
       "gold_symptoms": [
         "체중감소"
       ],
@@ -1476,7 +1476,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약은 아직 따로 안 먹고 있고 종아리가 자꾸 부어요.",
+      "text": "약은 아직 따로 안 먹고 있고 종아리가 자꾸 부어.",
       "gold_symptoms": [
         "하지부종"
       ],
@@ -1493,7 +1493,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 근력이 약해진 느낌입니다.",
+      "text": "지난 진료 이후 근력이 약해진 느낌이야.",
       "gold_symptoms": [
         "근력 약화"
       ],
@@ -1510,7 +1510,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 콧물이 줄줄 나와요.",
+      "text": "이번에 새로 콧물이 줄줄 나와.",
       "gold_symptoms": [
         "콧물"
       ],
@@ -1527,7 +1527,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "감기 증상은 현재 없습니다 그러나 아직 온몸이 떨립니다.",
+      "text": "감기 증상은 지금 없어 근데 아직 온몸이 떨려.",
       "gold_symptoms": [
         "온몸이 떨림"
       ],
@@ -1546,7 +1546,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 먹어도 거품 섞인 가래가 나옵니다. 누워 있을 때도 남아 있습니다.",
+      "text": "약을 먹어도 거품 섞인 가래가 나와. 누워 있어도 남아 있어.",
       "gold_symptoms": [
         "거품이 섞인 가래"
       ],
@@ -1563,7 +1563,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "어제부터 통증이 어깨 쪽으로 뻗칩니다 그리고 물을 마시면 자주 사레가 듭니다.",
+      "text": "어제부터 통증이 어깨 쪽으로 뻗쳐 그리고 물을 마시면 자주 사레가 들어.",
       "gold_symptoms": [
         "방사통",
         "사래걸림"
@@ -1581,7 +1581,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 기침이 자꾸 나와요 그리고 누런 가래가 자꾸 나와요.",
+      "text": "약 먹는 중인데 기침이 자꾸 나와 그리고 누런 가래가 자꾸 나와.",
       "gold_symptoms": [
         "기침",
         "화농성 객담"
@@ -1599,7 +1599,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "흉통은 현재 없습니다 그러나 가래에 피가 섞여 나옵니다 그리고 얼굴이 창백해졌습니다 그래서 진료를 보러 왔습니다.",
+      "text": "흉통은 지금 없어 근데 가래에 피가 섞여 나와 그리고 얼굴이 창백해졌어 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "객혈",
         "창백"
@@ -1619,7 +1619,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "며칠 전부터 가슴에서 쌕쌕 소리가 납니다 그리고 가슴이 답답합니다 그리고 가슴이 두근거립니다.",
+      "text": "며칠 전부터 가슴에서 쌕쌕 소리가 나 그리고 가슴이 답답해 그리고 가슴이 두근거려.",
       "gold_symptoms": [
         "천명음",
         "가슴 답답",
@@ -1638,7 +1638,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 목소리가 잘 나오지 않습니다.",
+      "text": "치료 후에도 목소리가 잘 나오지 않아.",
       "gold_symptoms": [
         "목소리 변화"
       ],
@@ -1655,7 +1655,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 조금만 걸어도 숨이 차요.",
+      "text": "약 먹는 중인데 조금만 걸어도 숨이 차.",
       "gold_symptoms": [
         "운동 시 호흡곤란"
       ],
@@ -1672,7 +1672,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "어지러움은 이제 거의 없어요 근데 지난번보다 숨 쉬면 가슴이 결려요.",
+      "text": "어지러움은 이제 거의 없어 근데 지난번보다 숨 쉬면 가슴이 결려.",
       "gold_symptoms": [
         "흉통"
       ],
@@ -1691,7 +1691,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "눈꼽이 자꾸 껴요 그래서 좀 불편해요.",
+      "text": "눈꼽이 자꾸 껴 그래서 좀 불편해.",
       "gold_symptoms": [
         "눈꼽"
       ],
@@ -1708,7 +1708,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "머리가 깨질 듯 아파요 그래서 좀 불편해요.",
+      "text": "머리깽이가 깨질 듯 아파 그래서 좀 불편해.",
       "gold_symptoms": [
         "두통"
       ],
@@ -1725,7 +1725,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 피로감이 계속됩니다.",
+      "text": "이번에는 새로 피로감이 계속돼.",
       "gold_symptoms": [
         "피로감"
       ],
@@ -1742,7 +1742,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "창백은 호전되었습니다 그러나 약을 복용하는 중에 검은색 가래가 나옵니다 그리고 재채기가 멈추지 않습니다.",
+      "text": "창백은 나아졌어 근데 약 먹는 중에 검은색 가래가 나와 그리고 재채기가 멈추지 않아.",
       "gold_symptoms": [
         "검은색 가래",
         "재채기"
@@ -1762,7 +1762,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 얼굴이 붉어집니다 그리고 땀이 많이 납니다.",
+      "text": "이번에는 새로 얼굴이 붉어져 그리고 땀이 많이 나.",
       "gold_symptoms": [
         "피부홍조",
         "발한"
@@ -1780,7 +1780,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "온몸 근육이 쑤십니다 그리고 감기 기운이 있습니다 그래서 진료를 보러 왔습니다.",
+      "text": "온몸 근육이 쑤셔 그리고 감기 기운이 있어 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "근육통",
         "감기 증상"
@@ -1798,7 +1798,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "최근에 먹다가 자꾸 사래가 걸려요 그리고 몸이 으슬으슬해요 그리고 팔다리가 붓는 거 같아요.",
+      "text": "최근에 먹다가 자꾸 사래가 걸려 그리고 몸땡이가 으슬으슬해 그리고 팔다리가 붓는 거 같아.",
       "gold_symptoms": [
         "사래걸림",
         "오한",
@@ -1817,7 +1817,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "근력 약화은 지금은 괜찮아요 근데 최근에 가래가 노랗고 진해요.",
+      "text": "근력 약화는 지금은 괜찮아 근데 최근에 가래가 노랗고 진해.",
       "gold_symptoms": [
         "화농성 객담"
       ],
@@ -1836,7 +1836,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "집에 있던 약 조금 먹었는데도 얼굴빛이 창백해 보여요.",
+      "text": "집에 있던 약 조금 먹었는데도 얼굴빛이 창백해 보여.",
       "gold_symptoms": [
         "창백"
       ],
@@ -1853,7 +1853,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "오늘 아침부터 가슴이 답답합니다.",
+      "text": "오늘 아침부터 가슴이 답답해.",
       "gold_symptoms": [
         "가슴 답답"
       ],
@@ -1870,7 +1870,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 마음이 자꾸 불안해요.",
+      "text": "치료하고 나서도 마음이 자꾸 불안해.",
       "gold_symptoms": [
         "불안"
       ],
@@ -1887,7 +1887,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "발한은 지금은 괜찮습니다 그러나 맥이 건너뛰는 느낌입니다 그래서 진료를 보러 왔습니다.",
+      "text": "발한은 지금은 괜찮아 근데 맥이 건너뛰는 느낌이야 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "부정맥"
       ],
@@ -1906,7 +1906,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 먹어도 심박이 빠른 느낌입니다.",
+      "text": "약을 먹어도 심박이 빠른 느낌이야.",
       "gold_symptoms": [
         "빈맥"
       ],
@@ -1923,7 +1923,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 전반적으로 몸이 무겁습니다 그리고 숨이 차서 힘듭니다.",
+      "text": "치료 후에도 전반적으로 몸이 무거워 그리고 숨이 차서 힘들어.",
       "gold_symptoms": [
         "권태감",
         "호흡곤란"
@@ -1941,7 +1941,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "눈이 무겁게 느껴집니다 그리고 빙빙 도는 느낌이 있습니다 그래서 진료를 보러 왔습니다.",
+      "text": "눈이 무겁게 느껴져 그리고 빙빙 도는 느낌이 있어 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "눈이 무거운 느낌",
         "어지러움"
@@ -1959,7 +1959,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "운동 시 호흡곤란은 지금은 괜찮습니다 그러나 약을 복용하는 중에 삼키기가 어렵습니다 그리고 가슴을 꽉 누르는 느낌입니다.",
+      "text": "운동 시 호흡곤란은 지금은 괜찮아 근데 약 먹는 중에 삼키기가 어려워 그리고 가슴을 꽉 누르는 느낌이야.",
       "gold_symptoms": [
         "삼키기 곤란",
         "흉부압박감"
@@ -1979,7 +1979,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 재채기가 자꾸 나와요 그리고 몸에 힘이 쭉 빠져요 그리고 기침하면 피가 비쳐요.",
+      "text": "치료하고 나서도 재채기가 자꾸 나와 그리고 몸땡이에 힘이 쭉 빠져 그리고 기침하면 피가 비쳐.",
       "gold_symptoms": [
         "재채기",
         "기운없음",
@@ -1998,7 +1998,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "어제부터 땀이 많이 납니다.",
+      "text": "어제부터 땀이 많이 나.",
       "gold_symptoms": [
         "발한"
       ],
@@ -2015,7 +2015,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 감기 기운이 있습니다.",
+      "text": "치료 후에도 감기 기운이 있어.",
       "gold_symptoms": [
         "감기 증상"
       ],
@@ -2032,7 +2032,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "호흡곤란은 호전되었습니다 그러나 며칠 전부터 몸이 춥고 떨립니다.",
+      "text": "호흡곤란은 나아졌어 근데 며칠 전부터 몸이 춥고 떨려.",
       "gold_symptoms": [
         "오한"
       ],
@@ -2051,7 +2051,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "코막힘이 계속됩니다 그래서 진료를 보러 왔습니다.",
+      "text": "코막힘이 계속돼 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "코막힘"
       ],
@@ -2068,7 +2068,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 목에 가래가 걸립니다.",
+      "text": "치료 후에도 목에 가래가 걸려.",
       "gold_symptoms": [
         "가래"
       ],
@@ -2085,7 +2085,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "심장이 빨리 뛰는 느낌입니다 그래서 진료를 보러 왔습니다.",
+      "text": "심장이 빨리 뛰는 느낌이야 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "가슴 두근거림"
       ],
@@ -2102,7 +2102,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "화농성 객담은 이제 거의 없어요 근데 아직 눈이 벌겋게 됐어요 그리고 팔다리에 힘이 잘 안 들어가요.",
+      "text": "화농성 객담은 이제 거의 없어 근데 아직 눈이 벌겋게 됐어 그리고 팔다리에 힘이 잘 안 들어가.",
       "gold_symptoms": [
         "눈의 충혈",
         "근력 약화"
@@ -2122,7 +2122,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 배가 아픕니다 그리고 콧물이 계속 흐릅니다.",
+      "text": "치료 후에도 배가 아파 그리고 콧물이 계속 흘러.",
       "gold_symptoms": [
         "복부 통증",
         "콧물"
@@ -2140,7 +2140,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 복용하는 중에 목이 따갑고 아픕니다 그리고 온몸이 떨립니다.",
+      "text": "약 먹는 중에 목이 따갑고 아파 그리고 온몸이 떨려.",
       "gold_symptoms": [
         "목의 통증",
         "온몸이 떨림"
@@ -2158,7 +2158,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "숨이 차가 힘들어요 그리고 거품 낀 가래가 나와요 그리고 근육이 욱신거려요 그래서 좀 불편해요.",
+      "text": "숨이 차가 힘들어 그리고 거품 낀 가래가 나와 그리고 근육이 욱신거려 그래서 좀 불편해.",
       "gold_symptoms": [
         "호흡곤란",
         "거품이 섞인 가래",
@@ -2177,7 +2177,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "하지부종은 지금은 괜찮아요 근데 빙 도는 느낌이 있어요 그래서 좀 불편해요.",
+      "text": "하지부종은 지금은 괜찮아 근데 빙 도는 느낌이 있어 그래서 좀 불편해.",
       "gold_symptoms": [
         "어지러움"
       ],
@@ -2196,7 +2196,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 가슴을 누르는 거 같아요.",
+      "text": "지난번보다 가슴을 누르는 거 같아.",
       "gold_symptoms": [
         "흉부압박감"
       ],
@@ -2213,7 +2213,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 기운이 없습니다.",
+      "text": "치료 후에도 기운이 없어.",
       "gold_symptoms": [
         "기운없음"
       ],
@@ -2230,7 +2230,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 묽은 변을 몇 번씩 봐요.",
+      "text": "약 먹는 중인데 묽은 변을 몇 번씩 봐.",
       "gold_symptoms": [
         "설사"
       ],
@@ -2247,7 +2247,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "재채기은 호전되었습니다 그러나 아직 복부가 팽팽한 느낌입니다.",
+      "text": "재채기는 나아졌어 근데 아직 복부가 팽팽한 느낌이야.",
       "gold_symptoms": [
         "복부팽만감"
       ],
@@ -2266,7 +2266,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "최근에 팔다리가 붓는 느낌입니다.",
+      "text": "최근에 팔다리가 붓는 느낌이야.",
       "gold_symptoms": [
         "사지 부종"
       ],
@@ -2283,7 +2283,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 속이 울렁거려 토할 거 같아요 그리고 가슴이 콕콕 아파요.",
+      "text": "지난번보다 속이 울렁거려 토할 거 같아 그리고 가슴이 콕콕 아파.",
       "gold_symptoms": [
         "구토",
         "흉통"
@@ -2301,7 +2301,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 살이 자꾸 빠져요 그리고 눈곱이 많이 붙어요.",
+      "text": "치료하고 나서도 살이 자꾸 빠져 그리고 눈곱이 많이 붙어.",
       "gold_symptoms": [
         "체중감소",
         "눈꼽"
@@ -2319,7 +2319,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "목소리 변화은 좀 나아졌어요 근데 다리가 퉁퉁 부어요 그리고 머리가 깨질 듯 아파요.",
+      "text": "목소리 변화는 좀 나아졌어 근데 다리깽이가 퉁퉁 부어 그리고 머리깽이가 깨질 듯 아파.",
       "gold_symptoms": [
         "하지부종",
         "두통"
@@ -2339,7 +2339,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "며칠 전부터 팔다리에 힘이 잘 들어가지 않습니다 그리고 피로감이 계속됩니다 그리고 삼키기가 어렵습니다.",
+      "text": "며칠 전부터 팔다리에 힘이 잘 들어가지 않아 그리고 피로감이 계속돼 그리고 삼키기가 어려워.",
       "gold_symptoms": [
         "근력 약화",
         "피로감",
@@ -2358,7 +2358,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "최근에 맑은 콧물이 납니다.",
+      "text": "최근에 맑은 콧물이 나.",
       "gold_symptoms": [
         "콧물"
       ],
@@ -2375,7 +2375,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "최근에 온몸이 덜덜 떨려요.",
+      "text": "최근에 온몸가 덜덜 떨려.",
       "gold_symptoms": [
         "온몸이 떨림"
       ],
@@ -2392,7 +2392,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "목의 통증은 좀 나아졌어요 근데 약은 아직 따로 안 먹고 있고 거품 낀 가래가 나와요.",
+      "text": "목의 통증은 좀 나아졌어 근데 약은 아직 따로 안 먹고 있고 거품 낀 가래가 나와.",
       "gold_symptoms": [
         "거품이 섞인 가래"
       ],
@@ -2411,7 +2411,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "아픈 게 어깨로 뻗어요 그래서 좀 불편해요.",
+      "text": "아픈 게 어깨로 뻗어 그래서 좀 불편해.",
       "gold_symptoms": [
         "방사통"
       ],
@@ -2428,7 +2428,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "최근에 기침이 자꾸 나와요.",
+      "text": "최근에 기침이 자꾸 나와.",
       "gold_symptoms": [
         "기침"
       ],
@@ -2445,7 +2445,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 가래에 피가 섞여 나옵니다.",
+      "text": "지난 진료 이후 가래에 피가 섞여 나와.",
       "gold_symptoms": [
         "객혈"
       ],
@@ -2462,7 +2462,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "사래걸림은 현재 없습니다 그러나 약을 복용하는 중에 가슴에서 쌕쌕 소리가 납니다 그리고 가슴이 막힌 듯 답답합니다.",
+      "text": "사래걸림은 지금 없어 근데 약 먹는 중에 가슴에서 쌕쌕 소리가 나 그리고 가슴이 막힌 듯 답답해.",
       "gold_symptoms": [
         "천명음",
         "가슴 답답"
@@ -2482,7 +2482,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "목소리가 쉬었습니다 그리고 괜히 불안합니다 그래서 진료를 보러 왔습니다.",
+      "text": "목소리가 쉬었어 그리고 괜히 불안해 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "목소리 변화",
         "불안"
@@ -2500,7 +2500,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 먹어도 걸을 때 숨이 더 찹니다 그리고 맥이 건너뛰는 느낌입니다.",
+      "text": "약을 먹어도 걸을 때 숨이 더 차 그리고 맥이 건너뛰는 느낌이야.",
       "gold_symptoms": [
         "운동 시 호흡곤란",
         "부정맥"
@@ -2518,7 +2518,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "현재 복용 중인 약은 없고 가슴 한쪽이 아픕니다 그리고 심박이 빠른 느낌입니다 그리고 목이 따갑고 아픕니다.",
+      "text": "지금 먹는 약은 없고 가슴 한쪽이 아파 그리고 심박이 빠른 느낌이야 그리고 목이 따갑고 아파.",
       "gold_symptoms": [
         "흉통",
         "빈맥",
@@ -2537,7 +2537,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "체중감소은 호전되었습니다 그러나 아직 아침마다 눈꼽이 많이 낍니다.",
+      "text": "체중감소는 나아졌어 근데 아직 아침마다 눈꼽이 많이 껴.",
       "gold_symptoms": [
         "눈꼽"
       ],
@@ -2556,7 +2556,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 머리가 지끈지끈해요.",
+      "text": "약 먹는 중인데 머리깽이가 지끈지끈해.",
       "gold_symptoms": [
         "두통"
       ],
@@ -2573,7 +2573,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "쉬어도 피곤합니다 그래서 진료를 보러 왔습니다.",
+      "text": "쉬어도 피곤해 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "피로감"
       ],
@@ -2590,7 +2590,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "거무스름한 가래가 나와요 그래서 좀 불편해요.",
+      "text": "거무스름한 가래가 나와 그래서 좀 불편해.",
       "gold_symptoms": [
         "검은색 가래"
       ],
@@ -2607,7 +2607,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "삼키기 곤란은 호전되었습니다 그러나 피부가 달아오르는 느낌입니다.",
+      "text": "삼키기 곤란은 나아졌어 근데 피부가 달아오르는 느낌이야.",
       "gold_symptoms": [
         "피부홍조"
       ],
@@ -2626,7 +2626,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "몸살처럼 근육통이 있습니다 그래서 진료를 보러 왔습니다. 아침에 더 느껴집니다.",
+      "text": "몸살처럼 근육통이 있어 그래서 진료 보러 왔어. 아침에 더 느껴져.",
       "gold_symptoms": [
         "근육통"
       ],
@@ -2643,7 +2643,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "먹다가 자꾸 사래가 걸려요 그리고 추워가 몸이 떨려요 그래서 좀 불편해요.",
+      "text": "먹다가 자꾸 사래가 걸려 그리고 추워가 몸땡이가 떨려 그래서 좀 불편해.",
       "gold_symptoms": [
         "사래걸림",
         "오한"
@@ -2661,7 +2661,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 누런 가래가 나옵니다 그리고 코막힘이 계속됩니다.",
+      "text": "치료 후에도 누런 가래가 나와 그리고 코막힘이 계속돼.",
       "gold_symptoms": [
         "화농성 객담",
         "코막힘"
@@ -2679,7 +2679,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "천명음은 지금은 괜찮습니다 그러나 얼굴이 창백해졌습니다 그리고 목에 가래가 걸립니다 그래서 진료를 보러 왔습니다.",
+      "text": "천명음은 지금은 괜찮아 근데 얼굴이 창백해졌어 그리고 목에 가래가 걸려 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "창백",
         "가래"
@@ -2699,7 +2699,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약은 아직 따로 안 먹고 있고 가슴이 답답해요 그리고 가슴이 막 두근거려요 그리고 종아리가 자꾸 부어요.",
+      "text": "약은 아직 따로 안 먹고 있고 가슴이 답답해 그리고 가슴이 막 두근거려 그리고 종아리가 자꾸 부어.",
       "gold_symptoms": [
         "가슴 답답",
         "가슴 두근거림",
@@ -2718,7 +2718,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "어제부터 괜히 불안합니다.",
+      "text": "어제부터 괜히 불안해.",
       "gold_symptoms": [
         "불안"
       ],
@@ -2735,7 +2735,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "맥이 건너뛰는 느낌입니다 그래서 진료를 보러 왔습니다.",
+      "text": "맥이 건너뛰는 느낌이야 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "부정맥"
       ],
@@ -2752,7 +2752,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "복부 통증은 지금은 괜찮습니다 그러나 치료 후에도 맥이 빠르게 뜁니다.",
+      "text": "복부 통증은 지금은 괜찮아 근데 치료 후에도 맥이 빠르게 뛰어.",
       "gold_symptoms": [
         "빈맥"
       ],
@@ -2771,7 +2771,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 전반적으로 몸이 무겁습니다.",
+      "text": "지난 진료 이후 전반적으로 몸이 무거워.",
       "gold_symptoms": [
         "권태감"
       ],
@@ -2788,7 +2788,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "눈이 무거워요 그래서 좀 불편해요. 밥 먹고 나서도 그래요.",
+      "text": "눈이 무거워 그래서 좀 불편해. 밥 먹고 나서도 그래.",
       "gold_symptoms": [
         "눈이 무거운 느낌"
       ],
@@ -2805,7 +2805,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "음식이 목에 걸려 잘 안 넘어가요 그래서 좀 불편해요.",
+      "text": "음식이 목에 걸려 잘 안 넘어가 그래서 좀 불편해.",
       "gold_symptoms": [
         "삼키기 곤란"
       ],
@@ -2822,7 +2822,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "근육통은 현재 없습니다 그러나 약을 먹어도 재채기가 자주 납니다 그리고 몸에 힘이 잘 들어가지 않습니다.",
+      "text": "근육통은 지금 없어 근데 약을 먹어도 재채기가 자주 나 그리고 몸에 힘이 잘 들어가지 않아.",
       "gold_symptoms": [
         "재채기",
         "기운없음"
@@ -2842,7 +2842,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "식은땀이 흘러요 그리고 묽은 변을 몇 번씩 봐요 그래서 좀 불편해요.",
+      "text": "식은땀이 흘러 그리고 묽은 변을 몇 번씩 봐 그래서 좀 불편해.",
       "gold_symptoms": [
         "발한",
         "설사"
@@ -2860,7 +2860,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "최근에 감기 기운이 있습니다 그리고 복부가 팽팽한 느낌입니다.",
+      "text": "최근에 감기 기운이 있어 그리고 복부가 팽팽한 느낌이야.",
       "gold_symptoms": [
         "감기 증상",
         "복부팽만감"
@@ -2878,7 +2878,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 복용하는 중에 몸이 춥고 떨립니다 그리고 팔다리가 붓는 느낌입니다 그리고 걸을 때 숨이 더 찹니다.",
+      "text": "약 먹는 중에 몸이 춥고 떨려 그리고 팔다리가 붓는 느낌이야 그리고 걸을 때 숨이 더 차.",
       "gold_symptoms": [
         "오한",
         "사지 부종",
@@ -2897,7 +2897,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "구토은 지금은 괜찮습니다 그러나 코가 막혀 답답합니다.",
+      "text": "구토는 지금은 괜찮아 근데 코가 막혀 답답해.",
       "gold_symptoms": [
         "코막힘"
       ],
@@ -2916,7 +2916,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "목에 가래가 걸려 있는 거 같아요 그래서 좀 불편해요.",
+      "text": "목에 가래가 걸려 있는 거 같아 그래서 좀 불편해.",
       "gold_symptoms": [
         "가래"
       ],
@@ -2933,7 +2933,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 가슴이 막 두근거려요.",
+      "text": "이번에 새로 가슴이 막 두근거려.",
       "gold_symptoms": [
         "가슴 두근거림"
       ],
@@ -2950,7 +2950,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 눈이 벌겋게 됐어요.",
+      "text": "약 먹는 중인데 눈이 벌겋게 됐어.",
       "gold_symptoms": [
         "눈의 충혈"
       ],
@@ -2967,7 +2967,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "눈이 무거운 느낌은 지금은 괜찮아요 근데 이번에 새로 속이 아파요.",
+      "text": "눈이 무거운 느낌은 지금은 괜찮아 근데 이번에 새로 속이 아파.",
       "gold_symptoms": [
         "복부 통증"
       ],
@@ -2986,7 +2986,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "목이 따가워요 그래서 좀 불편해요.",
+      "text": "목이 따가워 그래서 좀 불편해.",
       "gold_symptoms": [
         "목의 통증"
       ],
@@ -3003,7 +3003,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "집에 있던 약 조금 먹었는데도 숨이 차가 힘들어요 그리고 가래가 거품처럼 올라와요. 왔다 갔다 반복돼요.",
+      "text": "집에 있던 약 조금 먹었는데도 숨이 차가 힘들어 그리고 가래가 거품처럼 올라와. 왔다 갔다 반복돼.",
       "gold_symptoms": [
         "호흡곤란",
         "거품이 섞인 가래"
@@ -3021,7 +3021,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "며칠 전부터 일어나면 어질어질해요 그리고 가슴 아픈 게 팔까지 퍼져요.",
+      "text": "며칠 전부터 일어나면 어질어질해 그리고 가슴 아픈 게 팔까지 퍼져.",
       "gold_symptoms": [
         "어지러움",
         "방사통"
@@ -3039,7 +3039,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "객혈은 현재 없습니다 그러나 아직 가슴을 꽉 누르는 느낌입니다 그리고 기침이 자주 나옵니다.",
+      "text": "객혈은 지금 없어 근데 아직 가슴을 꽉 누르는 느낌이야 그리고 기침이 자주 나와.",
       "gold_symptoms": [
         "흉부압박감",
         "기침"
@@ -3059,7 +3059,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 기운이 하나도 없어요 그리고 가래에 피가 좀 묻어 나와요 그리고 얼굴빛이 창백해 보여요.",
+      "text": "약 먹는 중인데 기운이 하나도 없어 그리고 가래에 피가 좀 묻어 나와 그리고 얼굴빛이 창백해 보여.",
       "gold_symptoms": [
         "기운없음",
         "객혈",
@@ -3078,7 +3078,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 복용하는 중에 묽은 변을 자주 봅니다.",
+      "text": "약 먹는 중에 묽은 변을 자주 봐.",
       "gold_symptoms": [
         "설사"
       ],
@@ -3095,7 +3095,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "배가 빵빵해요 그래서 좀 불편해요. 밥 먹고 나서도 그래요.",
+      "text": "배가 빵빵해 그래서 좀 불편해. 밥 먹고 나서도 그래.",
       "gold_symptoms": [
         "복부팽만감"
       ],
@@ -3112,7 +3112,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "눈의 충혈은 지금은 괜찮아요 근데 손발이 자꾸 부어요 그래서 좀 불편해요.",
+      "text": "눈의 충혈은 지금은 괜찮아 근데 손발이 자꾸 부어 그래서 좀 불편해.",
       "gold_symptoms": [
         "사지 부종"
       ],
@@ -3131,7 +3131,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 속이 울렁거려 토할 거 같아요.",
+      "text": "약 먹는 중인데 속이 울렁거려 토할 거 같아.",
       "gold_symptoms": [
         "구토"
       ],
@@ -3148,7 +3148,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "오늘 아침부터 살이 자꾸 빠져요.",
+      "text": "오늘 아침부터 살이 자꾸 빠져.",
       "gold_symptoms": [
         "체중감소"
       ],
@@ -3165,7 +3165,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "다리가 붓습니다 그래서 진료를 보러 왔습니다. 물을 마셔도 크게 달라지지 않습니다.",
+      "text": "다리가 부어 그래서 진료 보러 왔어. 물 마셔도 크게 안 달라져.",
       "gold_symptoms": [
         "하지부종"
       ],
@@ -3182,7 +3182,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "피부홍조은 지금은 괜찮아요 근데 오늘 아침부터 힘이 부쩍 약해진 거 같아요 그리고 자도자도 피곤해요.",
+      "text": "피부홍조는 지금은 괜찮아 근데 오늘 아침부터 힘이 부쩍 약해진 거 같아 그리고 자도자도 피곤해.",
       "gold_symptoms": [
         "근력 약화",
         "피로감"
@@ -3202,7 +3202,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "집에 있던 약 조금 먹었는데도 콧물이 줄줄 나와요 그리고 가래가 좀 까매 보여요.",
+      "text": "집에 있던 약 조금 먹었는데도 콧물이 줄줄 나와 그리고 가래가 좀 까매 보여.",
       "gold_symptoms": [
         "콧물",
         "검은색 가래"
@@ -3220,7 +3220,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "온몸이 덜덜 떨려요 그리고 피부가 빨개져요 그래서 좀 불편해요. 오늘은 특히 불편해요.",
+      "text": "온몸가 덜덜 떨려 그리고 피부가 빨개져 그래서 좀 불편해. 오늘에는 특히 불편해.",
       "gold_symptoms": [
         "온몸이 떨림",
         "피부홍조"
@@ -3238,7 +3238,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 거품 낀 가래가 나와요 그리고 몸이 여기저기 쑤셔요 그리고 감기 몸살 같은 느낌이에요.",
+      "text": "약 먹는 중인데 거품 낀 가래가 나와 그리고 몸땡이가 여기저기 쑤셔 그리고 감기 몸살 같은 느낌이야.",
       "gold_symptoms": [
         "거품이 섞인 가래",
         "근육통",
@@ -3257,7 +3257,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "사지 부종은 이제 거의 없어요 근데 아픈 게 어깨로 뻗어요 그래서 좀 불편해요. 밤에 더 불편해요.",
+      "text": "사지 부종은 이제 거의 없어 근데 아픈 게 어깨로 뻗어 그래서 좀 불편해. 밤에 더 불편해.",
       "gold_symptoms": [
         "방사통"
       ],
@@ -3276,7 +3276,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 복용하는 중에 기침이 자주 나옵니다.",
+      "text": "약 먹는 중에 기침이 자주 나와.",
       "gold_symptoms": [
         "기침"
       ],
@@ -3293,7 +3293,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "며칠 전부터 가래에 피가 섞여 나옵니다.",
+      "text": "며칠 전부터 가래에 피가 섞여 나와.",
       "gold_symptoms": [
         "객혈"
       ],
@@ -3310,7 +3310,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 가슴에서 쌕쌕 소리가 납니다.",
+      "text": "이번에는 새로 가슴에서 쌕쌕 소리가 나.",
       "gold_symptoms": [
         "천명음"
       ],
@@ -3327,7 +3327,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "권태감은 지금은 괜찮습니다 그러나 새로 목소리가 잘 나오지 않습니다.",
+      "text": "권태감은 지금은 괜찮아 근데 새로 목소리가 잘 나오지 않아.",
       "gold_symptoms": [
         "목소리 변화"
       ],
@@ -3346,7 +3346,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "계단 오르면 숨이 확 막혀요 그래서 좀 불편해요. 진료 전에 확인받고 싶어요.",
+      "text": "계단 오르면 숨이 확 막혀 그래서 좀 불편해. 진료 전에 확인받고 싶어.",
       "gold_symptoms": [
         "운동 시 호흡곤란"
       ],
@@ -3363,7 +3363,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "며칠 전부터 숨을 쉴 때 가슴이 결립니다 그리고 맥이 빠르게 뜁니다.",
+      "text": "며칠 전부터 숨을 쉴 때 가슴이 결려 그리고 맥이 빠르게 뛰어.",
       "gold_symptoms": [
         "흉통",
         "빈맥"
@@ -3381,7 +3381,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 복용하는 중에 눈곱이 자주 낍니다 그리고 몸이 처지고 의욕이 없습니다.",
+      "text": "약 먹는 중에 눈곱이 자주 껴 그리고 몸이 처지고 의욕이 없어.",
       "gold_symptoms": [
         "눈꼽",
         "권태감"
@@ -3399,7 +3399,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "기침은 호전되었습니다 그러나 이번에는 새로 머리가 지끈거립니다 그리고 눈이 무겁게 느껴집니다.",
+      "text": "기침은 나아졌어 근데 이번에는 새로 머리가 지끈거려 그리고 눈이 무겁게 느껴져.",
       "gold_symptoms": [
         "두통",
         "눈이 무거운 느낌"
@@ -3419,7 +3419,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 쉬어도 몸이 피곤해요 그리고 삼키기가 힘들어요 그리고 가슴이 꽉 눌리는 느낌이에요.",
+      "text": "치료하고 나서도 쉬어도 몸땡이가 피곤해 그리고 삼키기가 힘들어 그리고 가슴이 꽉 눌리는 느낌이야.",
       "gold_symptoms": [
         "피로감",
         "삼키기 곤란",
@@ -3438,7 +3438,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "거무스름한 가래가 나와요 그래서 좀 불편해요. 요즘 들어 더 잦아졌어요.",
+      "text": "거무스름한 가래가 나와 그래서 좀 불편해. 요즘 들어 더 잦아졌어.",
       "gold_symptoms": [
         "검은색 가래"
       ],
@@ -3455,7 +3455,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "얼굴이 붉어집니다 그래서 진료를 보러 왔습니다.",
+      "text": "얼굴이 붉어져 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "피부홍조"
       ],
@@ -3472,7 +3472,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가슴 두근거림은 좀 나아졌어요 근데 몸이 여기저기 쑤셔요 그래서 좀 불편해요.",
+      "text": "가슴 두근거림은 좀 나아졌어 근데 몸땡이가 여기저기 쑤셔 그래서 좀 불편해.",
       "gold_symptoms": [
         "근육통"
       ],
@@ -3491,7 +3491,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "최근에 먹을 때 사래가 자주 걸립니다.",
+      "text": "최근에 먹을 때 사래가 자주 걸려.",
       "gold_symptoms": [
         "사래걸림"
       ],
@@ -3508,7 +3508,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 가래가 노랗고 진해요.",
+      "text": "치료하고 나서도 가래가 노랗고 진해.",
       "gold_symptoms": [
         "화농성 객담"
       ],
@@ -3525,7 +3525,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "어제부터 얼굴빛이 창백해 보여요.",
+      "text": "어제부터 얼굴빛이 창백해 보여.",
       "gold_symptoms": [
         "창백"
       ],
@@ -3542,7 +3542,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "검은색 가래은 호전되었습니다 그러나 가슴이 답답합니다 그리고 가슴이 두근거립니다 그래서 진료를 보러 왔습니다.",
+      "text": "검은색 가래는 나아졌어 근데 가슴이 답답해 그리고 가슴이 두근거려 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "가슴 답답",
         "가슴 두근거림"
@@ -3562,7 +3562,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "오늘 아침부터 괜히 불안합니다 그리고 눈이 빨갛게 충혈됐습니다.",
+      "text": "오늘 아침부터 괜히 불안해 그리고 눈이 빨갛게 충혈됐어.",
       "gold_symptoms": [
         "불안",
         "눈의 충혈"
@@ -3580,7 +3580,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "오늘 아침부터 맥이 들쑥날쑥해요 그리고 배가 콕콕 아파요.",
+      "text": "오늘 아침부터 맥이 들쑥날쑥해 그리고 배가 콕콕 아파.",
       "gold_symptoms": [
         "부정맥",
         "복부 통증"
@@ -3598,7 +3598,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약은 아직 따로 안 먹고 있고 심장이 빠르게 뛰는 느낌이에요 그리고 목이 따가워요 그리고 온몸이 덜덜 떨려요.",
+      "text": "약은 아직 따로 안 먹고 있고 심장이 빠르게 뛰는 느낌이야 그리고 목이 따가워 그리고 온몸가 덜덜 떨려.",
       "gold_symptoms": [
         "빈맥",
         "목의 통증",
@@ -3617,7 +3617,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "복부팽만감은 이제 거의 없어요 근데 몸이 축 처져요.",
+      "text": "복부팽만감은 이제 거의 없어 근데 몸땡이가 축 처져.",
       "gold_symptoms": [
         "권태감"
       ],
@@ -3636,7 +3636,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "눈꺼풀이 축 처지는 느낌이에요 그래서 좀 불편해요.",
+      "text": "눈꺼풀이 축 처지는 느낌이야 그래서 좀 불편해.",
       "gold_symptoms": [
         "눈이 무거운 느낌"
       ],
@@ -3653,7 +3653,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 삼키기가 힘들어요.",
+      "text": "지난번보다 삼키기가 힘들어.",
       "gold_symptoms": [
         "삼키기 곤란"
       ],
@@ -3670,7 +3670,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 재채기가 멈추지 않습니다.",
+      "text": "이번에는 새로 재채기가 멈추지 않아.",
       "gold_symptoms": [
         "재채기"
       ],
@@ -3687,7 +3687,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "빈맥은 호전되었습니다 그러나 식은땀이 납니다.",
+      "text": "빈맥은 나아졌어 근데 식은땀이 나.",
       "gold_symptoms": [
         "발한"
       ],
@@ -3706,7 +3706,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 감기 몸살 같은 느낌이에요.",
+      "text": "치료하고 나서도 감기 몸살 같은 느낌이야.",
       "gold_symptoms": [
         "감기 증상"
       ],
@@ -3723,7 +3723,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 몸이 으슬으슬해요 그리고 손발이 자꾸 부어요.",
+      "text": "이번에 새로 몸땡이가 으슬으슬해 그리고 손발이 자꾸 부어.",
       "gold_symptoms": [
         "오한",
         "사지 부종"
@@ -3741,7 +3741,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "며칠 전부터 코막힘이 계속됩니다 그리고 구토가 있었습니다.",
+      "text": "며칠 전부터 코막힘이 계속돼 그리고 구토가 있었어.",
       "gold_symptoms": [
         "코막힘",
         "구토"
@@ -3759,7 +3759,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "방사통은 지금은 괜찮아요 근데 오늘 아침부터 목에 가래가 걸려 있는 거 같아요 그리고 살이 자꾸 빠져요.",
+      "text": "방사통은 지금은 괜찮아 근데 오늘 아침부터 목에 가래가 걸려 있는 거 같아 그리고 살이 자꾸 빠져.",
       "gold_symptoms": [
         "가래",
         "체중감소"
@@ -3779,7 +3779,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "심장이 쿵쿵 뛰는 거 같아요 그리고 다리가 퉁퉁 부어요 그리고 머리가 깨질 듯 아파요 그래서 좀 불편해요.",
+      "text": "심장이 쿵쿵 뛰는 거 같아 그리고 다리깽이가 퉁퉁 부어 그리고 머리깽이가 깨질 듯 아파 그래서 좀 불편해.",
       "gold_symptoms": [
         "가슴 두근거림",
         "하지부종",
@@ -3798,7 +3798,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 눈이 벌겋게 됐어요.",
+      "text": "지난번보다 눈이 벌겋게 됐어.",
       "gold_symptoms": [
         "눈의 충혈"
       ],
@@ -3815,7 +3815,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "속이 아파요 그래서 좀 불편해요. 전보다 더 자주 느껴져요.",
+      "text": "속이 아파 그래서 좀 불편해. 전보다 더 자주 느껴져.",
       "gold_symptoms": [
         "복부 통증"
       ],
@@ -3832,7 +3832,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "가래은 좀 나아졌어요 근데 약 먹는 중인데 목이 따가워요.",
+      "text": "가래는 좀 나아졌어 근데 약 먹는 중인데 목이 따가워.",
       "gold_symptoms": [
         "목의 통증"
       ],
@@ -3851,7 +3851,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 숨이 차서 힘듭니다.",
+      "text": "지난 진료 이후 숨이 차서 힘들어.",
       "gold_symptoms": [
         "호흡곤란"
       ],
@@ -3868,7 +3868,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "빙빙 도는 느낌이 있습니다 그래서 진료를 보러 왔습니다.",
+      "text": "빙빙 도는 느낌이 있어 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "어지러움"
       ],
@@ -3885,7 +3885,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가슴을 누르는 거 같아요 그래서 좀 불편해요.",
+      "text": "가슴을 누르는 거 같아 그래서 좀 불편해.",
       "gold_symptoms": [
         "흉부압박감"
       ],
@@ -3902,7 +3902,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "피로감은 좀 나아졌어요 근데 이번에 새로 몸에 힘이 쭉 빠져요 그리고 가래에 피가 좀 묻어 나와요.",
+      "text": "피로감은 좀 나아졌어 근데 이번에 새로 몸땡이에 힘이 쭉 빠져 그리고 가래에 피가 좀 묻어 나와.",
       "gold_symptoms": [
         "기운없음",
         "객혈"
@@ -3922,7 +3922,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "어제부터 설사가 계속됩니다 그리고 가슴에서 쌕쌕 소리가 납니다. 간헐적으로 반복됩니다.",
+      "text": "어제부터 설사가 계속돼 그리고 가슴에서 쌕쌕 소리가 나. 왔다 갔다 반복돼.",
       "gold_symptoms": [
         "설사",
         "천명음"
@@ -3940,7 +3940,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 속이 더부룩하고 배가 불러요 그리고 목소리가 잘 안 나와요.",
+      "text": "치료하고 나서도 속이 더부룩하고 배가 불러 그리고 목소리가 잘 안 나와.",
       "gold_symptoms": [
         "복부팽만감",
         "목소리 변화"
@@ -3958,7 +3958,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "팔다리가 붓는 느낌입니다 그리고 걸을 때 숨이 더 찹니다 그리고 맥이 건너뛰는 느낌입니다 그래서 진료를 보러 왔습니다.",
+      "text": "팔다리가 붓는 느낌이야 그리고 걸을 때 숨이 더 차 그리고 맥이 건너뛰는 느낌이야 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "사지 부종",
         "운동 시 호흡곤란",
@@ -3977,7 +3977,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "설사은 호전되었습니다 그러나 약을 복용하는 중에 구토가 있었습니다.",
+      "text": "설사는 나아졌어 근데 약 먹는 중에 구토가 있었어.",
       "gold_symptoms": [
         "구토"
       ],
@@ -3996,7 +3996,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "살이 자꾸 빠져요 그래서 좀 불편해요.",
+      "text": "살이 자꾸 빠져 그래서 좀 불편해.",
       "gold_symptoms": [
         "체중감소"
       ],
@@ -4013,7 +4013,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 종아리가 붓는 느낌입니다.",
+      "text": "지난 진료 이후 종아리가 붓는 느낌이야.",
       "gold_symptoms": [
         "하지부종"
       ],
@@ -4030,7 +4030,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "힘이 부쩍 약해진 거 같아요 그래서 좀 불편해요.",
+      "text": "힘이 부쩍 약해진 거 같아 그래서 좀 불편해.",
       "gold_symptoms": [
         "근력 약화"
       ],
@@ -4047,7 +4047,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "부정맥은 현재 없습니다 그러나 이번에는 새로 맑은 콧물이 납니다.",
+      "text": "부정맥은 지금 없어 근데 이번에는 새로 맑은 콧물이 나.",
       "gold_symptoms": [
         "콧물"
       ],
@@ -4066,7 +4066,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "최근에 몸이 막 떨려요.",
+      "text": "최근에 몸땡이가 막 떨려.",
       "gold_symptoms": [
         "온몸이 떨림"
       ],
@@ -4083,7 +4083,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 가래가 거품처럼 올라와요 그리고 근육이 욱신거려요.",
+      "text": "이번에 새로 가래가 거품처럼 올라와 그리고 근육이 욱신거려.",
       "gold_symptoms": [
         "거품이 섞인 가래",
         "근육통"
@@ -4101,7 +4101,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "며칠 전부터 통증이 어깨 쪽으로 뻗칩니다 그리고 먹을 때 사래가 자주 걸립니다.",
+      "text": "며칠 전부터 통증이 어깨 쪽으로 뻗쳐 그리고 먹을 때 사래가 자주 걸려.",
       "gold_symptoms": [
         "방사통",
         "사래걸림"
@@ -4119,7 +4119,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "거품이 섞인 가래은 지금은 괜찮아요 근데 기침이 자꾸 나와요 그리고 가래가 노랗고 진해요 그래서 좀 불편해요.",
+      "text": "거품이 섞인 가래는 지금은 괜찮아 근데 기침이 자꾸 나와 그리고 가래가 노랗고 진해 그래서 좀 불편해.",
       "gold_symptoms": [
         "기침",
         "화농성 객담"
@@ -4139,7 +4139,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "기침할 때 피가 보입니다 그리고 안색이 창백합니다 그리고 목에 가래가 걸립니다 그래서 진료를 보러 왔습니다.",
+      "text": "기침할 때 피가 보여 그리고 안색이 창백해 그리고 목에 가래가 걸려 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "객혈",
         "창백",
@@ -4158,7 +4158,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "숨쉴 때 쌕쌕거리는 소리가 납니다 그래서 진료를 보러 왔습니다.",
+      "text": "숨쉴 때 쌕쌕거리는 소리가 나 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "천명음"
       ],
@@ -4175,7 +4175,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 목소리가 쉬었습니다.",
+      "text": "지난 진료 이후 목소리가 쉬었어.",
       "gold_symptoms": [
         "목소리 변화"
       ],
@@ -4192,7 +4192,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "코막힘은 호전되었습니다 그러나 어제부터 계단을 오르면 숨이 많이 찹니다.",
+      "text": "코막힘은 나아졌어 근데 어제부터 계단을 오르면 숨이 많이 차.",
       "gold_symptoms": [
         "운동 시 호흡곤란"
       ],
@@ -4211,7 +4211,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 가슴이 콕콕 아파요.",
+      "text": "지난번보다 가슴이 콕콕 아파.",
       "gold_symptoms": [
         "흉통"
       ],
@@ -4228,7 +4228,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 눈곱이 많이 붙어요.",
+      "text": "치료하고 나서도 눈곱이 많이 붙어.",
       "gold_symptoms": [
         "눈꼽"
       ],
@@ -4245,7 +4245,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "머리가 지끈지끈해요 그래서 좀 불편해요.",
+      "text": "머리깽이가 지끈지끈해 그래서 좀 불편해.",
       "gold_symptoms": [
         "두통"
       ],
@@ -4262,7 +4262,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "두통은 호전되었습니다 그러나 최근에 피로감이 계속됩니다 그리고 음식이 잘 넘어가지 않습니다.",
+      "text": "두통은 나아졌어 근데 최근에 피로감이 계속돼 그리고 음식이 잘 넘어가지 않아.",
       "gold_symptoms": [
         "피로감",
         "삼키기 곤란"
@@ -4282,7 +4282,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 거무스름한 가래가 나와요 그리고 재채기가 자꾸 나와요.",
+      "text": "치료하고 나서도 거무스름한 가래가 나와 그리고 재채기가 자꾸 나와.",
       "gold_symptoms": [
         "검은색 가래",
         "재채기"
@@ -4300,7 +4300,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "피부가 달아오르는 느낌입니다 그리고 식은땀이 납니다 그래서 진료를 보러 왔습니다.",
+      "text": "피부가 달아오르는 느낌이야 그리고 식은땀이 나 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "피부홍조",
         "발한"
@@ -4318,7 +4318,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "오늘 아침부터 몸이 여기저기 쑤셔요 그리고 감기 기운이 좀 있어요 그리고 속이 더부룩하고 배가 불러요.",
+      "text": "오늘 아침부터 몸땡이가 여기저기 쑤셔 그리고 감기 기운이 좀 있어 그리고 속이 더부룩하고 배가 불러.",
       "gold_symptoms": [
         "근육통",
         "감기 증상",
@@ -4337,7 +4337,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "기운없음은 호전되었습니다 그러나 먹을 때 사래가 자주 걸립니다 그래서 진료를 보러 왔습니다.",
+      "text": "기운없음은 나아졌어 근데 먹을 때 사래가 자주 걸려 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "사래걸림"
       ],
@@ -4356,7 +4356,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 누런 가래가 나옵니다. 최근 들어 더 잦아졌습니다.",
+      "text": "치료 후에도 누런 가래가 나와. 요즘 들어 더 잦아졌어.",
       "gold_symptoms": [
         "화농성 객담"
       ],
@@ -4373,7 +4373,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 얼굴빛이 창백해 보여요.",
+      "text": "치료하고 나서도 얼굴빛이 창백해 보여.",
       "gold_symptoms": [
         "창백"
       ],
@@ -4390,7 +4390,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "오늘 아침부터 가슴이 꽉 막힌 거 같아요.",
+      "text": "오늘 아침부터 가슴이 꽉 막힌 거 같아.",
       "gold_symptoms": [
         "가슴 답답"
       ],
@@ -4407,7 +4407,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "부정맥은 좀 나아졌어요 근데 아직 괜히 불안해요.",
+      "text": "부정맥은 좀 나아졌어 근데 아직 괜히 불안해.",
       "gold_symptoms": [
         "불안"
       ],
@@ -4426,7 +4426,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "심장이 엇박자로 뛰는 거 같아요 그래서 좀 불편해요.",
+      "text": "심장이 엇박자로 뛰는 거 같아 그래서 좀 불편해.",
       "gold_symptoms": [
         "부정맥"
       ],
@@ -4443,7 +4443,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 맥이 빠르게 뜁니다 그리고 목이 따갑고 아픕니다.",
+      "text": "치료 후에도 맥이 빠르게 뛰어 그리고 목이 따갑고 아파.",
       "gold_symptoms": [
         "빈맥",
         "목의 통증"
@@ -4461,7 +4461,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 괜히 몸이 무겁고 처져요 그리고 숨이 잘 안 쉬어지는 느낌이에요.",
+      "text": "치료하고 나서도 괜히 몸땡이가 무겁고 처져 그리고 숨이 잘 안 쉬어지는 느낌이야.",
       "gold_symptoms": [
         "권태감",
         "호흡곤란"
@@ -4479,7 +4479,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "온몸이 떨림은 지금은 괜찮아요 근데 지난번보다 눈꺼풀이 축 처지는 느낌이에요 그리고 일어나면 어질어질해요.",
+      "text": "온몸가 떨림은 지금은 괜찮아 근데 지난번보다 눈꺼풀이 축 처지는 느낌이야 그리고 일어나면 어질어질해.",
       "gold_symptoms": [
         "눈이 무거운 느낌",
         "어지러움"
@@ -4499,7 +4499,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "며칠 전부터 음식이 잘 넘어가지 않습니다 그리고 가슴을 꽉 누르는 느낌입니다 그리고 기침이 자주 나옵니다.",
+      "text": "며칠 전부터 음식이 잘 넘어가지 않아 그리고 가슴을 꽉 누르는 느낌이야 그리고 기침이 자주 나와.",
       "gold_symptoms": [
         "삼키기 곤란",
         "흉부압박감",
@@ -4518,7 +4518,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 복용하는 중에 재채기가 멈추지 않습니다.",
+      "text": "약 먹는 중에 재채기가 멈추지 않아.",
       "gold_symptoms": [
         "재채기"
       ],
@@ -4535,7 +4535,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 식은땀이 흘러요.",
+      "text": "지난번보다 식은땀이 흘러.",
       "gold_symptoms": [
         "발한"
       ],
@@ -4552,7 +4552,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "오한은 이제 거의 없어요 근데 감기 몸살 같은 느낌이에요.",
+      "text": "오한은 이제 거의 없어 근데 감기 몸살 같은 느낌이야.",
       "gold_symptoms": [
         "감기 증상"
       ],
@@ -4571,7 +4571,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "추워가 몸이 떨려요 그래서 좀 불편해요. 진료 전에 확인받고 싶어요.",
+      "text": "추워가 몸땡이가 떨려 그래서 좀 불편해. 진료 전에 확인받고 싶어.",
       "gold_symptoms": [
         "오한"
       ],
@@ -4588,7 +4588,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "현재 복용 중인 약은 없고 코막힘이 계속됩니다.",
+      "text": "지금 먹는 약은 없고 코막힘이 계속돼.",
       "gold_symptoms": [
         "코막힘"
       ],
@@ -4605,7 +4605,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 목에 가래가 걸립니다.",
+      "text": "지난 진료 이후 목에 가래가 걸려.",
       "gold_symptoms": [
         "가래"
       ],
@@ -4622,7 +4622,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "눈꼽은 이제 거의 없어요 근데 치료하고 나서도 심장이 쿵쿵 뛰는 거 같아요 그리고 다리가 퉁퉁 부어요.",
+      "text": "눈꼽은 이제 거의 없어 근데 치료하고 나서도 심장이 쿵쿵 뛰는 거 같아 그리고 다리깽이가 퉁퉁 부어.",
       "gold_symptoms": [
         "가슴 두근거림",
         "하지부종"
@@ -4642,7 +4642,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 눈이 빨개졌어요 그리고 힘이 부쩍 약해진 거 같아요. 기침하거나 움직이면 더 그래요.",
+      "text": "치료하고 나서도 눈이 빨개졌어 그리고 힘이 부쩍 약해진 거 같아. 기침하거나 움직이면 더 그래.",
       "gold_symptoms": [
         "눈의 충혈",
         "근력 약화"
@@ -4660,7 +4660,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 배가 아픕니다 그리고 콧물이 계속 흐릅니다.",
+      "text": "지난 진료 이후 배가 아파 그리고 콧물이 계속 흘러.",
       "gold_symptoms": [
         "복부 통증",
         "콧물"
@@ -4678,7 +4678,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "목이 칼칼하고 아파요 그리고 몸이 막 떨려요 그리고 얼굴이 확 달아올라요 그래서 좀 불편해요.",
+      "text": "목이 칼칼하고 아파 그리고 몸땡이가 막 떨려 그리고 얼굴이 확 달아올라 그래서 좀 불편해.",
       "gold_symptoms": [
         "목의 통증",
         "온몸이 떨림",
@@ -4697,7 +4697,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "흉부압박감은 이제 거의 없어요 근데 오늘 아침부터 숨이 차가 힘들어요.",
+      "text": "흉부압박감은 이제 거의 없어 근데 오늘 아침부터 숨이 차가 힘들어.",
       "gold_symptoms": [
         "호흡곤란"
       ],
@@ -4716,7 +4716,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "집에 있던 약 조금 먹었는데도 머리가 핑 돌아요.",
+      "text": "집에 있던 약 조금 먹었는데도 머리깽이가 핑 돌아.",
       "gold_symptoms": [
         "어지러움"
       ],
@@ -4733,7 +4733,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가슴을 누르는 거 같아요 그래서 좀 불편해요. 전보다 더 자주 느껴져요.",
+      "text": "가슴을 누르는 거 같아 그래서 좀 불편해. 전보다 더 자주 느껴져.",
       "gold_symptoms": [
         "흉부압박감"
       ],
@@ -4750,7 +4750,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 몸에 힘이 쭉 빠져요.",
+      "text": "지난번보다 몸땡이에 힘이 쭉 빠져.",
       "gold_symptoms": [
         "기운없음"
       ],
@@ -4767,7 +4767,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "가슴 답답은 호전되었습니다 그러나 설사가 계속됩니다.",
+      "text": "가슴 답답은 나아졌어 근데 설사가 계속돼.",
       "gold_symptoms": [
         "설사"
       ],
@@ -4786,7 +4786,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 배가 빵빵해요.",
+      "text": "지난번보다 배가 빵빵해.",
       "gold_symptoms": [
         "복부팽만감"
       ],
@@ -4803,7 +4803,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 손발이 붓습니다 그리고 걸을 때 숨이 더 찹니다.",
+      "text": "치료 후에도 손발이 부어 그리고 걸을 때 숨이 더 차.",
       "gold_symptoms": [
         "사지 부종",
         "운동 시 호흡곤란"
@@ -4821,7 +4821,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 토할 것 같습니다 그리고 숨을 쉴 때 가슴이 결립니다.",
+      "text": "치료 후에도 토할 것 같아 그리고 숨을 쉴 때 가슴이 결려.",
       "gold_symptoms": [
         "구토",
         "흉통"
@@ -4839,7 +4839,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "콧물은 호전되었습니다 그러나 새로 최근 살이 많이 빠졌습니다 그리고 아침마다 눈꼽이 많이 낍니다.",
+      "text": "콧물은 나아졌어 근데 새로 최근 살이 많이 빠졌어 그리고 아침마다 눈꼽이 많이 껴.",
       "gold_symptoms": [
         "체중감소",
         "눈꼽"
@@ -4859,7 +4859,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "종아리가 자꾸 부어요 그리고 머리가 지끈지끈해요 그리고 눈꺼풀이 축 처지는 느낌이에요 그래서 좀 불편해요.",
+      "text": "종아리가 자꾸 부어 그리고 머리깽이가 지끈지끈해 그리고 눈꺼풀이 축 처지는 느낌이야 그래서 좀 불편해.",
       "gold_symptoms": [
         "하지부종",
         "두통",
@@ -4878,7 +4878,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 복용하는 중에 근력이 약해진 느낌입니다.",
+      "text": "약 먹는 중에 근력이 약해진 느낌이야.",
       "gold_symptoms": [
         "근력 약화"
       ],
@@ -4895,7 +4895,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 콧물이 계속 흐릅니다. 일상생활 중에도 느껴집니다.",
+      "text": "치료 후에도 콧물이 계속 흘러. 평소에도 느껴져.",
       "gold_symptoms": [
         "콧물"
       ],
@@ -4912,7 +4912,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "감기 증상은 호전되었습니다 그러나 온몸이 떨립니다.",
+      "text": "감기 증상은 나아졌어 근데 온몸이 떨려.",
       "gold_symptoms": [
         "온몸이 떨림"
       ],
@@ -4931,7 +4931,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 거품 섞인 가래가 나옵니다.",
+      "text": "치료 후에도 거품 섞인 가래가 나와.",
       "gold_symptoms": [
         "거품이 섞인 가래"
       ],
@@ -4948,7 +4948,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "아픈 게 어깨로 뻗어요 그래서 좀 불편해요. 기침하거나 움직이면 더 그래요.",
+      "text": "아픈 게 어깨로 뻗어 그래서 좀 불편해. 기침하거나 움직이면 더 그래.",
       "gold_symptoms": [
         "방사통"
       ],
@@ -4965,7 +4965,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 먹어도 기침이 계속 납니다.",
+      "text": "약을 먹어도 기침이 계속 나.",
       "gold_symptoms": [
         "기침"
       ],
@@ -4982,7 +4982,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "흉통은 호전되었습니다 그러나 오늘 아침부터 가래에 피가 섞여 나옵니다 그리고 안색이 창백합니다.",
+      "text": "흉통은 나아졌어 근데 오늘 아침부터 가래에 피가 섞여 나와 그리고 안색이 창백해.",
       "gold_symptoms": [
         "객혈",
         "창백"
@@ -5002,7 +5002,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 숨 쉴 때 쌕쌕거려요 그리고 가슴이 꽉 막힌 거 같아요.",
+      "text": "치료하고 나서도 숨 쉴 때 쌕쌕거려 그리고 가슴이 꽉 막힌 거 같아.",
       "gold_symptoms": [
         "천명음",
         "가슴 답답"
@@ -5020,7 +5020,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 목소리가 쉬어 버렸어요 그리고 마음이 자꾸 불안해요.",
+      "text": "치료하고 나서도 목소리가 쉬어 버렸어 그리고 마음이 자꾸 불안해.",
       "gold_symptoms": [
         "목소리 변화",
         "불안"
@@ -5038,7 +5038,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 걸을 때 숨이 더 찹니다 그리고 맥이 건너뛰는 느낌입니다 그리고 복부 통증이 있습니다.",
+      "text": "지난 진료 이후 걸을 때 숨이 더 차 그리고 맥이 건너뛰는 느낌이야 그리고 복부 통증이 있어.",
       "gold_symptoms": [
         "운동 시 호흡곤란",
         "부정맥",
@@ -5057,7 +5057,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "어지러움은 지금은 괜찮아요 근데 아직 가슴 한쪽이 찌릿해요.",
+      "text": "어지러움은 지금은 괜찮아 근데 아직 가슴 한쪽이 찌릿해.",
       "gold_symptoms": [
         "흉통"
       ],
@@ -5076,7 +5076,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "눈곱이 많이 붙어요 그래서 좀 불편해요. 아침에 더 그래요.",
+      "text": "눈곱이 많이 붙어 그래서 좀 불편해. 아침에 더 그래.",
       "gold_symptoms": [
         "눈꼽"
       ],
@@ -5093,7 +5093,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "머리가 아픕니다 그래서 진료를 보러 왔습니다. 밤에 더 불편합니다.",
+      "text": "머리가 아파 그래서 진료 보러 왔어. 밤에 더 불편해.",
       "gold_symptoms": [
         "두통"
       ],
@@ -5110,7 +5110,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 자도자도 피곤해요.",
+      "text": "약 먹는 중인데 자도자도 피곤해.",
       "gold_symptoms": [
         "피로감"
       ],
@@ -5127,7 +5127,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "창백은 현재 없습니다 그러나 가래 색이 검게 보입니다 그래서 진료를 보러 왔습니다.",
+      "text": "창백은 지금 없어 근데 가래 색이 검게 보여 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "검은색 가래"
       ],
@@ -5146,7 +5146,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 피부가 달아오르는 느낌입니다.",
+      "text": "지난 진료 이후 피부가 달아오르는 느낌이야.",
       "gold_symptoms": [
         "피부홍조"
       ],
@@ -5163,7 +5163,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "온몸 근육이 쑤십니다 그리고 감기 기운이 있습니다 그래서 진료를 보러 왔습니다. 점점 더 신경 쓰입니다.",
+      "text": "온몸 근육이 쑤셔 그리고 감기 기운이 있어 그래서 진료 보러 왔어. 점점 더 신경 쓰여.",
       "gold_symptoms": [
         "근육통",
         "감기 증상"
@@ -5181,7 +5181,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 먹다가 자꾸 사래가 걸려요 그리고 몸이 으슬으슬해요.",
+      "text": "치료하고 나서도 먹다가 자꾸 사래가 걸려 그리고 몸땡이가 으슬으슬해.",
       "gold_symptoms": [
         "사래걸림",
         "오한"
@@ -5199,7 +5199,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "근력 약화은 좀 나아졌어요 근데 아직 누런 가래가 자꾸 나와요 그리고 코가 꽉 막혀요.",
+      "text": "근력 약화는 좀 나아졌어 근데 아직 누런 가래가 자꾸 나와 그리고 코가 꽉 막혀.",
       "gold_symptoms": [
         "화농성 객담",
         "코막힘"
@@ -5219,7 +5219,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 얼굴이 창백해졌습니다 그리고 가래가 자주 나옵니다 그리고 최근 살이 많이 빠졌습니다.",
+      "text": "이번에는 새로 얼굴이 창백해졌어 그리고 가래가 자주 나와 그리고 최근 살이 많이 빠졌어.",
       "gold_symptoms": [
         "창백",
         "가래",
@@ -5238,7 +5238,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "며칠 전부터 가슴이 답답합니다.",
+      "text": "며칠 전부터 가슴이 답답해.",
       "gold_symptoms": [
         "가슴 답답"
       ],
@@ -5255,7 +5255,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "최근에 마음이 자꾸 불안해요.",
+      "text": "최근에 마음이 자꾸 불안해.",
       "gold_symptoms": [
         "불안"
       ],
@@ -5272,7 +5272,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "발한은 좀 나아졌어요 근데 아직 맥이 들쑥날쑥해요.",
+      "text": "발한은 좀 나아졌어 근데 아직 맥이 들쑥날쑥해.",
       "gold_symptoms": [
         "부정맥"
       ],
@@ -5291,7 +5291,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 맥이 너무 빨리 뛰어요. 오후에 더 뚜렷해요.",
+      "text": "치료하고 나서도 맥이 너무 빨리 뛰어. 오후에 더 뚜렷해.",
       "gold_symptoms": [
         "빈맥"
       ],
@@ -5308,7 +5308,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 복용하는 중에 몸이 처지고 의욕이 없습니다. 물을 마셔도 크게 달라지지 않습니다.",
+      "text": "약 먹는 중에 몸이 처지고 의욕이 없어. 물 마셔도 크게 안 달라져.",
       "gold_symptoms": [
         "권태감"
       ],
@@ -5325,7 +5325,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 눈꺼풀이 축 처지는 느낌이에요.",
+      "text": "지난번보다 눈꺼풀이 축 처지는 느낌이야.",
       "gold_symptoms": [
         "눈이 무거운 느낌"
       ],
@@ -5342,7 +5342,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "운동 시 호흡곤란은 지금은 괜찮아요 근데 지난번보다 삼키기가 힘들어요 그리고 가슴이 꽉 눌리는 느낌이에요.",
+      "text": "운동 시 호흡곤란은 지금은 괜찮아 근데 지난번보다 삼키기가 힘들어 그리고 가슴이 꽉 눌리는 느낌이야.",
       "gold_symptoms": [
         "삼키기 곤란",
         "흉부압박감"
@@ -5362,7 +5362,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "어제부터 재채기를 계속 해요 그리고 몸에 힘이 쭉 빠져요.",
+      "text": "어제부터 재채기를 계속 해 그리고 몸땡이에 힘이 쭉 빠져.",
       "gold_symptoms": [
         "재채기",
         "기운없음"
@@ -5380,7 +5380,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "땀이 자꾸 나요 그리고 배가 아프고 설사를 해요 그래서 좀 불편해요. 아침에 더 그래요.",
+      "text": "땀이 자꾸 나 그리고 배가 아프고 설사를 해 그래서 좀 불편해. 아침에 더 그래.",
       "gold_symptoms": [
         "발한",
         "설사"
@@ -5398,7 +5398,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "감기 몸살 같은 느낌이에요 그리고 배가 빵빵해요 그리고 목소리가 쉬어 버렸어요 그래서 좀 불편해요.",
+      "text": "감기 몸살 같은 느낌이야 그리고 배가 빵빵해 그리고 목소리가 쉬어 버렸어 그래서 좀 불편해.",
       "gold_symptoms": [
         "감기 증상",
         "복부팽만감",
@@ -5417,7 +5417,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "호흡곤란은 지금은 괜찮습니다 그러나 오한이 있습니다 그래서 진료를 보러 왔습니다.",
+      "text": "호흡곤란은 지금은 괜찮아 근데 오한이 있어 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "오한"
       ],
@@ -5436,7 +5436,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "어제부터 코가 막혀가 답답해요. 쉬어도 별로 안 줄어요.",
+      "text": "어제부터 코가 막혀가 답답해. 쉬어도 별로 안 줄어.",
       "gold_symptoms": [
         "코막힘"
       ],
@@ -5453,7 +5453,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가래가 자꾸 나와요 그래서 좀 불편해요.",
+      "text": "가래가 자꾸 나와 그래서 좀 불편해.",
       "gold_symptoms": [
         "가래"
       ],
@@ -5470,7 +5470,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 복용하는 중에 심장이 빨리 뛰는 느낌입니다.",
+      "text": "약 먹는 중에 심장이 빨리 뛰는 느낌이야.",
       "gold_symptoms": [
         "가슴 두근거림"
       ],
@@ -5487,7 +5487,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "화농성 객담은 지금은 괜찮아요 근데 오늘 아침부터 눈이 벌겋게 됐어요.",
+      "text": "화농성 객담은 지금은 괜찮아 근데 오늘 아침부터 눈이 벌겋게 됐어.",
       "gold_symptoms": [
         "눈의 충혈"
       ],
@@ -5506,7 +5506,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "속이 아파요 그래서 좀 불편해요. 평소에도 자꾸 느껴져요.",
+      "text": "속이 아파 그래서 좀 불편해. 평소에도 자꾸 느껴져.",
       "gold_symptoms": [
         "복부 통증"
       ],
@@ -5523,7 +5523,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 목이 아픕니다 그리고 몸이 심하게 떨리는 느낌입니다.",
+      "text": "지난 진료 이후 목이 아파 그리고 몸이 심하게 떨리는 느낌이야.",
       "gold_symptoms": [
         "목의 통증",
         "온몸이 떨림"
@@ -5541,7 +5541,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 숨이 잘 안 쉬어지는 느낌이에요 그리고 가래가 거품처럼 올라와요.",
+      "text": "치료하고 나서도 숨이 잘 안 쉬어지는 느낌이야 그리고 가래가 거품처럼 올라와.",
       "gold_symptoms": [
         "호흡곤란",
         "거품이 섞인 가래"
@@ -5559,7 +5559,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "하지부종은 이제 거의 없어요 근데 일어나면 어질어질해요 그리고 아픈 게 어깨로 뻗어요 그래서 좀 불편해요.",
+      "text": "하지부종은 이제 거의 없어 근데 일어나면 어질어질해 그리고 아픈 게 어깨로 뻗어 그래서 좀 불편해.",
       "gold_symptoms": [
         "어지러움",
         "방사통"
@@ -5579,7 +5579,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가슴이 꽉 눌리는 느낌이에요 그리고 기침이 안 멎는 거 같아요 그리고 누런 가래가 자꾸 나와요 그래서 좀 불편해요.",
+      "text": "가슴이 꽉 눌리는 느낌이야 그리고 기침이 안 멎는 거 같아 그리고 누런 가래가 자꾸 나와 그래서 좀 불편해.",
       "gold_symptoms": [
         "흉부압박감",
         "기침",
@@ -5598,7 +5598,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 기운이 없습니다.",
+      "text": "이번에는 새로 기운이 없어.",
       "gold_symptoms": [
         "기운없음"
       ],
@@ -5615,7 +5615,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "집에 있던 약 조금 먹었는데도 배가 아프고 설사를 해요.",
+      "text": "집에 있던 약 조금 먹었는데도 배가 아프고 설사를 해.",
       "gold_symptoms": [
         "설사"
       ],
@@ -5632,7 +5632,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "재채기은 현재 없습니다 그러나 며칠 전부터 배가 더부룩하고 부풀어 있습니다.",
+      "text": "재채기는 지금 없어 근데 며칠 전부터 배가 더부룩하고 부풀어 있어.",
       "gold_symptoms": [
         "복부팽만감"
       ],
@@ -5651,7 +5651,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 팔다리가 붓는 거 같아요.",
+      "text": "약 먹는 중인데 팔다리가 붓는 거 같아.",
       "gold_symptoms": [
         "사지 부종"
       ],
@@ -5668,7 +5668,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "속이 울렁거려 토할 거 같아요 그래서 좀 불편해요.",
+      "text": "속이 울렁거려 토할 거 같아 그래서 좀 불편해.",
       "gold_symptoms": [
         "구토"
       ],
@@ -5685,7 +5685,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "몸무게가 좀 줄었어요 그래서 좀 불편해요.",
+      "text": "몸무게가 좀 줄었어 그래서 좀 불편해.",
       "gold_symptoms": [
         "체중감소"
       ],
@@ -5702,7 +5702,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "목소리 변화은 호전되었습니다 그러나 오늘 아침부터 다리가 붓습니다 그리고 머리가 지끈거립니다.",
+      "text": "목소리 변화는 나아졌어 근데 오늘 아침부터 다리가 부어 그리고 머리가 지끈거려.",
       "gold_symptoms": [
         "하지부종",
         "두통"
@@ -5722,7 +5722,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "어제부터 근력이 약해진 느낌입니다 그리고 피로감이 계속됩니다.",
+      "text": "어제부터 근력이 약해진 느낌이야 그리고 피로감이 계속돼.",
       "gold_symptoms": [
         "근력 약화",
         "피로감"
@@ -5740,7 +5740,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 코가 자꾸 흘러요 그리고 가래가 좀 까매 보여요.",
+      "text": "지난번보다 코가 자꾸 흘러 그리고 가래가 좀 까매 보여.",
       "gold_symptoms": [
         "콧물",
         "검은색 가래"
@@ -5758,7 +5758,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "몸이 막 떨려요 그리고 피부가 빨개져요 그리고 식은땀이 흘러요 그래서 좀 불편해요.",
+      "text": "몸땡이가 막 떨려 그리고 피부가 빨개져 그리고 식은땀이 흘러 그래서 좀 불편해.",
       "gold_symptoms": [
         "온몸이 떨림",
         "피부홍조",
@@ -5777,7 +5777,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "목의 통증은 좀 나아졌어요 근데 치료하고 나서도 거품 낀 가래가 나와요.",
+      "text": "목의 통증은 좀 나아졌어 근데 치료하고 나서도 거품 낀 가래가 나와.",
       "gold_symptoms": [
         "거품이 섞인 가래"
       ],
@@ -5796,7 +5796,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 아픈 게 어깨로 뻗어요.",
+      "text": "이번에 새로 아픈 게 어깨로 뻗어.",
       "gold_symptoms": [
         "방사통"
       ],
@@ -5813,7 +5813,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "며칠 전부터 기침이 안 멎는 거 같아요.",
+      "text": "며칠 전부터 기침이 안 멎는 거 같아.",
       "gold_symptoms": [
         "기침"
       ],
@@ -5830,7 +5830,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "며칠 전부터 기침하면 피가 비쳐요.",
+      "text": "며칠 전부터 기침하면 피가 비쳐.",
       "gold_symptoms": [
         "객혈"
       ],
@@ -5847,7 +5847,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "사래걸림은 현재 없습니다 그러나 며칠 전부터 숨쉴 때 쌕쌕거리는 소리가 납니다.",
+      "text": "사래걸림은 지금 없어 근데 며칠 전부터 숨쉴 때 쌕쌕거리는 소리가 나.",
       "gold_symptoms": [
         "천명음"
       ],
@@ -5866,7 +5866,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "며칠 전부터 목소리가 잘 안 나와요.",
+      "text": "며칠 전부터 목소리가 잘 안 나와.",
       "gold_symptoms": [
         "목소리 변화"
       ],
@@ -5883,7 +5883,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "어제부터 계단 오르면 숨이 확 막혀요 그리고 맥이 들쑥날쑥해요.",
+      "text": "어제부터 계단 오르면 숨이 확 막혀 그리고 맥이 들쑥날쑥해.",
       "gold_symptoms": [
         "운동 시 호흡곤란",
         "부정맥"
@@ -5901,7 +5901,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "며칠 전부터 가슴이 찌르듯 아픕니다 그리고 심박이 빠른 느낌입니다.",
+      "text": "며칠 전부터 가슴이 찌르듯 아파 그리고 심박이 빠른 느낌이야.",
       "gold_symptoms": [
         "흉통",
         "빈맥"
@@ -5919,7 +5919,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "체중감소은 이제 거의 없어요 근데 눈꼽이 자꾸 껴요 그리고 몸이 축 처져요.",
+      "text": "체중감소는 이제 거의 없어 근데 눈꼽이 자꾸 껴 그리고 몸땡이가 축 처져.",
       "gold_symptoms": [
         "눈꼽",
         "권태감"
@@ -5939,7 +5939,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "어제부터 머리가 지끈거립니다 그리고 눈이 무겁게 느껴집니다 그리고 머리가 어지럽습니다.",
+      "text": "어제부터 머리가 지끈거려 그리고 눈이 무겁게 느껴져 그리고 머리가 어지러워.",
       "gold_symptoms": [
         "두통",
         "눈이 무거운 느낌",
@@ -5958,7 +5958,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "쉬어도 몸이 피곤해요 그래서 좀 불편해요.",
+      "text": "쉬어도 몸땡이가 피곤해 그래서 좀 불편해.",
       "gold_symptoms": [
         "피로감"
       ],
@@ -5975,7 +5975,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "거무스름한 가래가 나와요 그래서 좀 불편해요. 오늘은 특히 불편해요.",
+      "text": "거무스름한 가래가 나와 그래서 좀 불편해. 오늘에는 특히 불편해.",
       "gold_symptoms": [
         "검은색 가래"
       ],
@@ -5992,7 +5992,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "삼키기 곤란은 현재 없습니다 그러나 아직 얼굴이 붉어집니다.",
+      "text": "삼키기 곤란은 지금 없어 근데 아직 얼굴이 붉어져.",
       "gold_symptoms": [
         "피부홍조"
       ],
@@ -6011,7 +6011,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "온몸 근육이 쑤십니다 그래서 진료를 보러 왔습니다.",
+      "text": "온몸 근육이 쑤셔 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "근육통"
       ],
@@ -6028,7 +6028,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "먹다가 자꾸 사래가 걸려요 그래서 좀 불편해요. 움직이면 더 신경 쓰여요.",
+      "text": "먹다가 자꾸 사래가 걸려 그래서 좀 불편해. 움직이면 더 신경 쓰여.",
       "gold_symptoms": [
         "사래걸림"
       ],
@@ -6045,7 +6045,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가래가 노랗고 진해요 그래서 좀 불편해요.",
+      "text": "가래가 노랗고 진해 그래서 좀 불편해.",
       "gold_symptoms": [
         "화농성 객담"
       ],
@@ -6062,7 +6062,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "천명음은 지금은 괜찮아요 근데 약 먹는 중인데 얼굴빛이 창백해 보여요 그리고 가래가 자꾸 나와요.",
+      "text": "천명음은 지금은 괜찮아 근데 약 먹는 중인데 얼굴빛이 창백해 보여 그리고 가래가 자꾸 나와.",
       "gold_symptoms": [
         "창백",
         "가래"
@@ -6082,7 +6082,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가슴이 답답해요 그리고 가슴이 막 두근거려요 그래서 좀 불편해요.",
+      "text": "가슴이 답답해 그리고 가슴이 막 두근거려 그래서 좀 불편해.",
       "gold_symptoms": [
         "가슴 답답",
         "가슴 두근거림"
@@ -6100,7 +6100,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 괜히 불안합니다 그리고 눈이 빨갛게 충혈됐습니다.",
+      "text": "치료 후에도 괜히 불안해 그리고 눈이 빨갛게 충혈됐어.",
       "gold_symptoms": [
         "불안",
         "눈의 충혈"
@@ -6118,7 +6118,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 맥이 들쑥날쑥해요 그리고 배가 콕콕 아파요 그리고 코가 자꾸 흘러요.",
+      "text": "지난번보다 맥이 들쑥날쑥해 그리고 배가 콕콕 아파 그리고 코가 자꾸 흘러.",
       "gold_symptoms": [
         "부정맥",
         "복부 통증",
@@ -6137,7 +6137,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "복부 통증은 현재 없습니다 그러나 심박이 빠른 느낌입니다 그래서 진료를 보러 왔습니다.",
+      "text": "복부 통증은 지금 없어 근데 심박이 빠른 느낌이야 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "빈맥"
       ],
@@ -6156,7 +6156,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "어제부터 몸이 축 처져요.",
+      "text": "어제부터 몸땡이가 축 처져.",
       "gold_symptoms": [
         "권태감"
       ],
@@ -6173,7 +6173,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 눈꺼풀이 무겁습니다.",
+      "text": "이번에는 새로 눈꺼풀이 무거워.",
       "gold_symptoms": [
         "눈이 무거운 느낌"
       ],
@@ -6190,7 +6190,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 음식이 목에 걸려 잘 안 넘어가요.",
+      "text": "이번에 새로 음식이 목에 걸려 잘 안 넘어가.",
       "gold_symptoms": [
         "삼키기 곤란"
       ],
@@ -6207,7 +6207,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "근육통은 좀 나아졌어요 근데 재채기가 자꾸 나와요 그래서 좀 불편해요.",
+      "text": "근육통은 좀 나아졌어 근데 재채기가 자꾸 나와 그래서 좀 불편해.",
       "gold_symptoms": [
         "재채기"
       ],
@@ -6226,7 +6226,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 땀이 많이 납니다.",
+      "text": "치료 후에도 땀이 많이 나.",
       "gold_symptoms": [
         "발한"
       ],
@@ -6243,7 +6243,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 감기 기운이 있습니다 그리고 배가 더부룩하고 부풀어 있습니다.",
+      "text": "지난 진료 이후 감기 기운이 있어 그리고 배가 더부룩하고 부풀어 있어.",
       "gold_symptoms": [
         "감기 증상",
         "복부팽만감"
@@ -6261,7 +6261,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "오늘 아침부터 오한이 있습니다 그리고 손발이 붓습니다.",
+      "text": "오늘 아침부터 오한이 있어 그리고 손발이 부어.",
       "gold_symptoms": [
         "오한",
         "사지 부종"
@@ -6279,7 +6279,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "체중감소은 좀 나아졌어요 근데 최근에 코가 꽉 막혀요 그리고 속이 울렁거려 토할 거 같아요.",
+      "text": "체중감소는 좀 나아졌어 근데 최근에 코가 꽉 막혀 그리고 속이 울렁거려 토할 거 같아.",
       "gold_symptoms": [
         "코막힘",
         "구토"
@@ -6299,7 +6299,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 목에 가래가 걸립니다 그리고 최근 살이 많이 빠졌습니다 그리고 아침마다 눈꼽이 많이 낍니다.",
+      "text": "지난 진료 이후 목에 가래가 걸려 그리고 최근 살이 많이 빠졌어 그리고 아침마다 눈꼽이 많이 껴.",
       "gold_symptoms": [
         "가래",
         "체중감소",
@@ -6318,7 +6318,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "심장이 빨리 뛰는 느낌입니다 그래서 진료를 보러 왔습니다. 밤에 더 불편합니다.",
+      "text": "심장이 빨리 뛰는 느낌이야 그래서 진료 보러 왔어. 밤에 더 불편해.",
       "gold_symptoms": [
         "가슴 두근거림"
       ],
@@ -6335,7 +6335,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "며칠 전부터 눈이 붉어졌습니다.",
+      "text": "며칠 전부터 눈이 붉어졌어.",
       "gold_symptoms": [
         "눈의 충혈"
       ],
@@ -6352,7 +6352,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "눈이 무거운 느낌은 좀 나아졌어요 근데 배가 콕콕 아파요 그래서 좀 불편해요.",
+      "text": "눈이 무거운 느낌은 좀 나아졌어 근데 배가 콕콕 아파 그래서 좀 불편해.",
       "gold_symptoms": [
         "복부 통증"
       ],
@@ -6371,7 +6371,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 목이 칼칼하고 아파요.",
+      "text": "지난번보다 목이 칼칼하고 아파.",
       "gold_symptoms": [
         "목의 통증"
       ],
@@ -6388,7 +6388,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "가만히 있어도 숨쉬기가 불편합니다 그래서 진료를 보러 왔습니다.",
+      "text": "가만히 있어도 숨쉬기가 불편해 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "호흡곤란"
       ],
@@ -6405,7 +6405,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 빙빙 도는 느낌이 있습니다.",
+      "text": "치료 후에도 빙빙 도는 느낌이 있어.",
       "gold_symptoms": [
         "어지러움"
       ],
@@ -6422,7 +6422,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "객혈은 좀 나아졌어요 근데 가슴을 누르는 거 같아요 그리고 기침이 자꾸 나와요.",
+      "text": "객혈은 좀 나아졌어 근데 가슴을 누르는 거 같아 그리고 기침이 자꾸 나와.",
       "gold_symptoms": [
         "흉부압박감",
         "기침"
@@ -6442,7 +6442,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 기운이 하나도 없어요 그리고 가래에 피가 좀 묻어 나와요.",
+      "text": "지난번보다 기운이 하나도 없어 그리고 가래에 피가 좀 묻어 나와.",
       "gold_symptoms": [
         "기운없음",
         "객혈"
@@ -6460,7 +6460,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "최근에 묽은 변을 몇 번씩 봐요 그리고 가슴에서 쌕쌕 소리가 나요.",
+      "text": "최근에 묽은 변을 몇 번씩 봐 그리고 가슴에서 쌕쌕 소리가 나.",
       "gold_symptoms": [
         "설사",
         "천명음"
@@ -6478,7 +6478,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "배가 더부룩하고 부풀어 있습니다 그리고 목소리가 잘 나오지 않습니다 그리고 불안감이 계속됩니다 그래서 진료를 보러 왔습니다.",
+      "text": "배가 더부룩하고 부풀어 있어 그리고 목소리가 잘 나오지 않아 그리고 불안감이 계속돼 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "복부팽만감",
         "목소리 변화",
@@ -6497,7 +6497,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "눈의 충혈은 지금은 괜찮아요 근데 약 먹는 중인데 팔다리가 붓는 거 같아요.",
+      "text": "눈의 충혈은 지금은 괜찮아 근데 약 먹는 중인데 팔다리가 붓는 거 같아.",
       "gold_symptoms": [
         "사지 부종"
       ],
@@ -6516,7 +6516,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "토를 했어요 그래서 좀 불편해요. 오후에 더 뚜렷해요.",
+      "text": "토를 했어 그래서 좀 불편해. 오후에 더 뚜렷해.",
       "gold_symptoms": [
         "구토"
       ],
@@ -6533,7 +6533,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "며칠 전부터 살이 자꾸 빠져요.",
+      "text": "며칠 전부터 살이 자꾸 빠져.",
       "gold_symptoms": [
         "체중감소"
       ],
@@ -6550,7 +6550,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 종아리가 붓는 느낌입니다.",
+      "text": "이번에는 새로 종아리가 붓는 느낌이야.",
       "gold_symptoms": [
         "하지부종"
       ],
@@ -6567,7 +6567,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "피부홍조은 이제 거의 없어요 근데 지난번보다 힘이 부쩍 약해진 거 같아요.",
+      "text": "피부홍조는 이제 거의 없어 근데 지난번보다 힘이 부쩍 약해진 거 같아.",
       "gold_symptoms": [
         "근력 약화"
       ],
@@ -6586,7 +6586,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 복용하는 중에 콧물이 계속 흐릅니다.",
+      "text": "약 먹는 중에 콧물이 계속 흘러.",
       "gold_symptoms": [
         "콧물"
       ],
@@ -6603,7 +6603,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "온몸이 덜덜 떨려요 그리고 피부가 빨개져요 그래서 좀 불편해요. 아침에 더 그래요.",
+      "text": "온몸가 덜덜 떨려 그리고 피부가 빨개져 그래서 좀 불편해. 아침에 더 그래.",
       "gold_symptoms": [
         "온몸이 떨림",
         "피부홍조"
@@ -6621,7 +6621,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "가래에 거품이 보입니다 그리고 온몸 근육이 쑤십니다 그래서 진료를 보러 왔습니다.",
+      "text": "가래에 거품이 보여 그리고 온몸 근육이 쑤셔 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "거품이 섞인 가래",
         "근육통"
@@ -6639,7 +6639,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "사지 부종은 좀 나아졌어요 근데 아픈 게 어깨로 뻗어요 그리고 물 마시면 사레가 잘 들어요.",
+      "text": "사지 부종은 좀 나아졌어 근데 아픈 게 어깨로 뻗어 그리고 물 마시면 사레가 잘 들어.",
       "gold_symptoms": [
         "방사통",
         "사래걸림"
@@ -6659,7 +6659,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 기침이 안 멎는 거 같아요 그리고 가래가 노랗고 진해요 그리고 코가 꽉 막혀요.",
+      "text": "치료하고 나서도 기침이 안 멎는 거 같아 그리고 가래가 노랗고 진해 그리고 코가 꽉 막혀.",
       "gold_symptoms": [
         "기침",
         "화농성 객담",
@@ -6678,7 +6678,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 가래에 피가 섞여 나옵니다.",
+      "text": "이번에는 새로 가래에 피가 섞여 나와.",
       "gold_symptoms": [
         "객혈"
       ],
@@ -6695,7 +6695,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가슴에서 쌕쌕 소리가 나요 그래서 좀 불편해요.",
+      "text": "가슴에서 쌕쌕 소리가 나 그래서 좀 불편해.",
       "gold_symptoms": [
         "천명음"
       ],
@@ -6712,7 +6712,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "권태감은 이제 거의 없어요 근데 목소리가 잘 안 나와요 그래서 좀 불편해요.",
+      "text": "권태감은 이제 거의 없어 근데 목소리가 잘 안 나와 그래서 좀 불편해.",
       "gold_symptoms": [
         "목소리 변화"
       ],
@@ -6731,7 +6731,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "계단 오르면 숨이 확 막혀요 그래서 좀 불편해요. 평소에도 자꾸 느껴져요.",
+      "text": "계단 오르면 숨이 확 막혀 그래서 좀 불편해. 평소에도 자꾸 느껴져.",
       "gold_symptoms": [
         "운동 시 호흡곤란"
       ],
@@ -6748,7 +6748,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가슴 한쪽이 찌릿해요 그래서 좀 불편해요.",
+      "text": "가슴 한쪽이 찌릿해 그래서 좀 불편해.",
       "gold_symptoms": [
         "흉통"
       ],
@@ -6765,7 +6765,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "눈곱이 자주 낍니다 그래서 진료를 보러 왔습니다.",
+      "text": "눈곱이 자주 껴 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "눈꼽"
       ],
@@ -6782,7 +6782,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "기침은 현재 없습니다 그러나 오늘 아침부터 머리가 아픕니다 그리고 눈이 무겁게 느껴집니다.",
+      "text": "기침은 지금 없어 근데 오늘 아침부터 머리가 아파 그리고 눈이 무겁게 느껴져.",
       "gold_symptoms": [
         "두통",
         "눈이 무거운 느낌"
@@ -6802,7 +6802,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "최근에 쉬어도 피곤합니다 그리고 삼키기가 어렵습니다.",
+      "text": "최근에 쉬어도 피곤해 그리고 삼키기가 어려워.",
       "gold_symptoms": [
         "피로감",
         "삼키기 곤란"
@@ -6820,7 +6820,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가래가 좀 까매 보여요 그리고 재채기를 계속 해요 그래서 좀 불편해요.",
+      "text": "가래가 좀 까매 보여 그리고 재채기를 계속 해 그래서 좀 불편해.",
       "gold_symptoms": [
         "검은색 가래",
         "재채기"
@@ -6838,7 +6838,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "얼굴이 확 달아올라요 그리고 식은땀이 흘러요 그리고 묽은 변을 몇 번씩 봐요 그래서 좀 불편해요.",
+      "text": "얼굴이 확 달아올라 그리고 식은땀이 흘러 그리고 묽은 변을 몇 번씩 봐 그래서 좀 불편해.",
       "gold_symptoms": [
         "피부홍조",
         "발한",
@@ -6857,7 +6857,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "가슴 두근거림은 지금은 괜찮습니다 그러나 아직 몸살처럼 근육통이 있습니다.",
+      "text": "가슴 두근거림은 지금은 괜찮아 근데 아직 몸살처럼 근육통이 있어.",
       "gold_symptoms": [
         "근육통"
       ],
@@ -6876,7 +6876,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 먹다가 자꾸 사래가 걸려요.",
+      "text": "약 먹는 중인데 먹다가 자꾸 사래가 걸려.",
       "gold_symptoms": [
         "사래걸림"
       ],
@@ -6893,7 +6893,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "최근에 누런 가래가 나옵니다.",
+      "text": "최근에 누런 가래가 나와.",
       "gold_symptoms": [
         "화농성 객담"
       ],
@@ -6910,7 +6910,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 안색이 창백합니다.",
+      "text": "치료 후에도 안색이 창백해.",
       "gold_symptoms": [
         "창백"
       ],
@@ -6927,7 +6927,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "검은색 가래은 지금은 괜찮습니다 그러나 지난 진료 이후 가슴이 막힌 듯 답답합니다.",
+      "text": "검은색 가래는 지금은 괜찮아 근데 지난 진료 이후 가슴이 막힌 듯 답답해.",
       "gold_symptoms": [
         "가슴 답답"
       ],
@@ -6946,7 +6946,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "오늘 아침부터 불안감이 계속됩니다.",
+      "text": "오늘 아침부터 불안감이 계속돼.",
       "gold_symptoms": [
         "불안"
       ],
@@ -6963,7 +6963,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "며칠 전부터 맥이 건너뛰는 느낌입니다 그리고 배가 아픕니다.",
+      "text": "며칠 전부터 맥이 건너뛰는 느낌이야 그리고 배가 아파.",
       "gold_symptoms": [
         "부정맥",
         "복부 통증"
@@ -6981,7 +6981,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "어제부터 맥이 너무 빨리 뛰어요 그리고 목이 칼칼하고 아파요.",
+      "text": "어제부터 맥이 너무 빨리 뛰어 그리고 목이 칼칼하고 아파.",
       "gold_symptoms": [
         "빈맥",
         "목의 통증"
@@ -6999,7 +6999,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "복부팽만감은 현재 없습니다 그러나 지난 진료 이후 몸이 처지고 의욕이 없습니다 그리고 숨이 부족한 느낌입니다.",
+      "text": "복부팽만감은 지금 없어 근데 지난 진료 이후 몸이 처지고 의욕이 없어 그리고 숨이 부족한 느낌이야.",
       "gold_symptoms": [
         "권태감",
         "호흡곤란"
@@ -7019,7 +7019,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 눈이 무겁게 느껴집니다 그리고 빙빙 도는 느낌이 있습니다 그리고 가슴 통증이 팔로 퍼집니다.",
+      "text": "치료 후에도 눈이 무겁게 느껴져 그리고 빙빙 도는 느낌이 있어 그리고 가슴 통증이 팔로 퍼져.",
       "gold_symptoms": [
         "눈이 무거운 느낌",
         "어지러움",
@@ -7038,7 +7038,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 음식이 잘 넘어가지 않습니다.",
+      "text": "치료 후에도 음식이 잘 넘어가지 않아.",
       "gold_symptoms": [
         "삼키기 곤란"
       ],
@@ -7055,7 +7055,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "재채기를 계속 해요 그래서 좀 불편해요. 누워 있어도 남아 있어요.",
+      "text": "재채기를 계속 해 그래서 좀 불편해. 누워 있어도 남아 있어.",
       "gold_symptoms": [
         "재채기"
       ],
@@ -7072,7 +7072,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "빈맥은 호전되었습니다 그러나 최근에 식은땀이 납니다.",
+      "text": "빈맥은 나아졌어 근데 최근에 식은땀이 나.",
       "gold_symptoms": [
         "발한"
       ],
@@ -7091,7 +7091,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "최근에 감기 증상이 이어집니다.",
+      "text": "최근에 감기 증상이 이어져.",
       "gold_symptoms": [
         "감기 증상"
       ],
@@ -7108,7 +7108,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "오한이 있습니다 그래서 진료를 보러 왔습니다.",
+      "text": "오한이 있어 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "오한"
       ],
@@ -7125,7 +7125,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 코가 꽉 막혀요.",
+      "text": "약 먹는 중인데 코가 꽉 막혀.",
       "gold_symptoms": [
         "코막힘"
       ],
@@ -7142,7 +7142,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "방사통은 지금은 괜찮습니다 그러나 목에 가래가 걸립니다 그리고 체중이 줄었습니다.",
+      "text": "방사통은 지금은 괜찮아 근데 목에 가래가 걸려 그리고 체중이 줄었어.",
       "gold_symptoms": [
         "가래",
         "체중감소"
@@ -7162,7 +7162,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 심장이 빨리 뛰는 느낌입니다 그리고 종아리가 붓는 느낌입니다.",
+      "text": "이번에는 새로 심장이 빨리 뛰는 느낌이야 그리고 종아리가 붓는 느낌이야.",
       "gold_symptoms": [
         "가슴 두근거림",
         "하지부종"
@@ -7180,7 +7180,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 눈이 빨갛게 충혈됐습니다 그리고 근력이 약해진 느낌입니다.",
+      "text": "지난 진료 이후 눈이 빨갛게 충혈됐어 그리고 근력이 약해진 느낌이야.",
       "gold_symptoms": [
         "눈의 충혈",
         "근력 약화"
@@ -7198,7 +7198,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 복부 통증이 있습니다 그리고 콧물이 계속 흐릅니다 그리고 가래 색이 검게 보입니다.",
+      "text": "이번에는 새로 복부 통증이 있어 그리고 콧물이 계속 흘러 그리고 가래 색이 검게 보여.",
       "gold_symptoms": [
         "복부 통증",
         "콧물",
@@ -7217,7 +7217,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "가래은 호전되었습니다 그러나 아직 목이 아픕니다.",
+      "text": "가래는 나아졌어 근데 아직 목이 아파.",
       "gold_symptoms": [
         "목의 통증"
       ],
@@ -7236,7 +7236,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 숨이 잘 안 쉬어지는 느낌이에요.",
+      "text": "약 먹는 중인데 숨이 잘 안 쉬어지는 느낌이야.",
       "gold_symptoms": [
         "호흡곤란"
       ],
@@ -7253,7 +7253,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "머리가 어지럽습니다 그래서 진료를 보러 왔습니다. 움직이면 더 신경 쓰입니다.",
+      "text": "머리가 어지러워 그래서 진료 보러 왔어. 움직이면 더 신경 쓰여.",
       "gold_symptoms": [
         "어지러움"
       ],
@@ -7270,7 +7270,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 먹어도 가슴이 눌리는 느낌입니다.",
+      "text": "약을 먹어도 가슴이 눌리는 느낌이야.",
       "gold_symptoms": [
         "흉부압박감"
       ],
@@ -7287,7 +7287,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "피로감은 현재 없습니다 그러나 치료 후에도 기운이 없습니다.",
+      "text": "피로감은 지금 없어 근데 치료 후에도 기운이 없어.",
       "gold_symptoms": [
         "기운없음"
       ],
@@ -7306,7 +7306,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "집에 있던 약 조금 먹었는데도 묽은 변을 몇 번씩 봐요.",
+      "text": "집에 있던 약 조금 먹었는데도 묽은 변을 몇 번씩 봐.",
       "gold_symptoms": [
         "설사"
       ],
@@ -7323,7 +7323,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "배가 더부룩하고 부풀어 있습니다 그리고 목소리가 쉬었습니다 그래서 진료를 보러 왔습니다.",
+      "text": "배가 더부룩하고 부풀어 있어 그리고 목소리가 쉬었어 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "복부팽만감",
         "목소리 변화"
@@ -7341,7 +7341,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "최근에 팔다리가 붓는 거 같아요 그리고 조금만 걸어도 숨이 차요.",
+      "text": "최근에 팔다리가 붓는 거 같아 그리고 조금만 걸어도 숨이 차.",
       "gold_symptoms": [
         "사지 부종",
         "운동 시 호흡곤란"
@@ -7359,7 +7359,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "설사은 좀 나아졌어요 근데 최근에 속이 울렁거려 토할 거 같아요 그리고 가슴 한쪽이 찌릿해요.",
+      "text": "설사는 좀 나아졌어 근데 최근에 속이 울렁거려 토할 거 같아 그리고 가슴 한쪽이 찌릿해.",
       "gold_symptoms": [
         "구토",
         "흉통"
@@ -7379,7 +7379,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "몸무게가 좀 줄었어요 그리고 눈꼽이 자꾸 껴요 그리고 괜히 몸이 무겁고 처져요 그래서 좀 불편해요.",
+      "text": "몸무게가 좀 줄었어 그리고 눈꼽이 자꾸 껴 그리고 괜히 몸땡이가 무겁고 처져 그래서 좀 불편해.",
       "gold_symptoms": [
         "체중감소",
         "눈꼽",
@@ -7398,7 +7398,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "종아리가 붓는 느낌입니다 그래서 진료를 보러 왔습니다.",
+      "text": "종아리가 붓는 느낌이야 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "하지부종"
       ],
@@ -7415,7 +7415,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 팔다리에 힘이 잘 안 들어가요.",
+      "text": "지난번보다 팔다리에 힘이 잘 안 들어가.",
       "gold_symptoms": [
         "근력 약화"
       ],
@@ -7432,7 +7432,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "부정맥은 좀 나아졌어요 근데 코가 자꾸 흘러요 그래서 좀 불편해요.",
+      "text": "부정맥은 좀 나아졌어 근데 코가 자꾸 흘러 그래서 좀 불편해.",
       "gold_symptoms": [
         "콧물"
       ],
@@ -7451,7 +7451,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "몸이 막 떨려요 그래서 좀 불편해요.",
+      "text": "몸땡이가 막 떨려 그래서 좀 불편해.",
       "gold_symptoms": [
         "온몸이 떨림"
       ],
@@ -7468,7 +7468,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가래가 거품처럼 올라와요 그래서 좀 불편해요.",
+      "text": "가래가 거품처럼 올라와 그래서 좀 불편해.",
       "gold_symptoms": [
         "거품이 섞인 가래"
       ],
@@ -7485,7 +7485,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약은 아직 따로 안 먹고 있고 아픈 게 어깨로 뻗어요.",
+      "text": "약은 아직 따로 안 먹고 있고 아픈 게 어깨로 뻗어.",
       "gold_symptoms": [
         "방사통"
       ],
@@ -7502,7 +7502,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "거품이 섞인 가래은 지금은 괜찮습니다 그러나 치료 후에도 기침이 자주 나옵니다 그리고 진한 노란 가래가 계속 나옵니다.",
+      "text": "거품이 섞인 가래는 지금은 괜찮아 근데 치료 후에도 기침이 자주 나와 그리고 진한 노란 가래가 계속 나와.",
       "gold_symptoms": [
         "기침",
         "화농성 객담"
@@ -7522,7 +7522,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 기침하면 피가 비쳐요 그리고 얼굴빛이 창백해 보여요.",
+      "text": "치료하고 나서도 기침하면 피가 비쳐 그리고 얼굴빛이 창백해 보여.",
       "gold_symptoms": [
         "객혈",
         "창백"
@@ -7540,7 +7540,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 가슴에서 쌕쌕 소리가 나요 그리고 가슴이 답답해요.",
+      "text": "약 먹는 중인데 가슴에서 쌕쌕 소리가 나 그리고 가슴이 답답해.",
       "gold_symptoms": [
         "천명음",
         "가슴 답답"
@@ -7558,7 +7558,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 복용하는 중에 목소리가 잘 나오지 않습니다 그리고 불안감이 계속됩니다 그리고 눈이 붉어졌습니다.",
+      "text": "약 먹는 중에 목소리가 잘 나오지 않아 그리고 불안감이 계속돼 그리고 눈이 붉어졌어.",
       "gold_symptoms": [
         "목소리 변화",
         "불안",
@@ -7577,7 +7577,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "코막힘은 지금은 괜찮아요 근데 오늘 아침부터 계단 오르면 숨이 확 막혀요.",
+      "text": "코막힘은 지금은 괜찮아 근데 오늘 아침부터 계단 오르면 숨이 확 막혀.",
       "gold_symptoms": [
         "운동 시 호흡곤란"
       ],
@@ -7596,7 +7596,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "숨을 쉴 때 가슴이 결립니다 그래서 진료를 보러 왔습니다.",
+      "text": "숨을 쉴 때 가슴이 결려 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "흉통"
       ],
@@ -7613,7 +7613,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 눈꼽이 자꾸 껴요.",
+      "text": "이번에 새로 눈꼽이 자꾸 껴.",
       "gold_symptoms": [
         "눈꼽"
       ],
@@ -7630,7 +7630,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "머리가 깨질 듯 아파요 그래서 좀 불편해요. 진료 전에 확인받고 싶어요.",
+      "text": "머리깽이가 깨질 듯 아파 그래서 좀 불편해. 진료 전에 확인받고 싶어.",
       "gold_symptoms": [
         "두통"
       ],
@@ -7647,7 +7647,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "두통은 호전되었습니다 그러나 지난 진료 이후 피로감이 계속됩니다.",
+      "text": "두통은 나아졌어 근데 지난 진료 이후 피로감이 계속돼.",
       "gold_symptoms": [
         "피로감"
       ],
@@ -7666,7 +7666,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "가래 색이 검게 보입니다 그래서 진료를 보러 왔습니다.",
+      "text": "가래 색이 검게 보여 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "검은색 가래"
       ],
@@ -7683,7 +7683,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "오늘 아침부터 피부가 빨개져요 그리고 식은땀이 흘러요.",
+      "text": "오늘 아침부터 피부가 빨개져 그리고 식은땀이 흘러.",
       "gold_symptoms": [
         "피부홍조",
         "발한"
@@ -7701,7 +7701,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "오늘 아침부터 몸이 여기저기 쑤셔요 그리고 감기 몸살 같은 느낌이에요.",
+      "text": "오늘 아침부터 몸땡이가 여기저기 쑤셔 그리고 감기 몸살 같은 느낌이야.",
       "gold_symptoms": [
         "근육통",
         "감기 증상"
@@ -7719,7 +7719,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "기운없음은 현재 없습니다 그러나 현재 복용 중인 약은 없고 물을 마시면 자주 사레가 듭니다 그리고 몸이 춥고 떨립니다.",
+      "text": "기운없음은 지금 없어 근데 지금 먹는 약은 없고 물을 마시면 자주 사레가 들어 그리고 몸이 춥고 떨려.",
       "gold_symptoms": [
         "사래걸림",
         "오한"
@@ -7739,7 +7739,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "오늘 아침부터 누런 가래가 자꾸 나와요 그리고 코가 꽉 막혀요 그리고 속이 울렁거려 토할 거 같아요.",
+      "text": "오늘 아침부터 누런 가래가 자꾸 나와 그리고 코가 꽉 막혀 그리고 속이 울렁거려 토할 거 같아.",
       "gold_symptoms": [
         "화농성 객담",
         "코막힘",
@@ -7758,7 +7758,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 안색이 하얗게 질렸어요.",
+      "text": "지난번보다 안색이 하얗게 질렸어.",
       "gold_symptoms": [
         "창백"
       ],
@@ -7775,7 +7775,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가슴이 꽉 막힌 거 같아요 그래서 좀 불편해요. 가끔 심했다가 조금 줄어요.",
+      "text": "가슴이 꽉 막힌 거 같아 그래서 좀 불편해. 가끔 심했다가 조금 줄어.",
       "gold_symptoms": [
         "가슴 답답"
       ],
@@ -7792,7 +7792,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "부정맥은 지금은 괜찮습니다 그러나 괜히 불안합니다.",
+      "text": "부정맥은 지금은 괜찮아 근데 괜히 불안해.",
       "gold_symptoms": [
         "불안"
       ],
@@ -7811,7 +7811,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 심장이 엇박자로 뛰는 거 같아요.",
+      "text": "약 먹는 중인데 심장이 엇박자로 뛰는 거 같아.",
       "gold_symptoms": [
         "부정맥"
       ],
@@ -7828,7 +7828,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "맥이 빠르게 뜁니다 그래서 진료를 보러 왔습니다. 아침에 더 느껴집니다.",
+      "text": "맥이 빠르게 뛰어 그래서 진료 보러 왔어. 아침에 더 느껴져.",
       "gold_symptoms": [
         "빈맥"
       ],
@@ -7845,7 +7845,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 몸이 처지고 의욕이 없습니다.",
+      "text": "지난 진료 이후 몸이 처지고 의욕이 없어.",
       "gold_symptoms": [
         "권태감"
       ],
@@ -7862,7 +7862,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "온몸이 떨림은 호전되었습니다 그러나 약을 먹어도 눈꺼풀이 무겁습니다 그리고 빙빙 도는 느낌이 있습니다.",
+      "text": "온몸이 떨림은 나아졌어 근데 약을 먹어도 눈꺼풀이 무거워 그리고 빙빙 도는 느낌이 있어.",
       "gold_symptoms": [
         "눈이 무거운 느낌",
         "어지러움"
@@ -7882,7 +7882,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 음식이 잘 넘어가지 않습니다 그리고 가슴이 눌리는 느낌입니다.",
+      "text": "치료 후에도 음식이 잘 넘어가지 않아 그리고 가슴이 눌리는 느낌이야.",
       "gold_symptoms": [
         "삼키기 곤란",
         "흉부압박감"
@@ -7900,7 +7900,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 재채기가 멈추지 않습니다 그리고 기운이 없습니다.",
+      "text": "지난 진료 이후 재채기가 멈추지 않아 그리고 기운이 없어.",
       "gold_symptoms": [
         "재채기",
         "기운없음"
@@ -7918,7 +7918,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 땀이 자꾸 나요 그리고 묽은 변을 몇 번씩 봐요 그리고 가슴에서 쌕쌕 소리가 나요.",
+      "text": "지난번보다 땀이 자꾸 나 그리고 묽은 변을 몇 번씩 봐 그리고 가슴에서 쌕쌕 소리가 나.",
       "gold_symptoms": [
         "발한",
         "설사",
@@ -7937,7 +7937,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "오한은 좀 나아졌어요 근데 어제부터 감기 몸살 같은 느낌이에요.",
+      "text": "오한은 좀 나아졌어 근데 어제부터 감기 몸살 같은 느낌이야.",
       "gold_symptoms": [
         "감기 증상"
       ],
@@ -7956,7 +7956,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 추워가 몸이 떨려요.",
+      "text": "지난번보다 추워가 몸땡이가 떨려.",
       "gold_symptoms": [
         "오한"
       ],
@@ -7973,7 +7973,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "코막힘이 계속됩니다 그래서 진료를 보러 왔습니다. 누워 있을 때도 남아 있습니다.",
+      "text": "코막힘이 계속돼 그래서 진료 보러 왔어. 누워 있어도 남아 있어.",
       "gold_symptoms": [
         "코막힘"
       ],
@@ -7990,7 +7990,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "목에 가래가 걸려 있는 거 같아요 그래서 좀 불편해요. 밥 먹고 나서도 그래요.",
+      "text": "목에 가래가 걸려 있는 거 같아 그래서 좀 불편해. 밥 먹고 나서도 그래.",
       "gold_symptoms": [
         "가래"
       ],
@@ -8007,7 +8007,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "눈꼽은 호전되었습니다 그러나 치료 후에도 가슴이 두근거립니다.",
+      "text": "눈꼽은 나아졌어 근데 치료 후에도 가슴이 두근거려.",
       "gold_symptoms": [
         "가슴 두근거림"
       ],
@@ -8026,7 +8026,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 눈이 붉어졌습니다.",
+      "text": "이번에는 새로 눈이 붉어졌어.",
       "gold_symptoms": [
         "눈의 충혈"
       ],
@@ -8043,7 +8043,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "어제부터 배가 아픕니다 그리고 콧물이 계속 흐릅니다.",
+      "text": "어제부터 배가 아파 그리고 콧물이 계속 흘러.",
       "gold_symptoms": [
         "복부 통증",
         "콧물"
@@ -8061,7 +8061,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "목이 칼칼하고 아파요 그리고 온몸이 덜덜 떨려요 그래서 좀 불편해요.",
+      "text": "목이 칼칼하고 아파 그리고 온몸가 덜덜 떨려 그래서 좀 불편해.",
       "gold_symptoms": [
         "목의 통증",
         "온몸이 떨림"
@@ -8079,7 +8079,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "흉부압박감은 현재 없습니다 그러나 어제부터 가만히 있어도 숨쉬기가 불편합니다 그리고 거품 섞인 가래가 나옵니다.",
+      "text": "흉부압박감은 지금 없어 근데 어제부터 가만히 있어도 숨쉬기가 불편해 그리고 거품 섞인 가래가 나와.",
       "gold_symptoms": [
         "호흡곤란",
         "거품이 섞인 가래"
@@ -8099,7 +8099,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 빙빙 도는 느낌이 있습니다 그리고 통증이 어깨 쪽으로 뻗칩니다 그리고 물을 마시면 자주 사레가 듭니다.",
+      "text": "치료 후에도 빙빙 도는 느낌이 있어 그리고 통증이 어깨 쪽으로 뻗쳐 그리고 물을 마시면 자주 사레가 들어.",
       "gold_symptoms": [
         "어지러움",
         "방사통",
@@ -8118,7 +8118,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "며칠 전부터 가슴을 꽉 누르는 느낌입니다.",
+      "text": "며칠 전부터 가슴을 꽉 누르는 느낌이야.",
       "gold_symptoms": [
         "흉부압박감"
       ],
@@ -8135,7 +8135,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "기운이 없습니다 그래서 진료를 보러 왔습니다. 아침에 더 느껴집니다.",
+      "text": "기운이 없어 그래서 진료 보러 왔어. 아침에 더 느껴져.",
       "gold_symptoms": [
         "기운없음"
       ],
@@ -8152,7 +8152,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "가슴 답답은 좀 나아졌어요 근데 어제부터 묽은 변을 몇 번씩 봐요.",
+      "text": "가슴 답답은 좀 나아졌어 근데 어제부터 묽은 변을 몇 번씩 봐.",
       "gold_symptoms": [
         "설사"
       ],
@@ -8171,7 +8171,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 배가 더부룩하고 부풀어 있습니다. 움직이면 더 신경 쓰입니다.",
+      "text": "치료 후에도 배가 더부룩하고 부풀어 있어. 움직이면 더 신경 쓰여.",
       "gold_symptoms": [
         "복부팽만감"
       ],
@@ -8188,7 +8188,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 팔다리가 붓는 거 같아요.",
+      "text": "치료하고 나서도 팔다리가 붓는 거 같아.",
       "gold_symptoms": [
         "사지 부종"
       ],
@@ -8205,7 +8205,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "최근에 토할 것 같습니다. 간헐적으로 반복됩니다.",
+      "text": "최근에 토할 것 같아. 왔다 갔다 반복돼.",
       "gold_symptoms": [
         "구토"
       ],
@@ -8222,7 +8222,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "콧물은 지금은 괜찮아요 근데 최근에 몸무게가 좀 줄었어요 그리고 눈곱이 많이 붙어요.",
+      "text": "콧물은 지금은 괜찮아 근데 최근에 몸무게가 좀 줄었어 그리고 눈곱이 많이 붙어.",
       "gold_symptoms": [
         "체중감소",
         "눈꼽"
@@ -8242,7 +8242,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 종아리가 자꾸 부어요 그리고 머리가 지끈지끈해요.",
+      "text": "지난번보다 종아리가 자꾸 부어 그리고 머리깽이가 지끈지끈해.",
       "gold_symptoms": [
         "하지부종",
         "두통"
@@ -8260,7 +8260,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "팔다리에 힘이 잘 안 들어가요 그리고 쉬어도 몸이 피곤해요 그래서 좀 불편해요.",
+      "text": "팔다리에 힘이 잘 안 들어가 그리고 쉬어도 몸땡이가 피곤해 그래서 좀 불편해.",
       "gold_symptoms": [
         "근력 약화",
         "피로감"
@@ -8278,7 +8278,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "이번에는 새로 콧물이 계속 흐릅니다 그리고 검은색 가래가 나옵니다 그리고 재채기가 자주 납니다.",
+      "text": "이번에는 새로 콧물이 계속 흘러 그리고 검은색 가래가 나와 그리고 재채기가 자주 나.",
       "gold_symptoms": [
         "콧물",
         "검은색 가래",
@@ -8297,7 +8297,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "감기 증상은 지금은 괜찮아요 근데 몸이 막 떨려요 그래서 좀 불편해요.",
+      "text": "감기 증상은 지금은 괜찮아 근데 몸땡이가 막 떨려 그래서 좀 불편해.",
       "gold_symptoms": [
         "온몸이 떨림"
       ],
@@ -8316,7 +8316,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "어제부터 가래에 거품이 보입니다. 기침하거나 움직일 때 더 느껴집니다.",
+      "text": "어제부터 가래에 거품이 보여. 기침하거나 움직일 때 더 느껴져.",
       "gold_symptoms": [
         "거품이 섞인 가래"
       ],
@@ -8333,7 +8333,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "어제부터 통증이 어깨 쪽으로 뻗칩니다.",
+      "text": "어제부터 통증이 어깨 쪽으로 뻗쳐.",
       "gold_symptoms": [
         "방사통"
       ],
@@ -8350,7 +8350,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "약 먹는 중인데 기침이 자꾸 나와요.",
+      "text": "약 먹는 중인데 기침이 자꾸 나와.",
       "gold_symptoms": [
         "기침"
       ],
@@ -8367,7 +8367,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "흉통은 지금은 괜찮아요 근데 지난번보다 가래에 피가 좀 묻어 나와요.",
+      "text": "흉통은 지금은 괜찮아 근데 지난번보다 가래에 피가 좀 묻어 나와.",
       "gold_symptoms": [
         "객혈"
       ],
@@ -8386,7 +8386,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "약을 먹어도 가슴에서 쌕쌕 소리가 납니다.",
+      "text": "약을 먹어도 가슴에서 쌕쌕 소리가 나.",
       "gold_symptoms": [
         "천명음"
       ],
@@ -8403,7 +8403,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 목소리가 쉬었습니다 그리고 괜히 불안합니다.",
+      "text": "치료 후에도 목소리가 쉬었어 그리고 괜히 불안해.",
       "gold_symptoms": [
         "목소리 변화",
         "불안"
@@ -8421,7 +8421,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "현재 복용 중인 약은 없고 걸을 때 숨이 더 찹니다 그리고 맥이 건너뛰는 느낌입니다.",
+      "text": "지금 먹는 약은 없고 걸을 때 숨이 더 차 그리고 맥이 건너뛰는 느낌이야.",
       "gold_symptoms": [
         "운동 시 호흡곤란",
         "부정맥"
@@ -8439,7 +8439,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "어지러움은 현재 없습니다 그러나 이번에는 새로 숨을 쉴 때 가슴이 결립니다 그리고 심박이 빠른 느낌입니다.",
+      "text": "어지러움은 지금 없어 근데 이번에는 새로 숨을 쉴 때 가슴이 결려 그리고 심박이 빠른 느낌이야.",
       "gold_symptoms": [
         "흉통",
         "빈맥"
@@ -8459,7 +8459,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "아침마다 눈꼽이 많이 낍니다 그리고 전반적으로 몸이 무겁습니다 그리고 숨이 부족한 느낌입니다 그래서 진료를 보러 왔습니다.",
+      "text": "아침마다 눈꼽이 많이 껴 그리고 전반적으로 몸이 무거워 그리고 숨이 부족한 느낌이야 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "눈꼽",
         "권태감",
@@ -8478,7 +8478,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 머리가 아픕니다.",
+      "text": "지난 진료 이후 머리가 아파.",
       "gold_symptoms": [
         "두통"
       ],
@@ -8495,7 +8495,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "쉬어도 몸이 피곤해요 그래서 좀 불편해요. 쉬어도 별로 안 줄어요.",
+      "text": "쉬어도 몸땡이가 피곤해 그래서 좀 불편해. 쉬어도 별로 안 줄어.",
       "gold_symptoms": [
         "피로감"
       ],
@@ -8512,7 +8512,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "창백은 호전되었습니다 그러나 현재 복용 중인 약은 없고 검은색 가래가 나옵니다.",
+      "text": "창백은 나아졌어 근데 지금 먹는 약은 없고 검은색 가래가 나와.",
       "gold_symptoms": [
         "검은색 가래"
       ],
@@ -8531,7 +8531,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 피부가 달아오르는 느낌입니다. 점점 더 신경 쓰입니다.",
+      "text": "지난 진료 이후 피부가 달아오르는 느낌이야. 점점 더 신경 쓰여.",
       "gold_symptoms": [
         "피부홍조"
       ],
@@ -8548,7 +8548,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "근육이 욱신거려요 그래서 좀 불편해요.",
+      "text": "근육이 욱신거려 그래서 좀 불편해.",
       "gold_symptoms": [
         "근육통"
       ],
@@ -8565,7 +8565,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 먹다가 자꾸 사래가 걸려요.",
+      "text": "이번에 새로 먹다가 자꾸 사래가 걸려.",
       "gold_symptoms": [
         "사래걸림"
       ],
@@ -8582,7 +8582,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "근력 약화은 좀 나아졌어요 근데 이번에 새로 누런 가래가 자꾸 나와요 그리고 코가 막혀가 답답해요.",
+      "text": "근력 약화는 좀 나아졌어 근데 이번에 새로 누런 가래가 자꾸 나와 그리고 코가 막혀가 답답해.",
       "gold_symptoms": [
         "화농성 객담",
         "코막힘"
@@ -8602,7 +8602,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "어제부터 안색이 창백합니다 그리고 목에 가래가 걸립니다.",
+      "text": "어제부터 안색이 창백해 그리고 목에 가래가 걸려.",
       "gold_symptoms": [
         "창백",
         "가래"
@@ -8620,7 +8620,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "집에 있던 약 조금 먹었는데도 가슴이 꽉 막힌 거 같아요 그리고 가슴이 막 두근거려요.",
+      "text": "집에 있던 약 조금 먹었는데도 가슴이 꽉 막힌 거 같아 그리고 가슴이 막 두근거려.",
       "gold_symptoms": [
         "가슴 답답",
         "가슴 두근거림"
@@ -8638,7 +8638,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "치료하고 나서도 괜히 불안해요 그리고 눈이 벌겋게 됐어요 그리고 팔다리에 힘이 잘 안 들어가요.",
+      "text": "치료하고 나서도 괜히 불안해 그리고 눈이 벌겋게 됐어 그리고 팔다리에 힘이 잘 안 들어가.",
       "gold_symptoms": [
         "불안",
         "눈의 충혈",
@@ -8657,7 +8657,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "발한은 지금은 괜찮아요 근데 심장이 엇박자로 뛰는 거 같아요.",
+      "text": "발한은 지금은 괜찮아 근데 심장이 엇박자로 뛰는 거 같아.",
       "gold_symptoms": [
         "부정맥"
       ],
@@ -8676,7 +8676,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 맥이 빠르게 뜁니다.",
+      "text": "치료 후에도 맥이 빠르게 뛰어.",
       "gold_symptoms": [
         "빈맥"
       ],
@@ -8693,7 +8693,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "몸이 축 처져요 그래서 좀 불편해요.",
+      "text": "몸땡이가 축 처져 그래서 좀 불편해.",
       "gold_symptoms": [
         "권태감"
       ],
@@ -8710,7 +8710,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "지난번보다 눈이 무거워요.",
+      "text": "지난번보다 눈이 무거워.",
       "gold_symptoms": [
         "눈이 무거운 느낌"
       ],
@@ -8727,7 +8727,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "운동 시 호흡곤란은 좀 나아졌어요 근데 이번에 새로 음식이 목에 걸려 잘 안 넘어가요.",
+      "text": "운동 시 호흡곤란은 좀 나아졌어 근데 이번에 새로 음식이 목에 걸려 잘 안 넘어가.",
       "gold_symptoms": [
         "삼키기 곤란"
       ],
@@ -8746,7 +8746,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "최근에 재채기가 자꾸 나와요.",
+      "text": "최근에 재채기가 자꾸 나와.",
       "gold_symptoms": [
         "재채기"
       ],
@@ -8763,7 +8763,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "땀이 자꾸 나요 그리고 배가 아프고 설사를 해요 그래서 좀 불편해요. 밤에 더 불편해요.",
+      "text": "땀이 자꾸 나 그리고 배가 아프고 설사를 해 그래서 좀 불편해. 밤에 더 불편해.",
       "gold_symptoms": [
         "발한",
         "설사"
@@ -8781,7 +8781,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "최근에 감기 몸살 같은 느낌이에요 그리고 배가 빵빵해요.",
+      "text": "최근에 감기 몸살 같은 느낌이야 그리고 배가 빵빵해.",
       "gold_symptoms": [
         "감기 증상",
         "복부팽만감"
@@ -8799,7 +8799,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "호흡곤란은 지금은 괜찮습니다 그러나 오늘 아침부터 오한이 있습니다 그리고 손발이 붓습니다.",
+      "text": "호흡곤란은 지금은 괜찮아 근데 오늘 아침부터 오한이 있어 그리고 손발이 부어.",
       "gold_symptoms": [
         "오한",
         "사지 부종"
@@ -8819,7 +8819,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "코막힘이 계속됩니다 그리고 토할 것 같습니다 그리고 가슴이 찌르듯 아픕니다 그래서 진료를 보러 왔습니다.",
+      "text": "코막힘이 계속돼 그리고 토할 것 같아 그리고 가슴이 찌르듯 아파 그래서 진료 보러 왔어.",
       "gold_symptoms": [
         "코막힘",
         "구토",
@@ -8838,7 +8838,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "오늘 아침부터 가래가 자주 나옵니다.",
+      "text": "오늘 아침부터 가래가 자주 나와.",
       "gold_symptoms": [
         "가래"
       ],
@@ -8855,7 +8855,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "치료 후에도 가슴이 두근거립니다.",
+      "text": "치료 후에도 가슴이 두근거려.",
       "gold_symptoms": [
         "가슴 두근거림"
       ],
@@ -8872,7 +8872,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q3",
-      "text": "화농성 객담은 현재 없습니다 그러나 약을 복용하는 중에 눈이 붉어졌습니다.",
+      "text": "화농성 객담은 지금 없어 근데 약 먹는 중에 눈이 붉어졌어.",
       "gold_symptoms": [
         "눈의 충혈"
       ],
@@ -8891,7 +8891,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "어제부터 배가 아픕니다.",
+      "text": "어제부터 배가 아파.",
       "gold_symptoms": [
         "복부 통증"
       ],
@@ -8908,7 +8908,7 @@
       "visit_type": "재진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "지난 진료 이후 목이 따갑고 아픕니다.",
+      "text": "지난 진료 이후 목이 따갑고 아파.",
       "gold_symptoms": [
         "목의 통증"
       ],
@@ -8925,7 +8925,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q1",
-      "text": "숨이 차가 힘들어요 그래서 좀 불편해요.",
+      "text": "숨이 차가 힘들어 그래서 좀 불편해.",
       "gold_symptoms": [
         "호흡곤란"
       ],
@@ -8942,7 +8942,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "하지부종은 지금은 괜찮습니다 그러나 일어설 때 어지럽습니다 그리고 가슴 통증이 팔로 퍼집니다.",
+      "text": "하지부종은 지금은 괜찮아 근데 일어설 때 어지러워 그리고 가슴 통증이 팔로 퍼져.",
       "gold_symptoms": [
         "어지러움",
         "방사통"
@@ -8962,7 +8962,7 @@
       "visit_type": "초진",
       "dialect_type": "standard",
       "question_id": "Q1",
-      "text": "가슴을 꽉 누르는 느낌입니다 그리고 마른기침이 반복됩니다 그래서 진료를 보러 왔습니다. 오전보다 오후에 더 뚜렷합니다.",
+      "text": "가슴을 꽉 누르는 느낌이야 그리고 마른기침이 반복돼 그래서 진료 보러 왔어. 오전보다 오후에 더 뚜렷해.",
       "gold_symptoms": [
         "흉부압박감",
         "기침"
@@ -8980,7 +8980,7 @@
       "visit_type": "초진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "집에 있던 약 조금 먹었는데도 몸에 힘이 쭉 빠져요 그리고 가래에 피가 좀 묻어 나와요.",
+      "text": "집에 있던 약 조금 먹었는데도 몸땡이에 힘이 쭉 빠져 그리고 가래에 피가 좀 묻어 나와.",
       "gold_symptoms": [
         "기운없음",
         "객혈"
@@ -8998,7 +8998,7 @@
       "visit_type": "재진",
       "dialect_type": "dialect",
       "question_id": "Q3",
-      "text": "이번에 새로 배가 아프고 설사를 해요 그리고 가슴에서 쌕쌕 소리가 나요 그리고 가슴이 꽉 막힌 거 같아요.",
+      "text": "이번에 새로 배가 아프고 설사를 해 그리고 가슴에서 쌕쌕 소리가 나 그리고 가슴이 꽉 막힌 거 같아.",
       "gold_symptoms": [
         "설사",
         "천명음",

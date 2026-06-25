@@ -232,6 +232,153 @@ PHRASE_BANK: dict[str, dict[str, list[str]]] = {
     },
 }
 
+CASUAL_REPLACEMENTS = [
+    ("진료를 보러 왔습니다", "진료 보러 왔어"),
+    ("진료를 보러 왔어요", "진료 보러 왔어"),
+    ("진료를 보러 왔어", "진료 보러 왔어"),
+    ("진료 전에 확인받고 싶습니다", "진료 전에 확인받고 싶어"),
+    ("진료 전에 확인받고 싶어요", "진료 전에 확인받고 싶어"),
+    ("현재 복용 중인 약은 없고", "지금 먹는 약은 없고"),
+    ("복용 중에도", "약 먹는 중에도"),
+    ("복용하는 중에", "약 먹는 중에"),
+    ("현재", "지금"),
+    ("그러나", "근데"),
+    ("입니다", "이야"),
+    ("였습니다", "였어"),
+    ("했습니다", "했어"),
+    ("있었습니다", "있었어"),
+    ("없었습니다", "없었어"),
+    ("있습니다", "있어"),
+    ("없습니다", "없어"),
+    ("않습니다", "않아"),
+    ("어렵습니다", "어려워"),
+    ("아픕", "아파"),
+    ("따갑", "따가워"),
+    ("답답합", "답답해"),
+    ("불편합", "불편해"),
+    ("힘듭", "힘들어"),
+    ("느껴집", "느껴져"),
+    ("보입니다", "보여"),
+    ("나옵", "나와"),
+    ("납니다", "나"),
+    ("흐릅니다", "흘러"),
+    ("뜁", "뛰어"),
+    ("줄었습니다", "줄었어"),
+    ("빠졌습니다", "빠졌어"),
+    ("걸립니다", "걸려"),
+    ("반복됩니다", "반복돼"),
+    ("계속됩니다", "계속돼"),
+    ("이어집니다", "이어져"),
+    ("무겁습니다", "무거워"),
+    ("부족한 느낌", "부족한 느낌"),
+    ("느낌입니다", "느낌이야"),
+    ("상태입니다", "상태야"),
+    ("먹고 있습니다", "먹고 있어"),
+    ("궁금합니다", "궁금해"),
+    ("문의했습니다", "물어봤어"),
+    ("호전되었습니다", "나아졌어"),
+    ("괜찮습니다", "괜찮아"),
+    ("괜찮아요", "괜찮아"),
+    ("나아졌어요", "나아졌어"),
+    ("있어요", "있어"),
+    ("없어요", "없어"),
+    ("같아요", "같아"),
+    ("같습니다", "같아"),
+    ("해요", "해"),
+    ("돼요", "돼"),
+    ("그래요", "그래"),
+    ("싶어요", "싶어"),
+    ("불편해요", "불편해"),
+    ("힘들어요", "힘들어"),
+    ("아파요", "아파"),
+    ("답답해요", "답답해"),
+    ("느껴져요", "느껴져"),
+    ("나와요", "나와"),
+    ("흘러요", "흘러"),
+    ("뛰어요", "뛰어"),
+    ("부어요", "부어"),
+    ("쑤셔요", "쑤셔"),
+    ("떨려요", "떨려"),
+    ("걸려요", "걸려"),
+    ("어려워요", "어려워"),
+    ("요.", "."),
+    ("요?", "?"),
+    ("요!", "!"),
+]
+
+RAG_DIALECT_REPLACEMENTS = [
+    ("가만 있어도", "가마이 있어도"),
+    ("가만히", "가마이"),
+    ("아까처럼", "아까맨치로"),
+    ("어떻게", "어터"),
+    ("오늘은", "오늘에는"),
+    ("진짜", "진뗑이"),
+    ("살살", "실실"),
+    ("혀바닥", "셋바닥"),
+    ("무릎", "고뱅이"),
+    ("다리가", "다리깽이가"),
+    ("다리에", "다리깽이에"),
+    ("머리가", "머리깽이가"),
+    ("머리를", "머리깽이를"),
+    ("몸이", "몸땡이가"),
+    ("몸에", "몸땡이에"),
+    ("몸은", "몸땡이는"),
+    ("몸을", "몸땡이를"),
+    ("나중", "냉중"),
+    ("어디", "워대"),
+    ("얼마나", "얼매나"),
+    ("매우", "데우"),
+    ("다녀", "댕겨"),
+]
+
+CASUAL_CLEANUPS = [
+    ("나와니다", "나와"),
+    ("아파니다", "아파"),
+    ("답답해니다", "답답해"),
+    ("불편해니다", "불편해"),
+    ("힘들어니다", "힘들어"),
+    ("뛰어니다", "뛰어"),
+    ("느껴져니다", "느껴져"),
+    ("보이야", "보여"),
+    ("따가워고", "따갑고"),
+    ("어지럽습니다", "어지러워"),
+    ("붓습니다", "부어"),
+    ("찹니다", "차"),
+    ("뻗칩니다", "뻗쳐"),
+    ("결립니다", "결려"),
+    ("뜁니다", "뛰어"),
+    ("쑤십니다", "쑤셔"),
+    ("떨립니다", "떨려"),
+    ("충혈됐습니다", "충혈됐어"),
+    ("붉어졌습니다", "붉어졌어"),
+    ("창백합니다", "창백해"),
+    ("창백해졌습니다", "창백해졌어"),
+    ("피곤합니다", "피곤해"),
+    ("불안합니다", "불안해"),
+    ("두근거립니다", "두근거려"),
+    ("지끈거립니다", "지끈거려"),
+    ("붉어집니다", "붉어져"),
+    ("퍼집니다", "퍼져"),
+    ("봅니다", "봐"),
+    ("쉬었습니다", "쉬었어"),
+    ("많이 낍니다", "많이 껴"),
+    ("자주 낍니다", "자주 껴"),
+    ("사레가 듭니다", "사레가 들어"),
+    ("자주 사레가 듭니다", "자주 사레가 들어"),
+    ("느낌이에요", "느낌이야"),
+    ("느낌입니다", "느낌이야"),
+    ("거 같아요", "거 같아"),
+    ("안 나와요", "안 나와"),
+    ("잘 안 들어가요", "잘 안 들어가"),
+    ("잘 안 넘어가요", "잘 안 넘어가"),
+    ("몸땡이이", "몸땡이가"),
+    ("팔다리깽이", "팔다리"),
+    ("온몸땡이", "온몸"),
+    ("약을 약 먹는 중에", "약 먹는 중에"),
+    ("느낌이에.", "느낌이야."),
+    ("느낌이에", "느낌이야"),
+]
+
 
 def main() -> int:
     args = parse_args()
@@ -343,6 +490,7 @@ def render_case(item: dict[str, Any], rng: random.Random) -> dict[str, Any]:
         negative_clauses=negative_clauses,
         rng=rng,
     )
+    text = casualize_text(text, dialect_type)
     return {
         "case_id": item["case_id"],
         "visit_type": item["visit_type"],
@@ -359,6 +507,24 @@ def render_case(item: dict[str, Any], rng: random.Random) -> dict[str, Any]:
     }
 
 
+def casualize_text(text: str, dialect_type: str) -> str:
+    """Convert generated utterances to casual spoken Korean."""
+    result = text
+    for old, new in CASUAL_REPLACEMENTS:
+        result = result.replace(old, new)
+    for old, new in CASUAL_CLEANUPS:
+        result = result.replace(old, new)
+    result = re.sub(r"요(?=(\s|\.|,|!|\?|$))", "", result)
+    if dialect_type == "dialect":
+        for old, new in RAG_DIALECT_REPLACEMENTS:
+            result = result.replace(old, new)
+        for old, new in CASUAL_CLEANUPS:
+            result = result.replace(old, new)
+    result = re.sub(r"\s+", " ", result).strip()
+    result = result.replace(" .", ".").replace(" ?", "?").replace(" !", "!")
+    return result
+
+
 def positive_clause(symptom: str, dialect_type: str, rng: random.Random) -> str:
     bank = PHRASE_BANK.get(symptom)
     if bank:
@@ -367,18 +533,31 @@ def positive_clause(symptom: str, dialect_type: str, rng: random.Random) -> str:
     return f"{symptom}이 {suffix}"
 
 
+def topic_particle(text: str) -> str:
+    """Return Korean topic marker 은/는 for a label."""
+    stripped = str(text or "").strip()
+    if not stripped:
+        return "은"
+    last = stripped[-1]
+    code = ord(last)
+    if 0xAC00 <= code <= 0xD7A3:
+        return "은" if (code - 0xAC00) % 28 else "는"
+    return "은"
+
+
 def negative_clause(symptom: str, dialect_type: str, rng: random.Random) -> str:
+    topic = topic_particle(symptom)
     if dialect_type == "dialect":
         templates = [
-            f"{symptom}은 이제 거의 없어요",
-            f"{symptom}은 좀 나아졌어요",
-            f"{symptom}은 지금은 괜찮아요",
+            f"{symptom}{topic} 이제 거의 없어요",
+            f"{symptom}{topic} 좀 나아졌어요",
+            f"{symptom}{topic} 지금은 괜찮아요",
         ]
     else:
         templates = [
-            f"{symptom}은 현재 없습니다",
-            f"{symptom}은 호전되었습니다",
-            f"{symptom}은 지금은 괜찮습니다",
+            f"{symptom}{topic} 현재 없습니다",
+            f"{symptom}{topic} 호전되었습니다",
+            f"{symptom}{topic} 지금은 괜찮습니다",
         ]
     return rng.choice(templates)
 
@@ -477,42 +656,42 @@ def duplicate_suffix(case_id: str, dialect_type: str) -> str:
     except ValueError:
         index = 0
     standard_contexts = [
-        "아침에 더 느껴집니다.",
-        "밤에 더 불편합니다.",
-        "움직이면 더 신경 쓰입니다.",
-        "쉬어도 크게 줄지 않습니다.",
-        "간헐적으로 반복됩니다.",
-        "점점 더 신경 쓰입니다.",
-        "진료 전에 확인받고 싶습니다.",
-        "일상생활 중에도 느껴집니다.",
-        "누워 있을 때도 남아 있습니다.",
-        "식사 후에도 이어집니다.",
-        "기침하거나 움직일 때 더 느껴집니다.",
-        "최근 들어 더 잦아졌습니다.",
-        "오전보다 오후에 더 뚜렷합니다.",
-        "물을 마셔도 크게 달라지지 않습니다.",
-        "가끔 심해졌다가 조금 줄어듭니다.",
-        "예전보다 더 자주 느낍니다.",
-        "오늘은 특히 불편합니다.",
+        "아침에 더 느껴져.",
+        "밤에 더 불편해.",
+        "움직이면 더 신경 쓰여.",
+        "쉬어도 크게 안 줄어.",
+        "왔다 갔다 반복돼.",
+        "점점 더 신경 쓰여.",
+        "진료 전에 확인받고 싶어.",
+        "평소에도 느껴져.",
+        "누워 있어도 남아 있어.",
+        "밥 먹고 나서도 이어져.",
+        "기침하거나 움직일 때 더 느껴져.",
+        "요즘 들어 더 잦아졌어.",
+        "오전보다 오후에 더 뚜렷해.",
+        "물 마셔도 크게 안 달라져.",
+        "가끔 심해졌다가 조금 줄어.",
+        "예전보다 더 자주 느껴.",
+        "오늘은 특히 불편해.",
     ]
     dialect_contexts = [
-        "아침에 더 그래요.",
-        "밤에 더 불편해요.",
-        "움직이면 더 신경 쓰여요.",
-        "쉬어도 별로 안 줄어요.",
-        "왔다 갔다 반복돼요.",
-        "점점 더 신경 쓰여요.",
-        "진료 전에 확인받고 싶어요.",
-        "평소에도 자꾸 느껴져요.",
-        "누워 있어도 남아 있어요.",
-        "밥 먹고 나서도 그래요.",
-        "기침하거나 움직이면 더 그래요.",
-        "요즘 들어 더 잦아졌어요.",
-        "오후에 더 뚜렷해요.",
-        "물 마셔도 별로 안 달라져요.",
-        "가끔 심했다가 조금 줄어요.",
-        "전보다 더 자주 느껴져요.",
-        "오늘은 특히 불편해요.",
+        "아침에 더 그래.",
+        "밤에 더 불편해.",
+        "움직이면 더 신경 쓰여.",
+        "쉬어도 별로 안 줄어.",
+        "왔다 갔다 반복돼.",
+        "점점 더 신경 쓰여.",
+        "진료 전에 확인받고 싶어.",
+        "평소에도 자꾸 느껴져.",
+        "누워 있어도 남아 있어.",
+        "밥 먹고 나서도 그래.",
+        "기침하거나 움직이면 더 그래.",
+        "요즘 들어 더 잦아졌어.",
+        "오후에 더 뚜렷해.",
+        "물 마셔도 별로 안 달라져.",
+        "가끔 심했다가 조금 줄어.",
+        "전보다 더 자주 느껴져.",
+        "오늘에는 특히 불편해.",
     ]
     contexts = dialect_contexts if dialect_type == "dialect" else standard_contexts
     return contexts[index % len(contexts)]
@@ -533,10 +712,14 @@ def validate_generated(cases: list[dict[str, Any]]) -> None:
         text = str(case.get("text") or "")
         if not text.strip():
             raise RuntimeError(f"empty text: {case_id}")
+        if re.search(r"(습니다|습니까|니다|니까|요(?=\s|[.!?]|$))", text):
+            raise RuntimeError(f"polite/formal ending remains in {case_id}: {text}")
         text_key = normalize_for_duplicate(text)
         if text_key in seen_texts:
             suffix = duplicate_suffix(case_id, str(case.get("dialect_type") or "standard"))
             case["text"] = f"{text} {suffix}"
+            if re.search(r"(습니다|습니까|니다|니까|요(?=\s|[.!?]|$))", str(case["text"])):
+                raise RuntimeError(f"polite/formal ending remains in duplicate suffix {case_id}: {case['text']}")
             text_key = normalize_for_duplicate(str(case["text"]))
             if text_key in seen_texts:
                 raise RuntimeError(f"duplicate text: {case_id}: {case['text']}")
