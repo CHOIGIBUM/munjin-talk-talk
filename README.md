@@ -335,7 +335,7 @@ munjin-talk-talk/
 | [frontend/README.md](frontend/README.md) | 화면·라우팅·STT·API 연동 |
 | [backend/README.md](backend/README.md) | 백엔드 책임·LangGraph·LLM·IR·저장 |
 | [backend/serverless/README.md](backend/serverless/README.md) | SAM 배포·endpoint·환경변수 |
-| [docs/LANGGRAPH_PIPELINE.md](docs/LANGGRAPH_PIPELINE.md) | 답변 1개가 거치는 노드 흐름 |
+| [docs/LANGGRAPH_PIPELINE.md](docs/LANGGRAPH_PIPELINE.md) | Q1~Q4 답변 묶음이 거치는 LangGraph 분석 흐름 |
 | [docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md) | DynamoDB·S3·extraction·onepaper·guide JSON |
 | [docs/SECURITY_DATA_INVENTORY.md](docs/SECURITY_DATA_INVENTORY.md) | 필드별 보안 처리 기준 |
 

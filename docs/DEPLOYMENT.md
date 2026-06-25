@@ -224,7 +224,7 @@ AWS Console에서 Bedrock model access를 확인합니다.
 - `symptom_embeddings_amazon.titan-embed-text-v2_0_512.json`
 
 ```powershell
-cd C:\Users\CGB\munjin-talk-talk-mvp\backend\serverless
+cd backend/serverless
 sam build
 sam deploy --guided
 ```

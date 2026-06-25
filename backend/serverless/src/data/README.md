@@ -50,7 +50,7 @@ backend/serverless/src/data/
 PowerShell 확인:
 
 ```powershell
-cd C:\Users\CGB\munjin-talk-talk-mvp\backend\serverless\src\data
+cd backend/serverless/src/data
 Get-Item diseases_cleaned.json
 Get-Item symptom_index.json
 Get-Item symptom_embeddings_amazon.titan-embed-text-v2_0_512.json

@@ -61,7 +61,7 @@ AWS 동작 확인:
 ## 4. 프론트엔드 로컬 실행
 
 ```powershell
-cd C:\Users\CGB\munjin-talk-talk-mvp\frontend
+cd frontend
 npm install
 Copy-Item .env.example .env.local
 npm run dev -- --host 127.0.0.1 --port 5173
@@ -106,7 +106,7 @@ npm.cmd run dev -- --host 127.0.0.1 --port 5173
 - `symptom_embeddings_amazon.titan-embed-text-v2_0_512.json`
 
 ```powershell
-cd C:\Users\CGB\munjin-talk-talk-mvp\backend\serverless
+cd backend/serverless
 sam build
 sam deploy --guided
 ```

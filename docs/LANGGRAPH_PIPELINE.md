@@ -1,6 +1,6 @@
 # LangGraph 문진 처리 파이프라인
 
-이 문서는 환자 답변 1개가 백엔드에서 어떤 순서로 처리되는지 설명합니다.
+이 문서는 환자가 Q1~Q4 문진을 완료한 뒤, 백엔드가 답변 묶음을 어떤 순서로 분석해 원페이퍼와 환자 안내문으로 바꾸는지 설명합니다.
 
 실제 실행 코드는 다음 파일에 나뉘어 있습니다.
 
@@ -16,30 +16,31 @@ backend/serverless/src/pipeline_trace.py
 
 ## 먼저 알아야 할 핵심
 
-문진톡톡은 환자 답변을 한 번에 모든 것을 처리하는 black box로 만들지 않습니다.
+문진톡톡은 환자 문진 결과를 하나의 큰 LLM 호출에 맡기지 않습니다.
 
-대신 답변 1개가 아래 노드를 순서대로 지나가고, 각 노드가 남긴 결과를 trace로 저장합니다.
+환자가 Q1~Q4를 모두 끝내면 프론트엔드는 답변을 한 번에 저장합니다. 이후 Lambda가 백그라운드에서 각 답변을 순서대로 LangGraph 노드에 통과시키고, 운영에 필요한 최소 trace를 S3 artifact로 남깁니다.
 
 ```text
-환자 답변 텍스트
-  -> 입력 검증
+Q1~Q4 확인 답변 저장
+  -> 환자 화면에는 즉시 완료 응답
+  -> Lambda 백그라운드 분석 시작
+  -> 답변별 입력 검증
   -> 안전 표현 1차 감지
-  -> RAG 참고 컨텍스트 검색
+  -> 방언 RAG와 도메인 문맥 검색
   -> LLM 의미 추출
-  -> fixed schema와 quote 검증
+  -> fixed schema와 source_quote 검증
   -> 검증 실패 시 repair prompt로 재시도
-  -> 증상 문항이면 Hybrid IR
-  -> DynamoDB 저장
-  -> 원페이퍼 갱신
-  -> 프론트 응답
+  -> active symptom span은 Hybrid IR
+  -> 원페이퍼와 안내문용 artifact 저장
+  -> 의료진 화면에서 분석 결과 확인
 ```
 
 이 구조를 LangGraph로 명시한 이유는 다음과 같습니다.
 
-- 처리 단계가 눈에 보여야 함
-- LLM 실패와 안전 분기가 분명해야 함
-- 각 단계의 입력과 결과를 trace로 남겨야 함
-- 방언 RAG, 추가 validator, review node처럼 역할이 다른 단계를 독립 노드로 붙이기 쉬워야 함
+- 처리 단계가 코드에서 명확히 보입니다.
+- LLM 실패, 안전 플래그, schema 검증 실패가 같은 흐름 안에서 분기됩니다.
+- 운영에 필요한 최소 trace를 남겨 의료진 검토와 오류 분석에 활용할 수 있습니다.
+- 방언 RAG, validator, IR, reviewer처럼 역할이 다른 단계를 독립 노드로 관리할 수 있습니다.
 
 ---
 
@@ -693,16 +694,18 @@ Retry 후에도 실패하면 rule-based로 조용히 대체하지 않습니다. 
 
 ---
 
-## 앞으로 확장할 수 있는 지점
+## 유지보수 포인트
 
-| 확장 | 붙일 위치 |
+아래 항목은 현재 코드에서 역할이 분리되어 있는 위치입니다. 기능을 손볼 때는 해당 파일을 중심으로 확인합니다.
+
+| 영역 | 확인 위치 |
 | --- | --- |
-| 방언 RAG 데이터팩 확장 | `data/dialect_packs/`, `dialect_rag.py`, `dialect_normalization.py` |
-| 추가 안전 flag | `clinical_terms.py`, `quick_safety_flag_node` |
-| 의사 review node 분리 | `onepaper_review.py`, 새 LangGraph node |
-| 의료 지식 RAG retriever | `rag_context.py` 또는 LangChain retriever adapter |
-| tracing dashboard | `pipeline_trace.py`, S3 `llm_trace.redacted.json` artifact |
-| 인증/권한 분기 | `handler.py`, API Gateway authorizer |
+| 방언 RAG 데이터팩 | `data/dialect_packs/`, `dialect_rag.py`, `dialect_normalization.py` |
+| 안전 flag | `clinical_terms.py`, `quick_safety_flag_node` |
+| 원페이퍼 review | `onepaper_review.py`, `onepaper_sections.py` |
+| 도메인 문맥 RAG | `rag_context.py`, `domain_config.py` |
+| trace 저장 | `pipeline_trace.py`, S3 `llm_trace.redacted.json` artifact |
+| 인증/권한 분기 | `handler.py`, `security.py` |
 
 ---
 
