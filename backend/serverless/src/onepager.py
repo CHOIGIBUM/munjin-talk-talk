@@ -257,6 +257,8 @@ def build_onepager(session: dict[str, Any]) -> dict[str, Any]:
     q2 = responses.get("Q2", {})
     q3 = responses.get("Q3", {})
     q4 = responses.get("Q4", {})
+    q1 = restore_safety_slots(q1)
+    q3 = restore_safety_slots(q3)
 
     slots = collect_symptom_slots(q1, q3)
     clinical = build_clinical_clues(q1, q2, q3, visit_type)
@@ -283,6 +285,18 @@ def build_onepager(session: dict[str, Any]) -> dict[str, Any]:
         session_for_review = {**session, "responses": responses, "question_results": responses}
         onepager = apply_bedrock_onepager_review(session_for_review, onepager)
     return onepager
+
+
+def restore_safety_slots(question_result: dict[str, Any]) -> dict[str, Any]:
+    """저장된 답변 재조립 시에도 safety 기반 증상 카드를 복원합니다."""
+    if not isinstance(question_result, dict):
+        return question_result
+    matched_slots = question_result.get("matched_slots") or []
+    safety_flag = scan_safety(question_result.get("text", ""), matched_slots)
+    restored_slots = ensure_safety_matched_slot(matched_slots, safety_flag)
+    if restored_slots == matched_slots:
+        return question_result
+    return {**question_result, "matched_slots": restored_slots}
 
 
 def collect_symptom_slots(q1: dict[str, Any], q3: dict[str, Any]) -> list[dict[str, Any]]:

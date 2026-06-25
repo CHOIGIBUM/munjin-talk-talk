@@ -130,6 +130,27 @@ def test_safety_flag_is_preserved_as_symptom_card_when_ir_misses_it():
     assert slots[0]["alert"] is True
 
 
+def test_build_onepager_restores_safety_symptom_from_saved_answer():
+    install_onepager_stubs()
+    from onepager import build_onepager  # noqa: E402
+
+    onepager = build_onepager({
+        "visit_type": "initial",
+        "patient": {"age": 80, "gender": "남성", "name": "홍*동"},
+        "responses": {
+            "Q1": {
+                "text": "가심이 답답허고 코물이 줄줄 나와",
+                "matched_slots": [],
+                "structured": {"clinical_clues": [], "questions": []},
+                "spans": [],
+            }
+        },
+    })
+
+    assert any(slot["name"] == "가슴 답답" for slot in onepager["symptom_slots"])
+    assert any(flag["category"] == "chest_discomfort" for flag in onepager["safety_flags"])
+
+
 def test_hongsam_medication_question_is_supplement_agenda():
     from onepager_sections import normalize_agenda  # noqa: E402
 
