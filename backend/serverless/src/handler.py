@@ -16,7 +16,7 @@ from onepager import get_onepager_payload, rerun_onepager_review
 from orchestration import handle_internal_event, process_answer, process_answers, retry_answer_analysis
 from question_sets import public_question_set
 from security import is_auth_configured, issue_role_token, require_patient_session, require_role, role_for_event, verify_access_code
-from sessions import create_session, get_session, list_sessions, public_session, save_patient_consent, update_session
+from sessions import create_session, delete_session, get_session, list_sessions, public_session, save_patient_consent, update_session
 from utils import parse_body, response, set_request_origin
 
 
@@ -97,6 +97,15 @@ def route(method, path, event):
             return auth_error
         include_token = role_for_event(event) == "staff"
         return response(200, public_session(session, include_artifacts=True, include_patient_token=include_token))
+
+    if method == "DELETE" and match:
+        auth_error = require_role(event, "staff")
+        if auth_error:
+            return auth_error
+        session_id = unquote_plus(match.group(1))
+        if not delete_session(session_id):
+            return response(404, {"error": "session_not_found"})
+        return response(200, {"deleted": True, "session_id": session_id})
 
     match = re.fullmatch(r"/sessions/([^/]+)/staff-help", path)
     if method == "POST" and match:

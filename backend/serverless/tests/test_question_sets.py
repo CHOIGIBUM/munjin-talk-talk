@@ -86,6 +86,7 @@ def install_handler_stubs():
     sessions.public_session = lambda session, include_artifacts=False: session
     sessions.save_patient_consent = lambda _session_id, _body: None
     sessions.update_session = lambda _session_id, _updates: None
+    sessions.delete_session = lambda _session_id: False
     sys.modules["sessions"] = sessions
 
     return importlib.import_module("handler")

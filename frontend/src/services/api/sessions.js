@@ -34,6 +34,19 @@ export async function createIntakeSession(form) {
   return session
 }
 
+// 접수처에서 잘못 만든 문진 세션을 삭제합니다.
+// 직원 화면의 대기열에서만 사용하는 API이며, 환자/의료진 화면에서는 호출하지 않습니다.
+export async function deleteIntakeSession(sessionId) {
+  ensureApiConfigured()
+
+  const res = await fetch(`${API_BASE_URL}/sessions/${encodeURIComponent(sessionId)}`, {
+    method: 'DELETE',
+    headers: await apiHeaders({ role: 'staff' }),
+  })
+  if (!res.ok) throw new Error('문진 세션 삭제 실패')
+  return res.json()
+}
+
 // 직원/의료진 대기열을 조회합니다.
 // 직원 화면은 환자 태블릿 URL 생성이 필요하므로 환자 토큰을 포함해 받습니다.
 export async function getDoctorQueue({ role = 'doctor' } = {}) {

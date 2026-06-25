@@ -7,9 +7,9 @@ import './DoctorOnePager.css'
 function getOnePagerStatusMessage(status) {
   const messages = {
     refreshing: '원페이퍼를 새로 불러오는 중입니다.',
-    reviewing: 'AI가 문진 결과를 다시 검토하고 있습니다.',
+    reviewing: '원페이퍼 최종 검토를 갱신하고 있습니다.',
     refreshed: '최신 원페이퍼가 반영되었습니다.',
-    reviewed: 'AI 재검토가 완료되었습니다.',
+    reviewed: '원페이퍼 검토가 갱신되었습니다.',
     error: '요청 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.',
     retrying: '문진 분석을 다시 실행하고 있습니다.',
     queued: '문진 분석이 대기열에 등록되었습니다.',
@@ -122,7 +122,7 @@ export default function DoctorOnePager({
             )}
             {isAnalysisFailed && onAnalysisRetry && (
               <button type="button" className="op-tool-btn op-tool-btn-primary" onClick={onAnalysisRetry}>
-                분석 다시 실행
+                입력 기반 재분석
               </button>
             )}
           </div>
@@ -171,7 +171,7 @@ export default function DoctorOnePager({
                 onClick={onAiReview}
                 disabled={onepagerStatus === 'refreshing' || onepagerStatus === 'reviewing' || onepagerStatus === 'retrying'}
               >
-                AI 재검토
+                검토 갱신
               </button>
             )}
           </div>
@@ -291,7 +291,7 @@ export default function DoctorOnePager({
                         <p>"{item.original}"</p>
                       </div>
                     )}
-                    {item.standardized && item.standardized !== item.original && (
+                    {item.standardized && (
                       <div className="patient-summary-standard">
                         <span>표준화</span>
                         <p>{item.standardized}</p>

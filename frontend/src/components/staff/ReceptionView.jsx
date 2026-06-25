@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createIntakeSession, getDoctorQueue, getIntakeSession, processTranscript } from '../../services/api.js'
+import { createIntakeSession, deleteIntakeSession, getDoctorQueue, getIntakeSession, processTranscript } from '../../services/api.js'
 import { QUESTIONS } from '../../config/questions.js'
 import { questionTextForBackend } from '../../config/questionText.js'
 import logoUrl from '../../assets/munjin-logo.svg'
@@ -24,6 +24,7 @@ export default function ReceptionView() {
   const [manualStatus, setManualStatus] = useState('')
   const [manualSubmitting, setManualSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
+  const [isCreatingSession, setIsCreatingSession] = useState(false)
 
   const loadSessions = useCallback(async () => {
     try {
@@ -55,19 +56,39 @@ export default function ReceptionView() {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+    if (isCreatingSession) return
     const birthError = getBirthDateError(form.birthDate)
     if (birthError) {
       setFormError(birthError)
       return
     }
     setFormError('')
+    setIsCreatingSession(true)
     try {
       const next = await createIntakeSession(form)
       await loadSessions()
       setCreated(next)
+      setForm({ ...INITIAL_RECEPTION_FORM })
     } catch (error) {
       console.error('create session failed:', error)
       setFormError('문진 세션을 생성하지 못했습니다. 네트워크와 백엔드 상태를 확인해 주세요.')
+    } finally {
+      setIsCreatingSession(false)
+    }
+  }
+
+  const handleDeleteSession = async (session) => {
+    const patientName = session?.patient?.name || '해당 환자'
+    if (!window.confirm(`${patientName} 문진 세션을 삭제할까요?`)) return
+
+    try {
+      await deleteIntakeSession(session.sessionId)
+      if (created?.sessionId === session.sessionId) setCreated(null)
+      if (manualSession?.sessionId === session.sessionId) setManualSession(null)
+      await loadSessions()
+    } catch (error) {
+      console.error('delete session failed:', error)
+      setFormError('문진 세션을 삭제하지 못했습니다. 네트워크와 백엔드 상태를 확인해 주세요.')
     }
   }
 
@@ -154,8 +175,9 @@ export default function ReceptionView() {
           onSubmit={handleSubmit}
           onOpenTablet={(sessionId, patientToken) => navigate(sessionUrl(`/patient/${sessionId}`, patientToken))}
           submitError={formError}
+          isSubmitting={isCreatingSession}
         />
-        <ReceptionSessionList sessions={sessions} onOpenManualInput={openManualInput} />
+        <ReceptionSessionList sessions={sessions} onOpenManualInput={openManualInput} onDeleteSession={handleDeleteSession} />
       </div>
 
       <ReceptionManualInput

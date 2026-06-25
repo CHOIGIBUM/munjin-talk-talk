@@ -233,6 +233,14 @@
   background: #eff6ff;
   color: var(--blue);
 }
+.rp-row-actions .rp-danger-link {
+  border-color: #fecaca;
+  background: #fff7f7;
+  color: #b42318;
+}
+.rp-row-actions .rp-danger-link:hover {
+  background: #fee2e2;
+}
 .rp-ghost {
   background: #f8fafc;
 }

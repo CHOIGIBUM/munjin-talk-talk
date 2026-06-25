@@ -13,7 +13,7 @@ import uuid
 import secrets
 from typing import Any
 
-from artifact_store import artifact_meta, load_answers, put_json, CONSENT_FILE
+from artifact_store import artifact_meta, delete_session_artifacts, load_answers, put_json, CONSENT_FILE
 from privacy import consent_summary, sanitize_reception_patient
 from question_sets import selected_question_set_id
 from settings import table
@@ -118,6 +118,34 @@ def update_session(session_id: str, updates: dict[str, Any]) -> dict[str, Any] |
         ReturnValues="ALL_NEW",
     )
     return res.get("Attributes")
+
+
+def delete_session(session_id: str) -> bool:
+    """접수처에서 잘못 생성한 문진 세션을 삭제합니다.
+
+    운영 세션만 삭제 대상으로 삼고, 대기번호 발급용 meta item은 보호합니다.
+    S3 artifact 정리는 best-effort로 수행합니다. S3 삭제 권한이 부족하거나
+    이미 객체가 없어 실패하더라도 DynamoDB 세션 삭제는 계속 진행합니다.
+    """
+    if not session_id or str(session_id).startswith("__meta"):
+        return False
+
+    session = get_session(session_id)
+    if not session:
+        return False
+
+    try:
+        delete_session_artifacts(session)
+    except Exception as exc:
+        print({
+            "level": "warning",
+            "event": "artifact_delete_failed",
+            "session_id": session_id,
+            "error": str(exc),
+        })
+
+    table.delete_item(Key={"session_id": session_id})
+    return True
 
 
 def create_session(body: dict[str, Any]) -> dict[str, Any]:

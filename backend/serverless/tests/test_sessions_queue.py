@@ -49,6 +49,9 @@ class FakeTable:
     def scan(self, **_kwargs):
         return {"Items": list(self.items.values())}
 
+    def delete_item(self, Key):
+        self.items.pop(Key["session_id"], None)
+
 
 def import_sessions_with_fake_table(fake_table: FakeTable):
     """sessions 모듈이 AWS 클라이언트를 만들지 않도록 의존 모듈을 가짜로 주입합니다."""
@@ -64,6 +67,7 @@ def import_sessions_with_fake_table(fake_table: FakeTable):
     artifact_store.artifact_meta = lambda session_id, created_at: {"session_id": session_id, "created_at": created_at}
     artifact_store.load_answers = lambda _session: {}
     artifact_store.put_json = lambda *_args, **_kwargs: None
+    artifact_store.delete_session_artifacts = lambda _session: None
     sys.modules["artifact_store"] = artifact_store
 
     privacy = types.ModuleType("privacy")
@@ -101,3 +105,12 @@ def test_create_session_stores_question_set_id():
 
     assert created["question_set_id"] == "default"
     assert sessions.public_session(created)["questionSetId"] == "default"
+
+
+def test_delete_session_removes_user_session_but_not_meta_counter():
+    fake = FakeTable()
+    sessions = import_sessions_with_fake_table(fake)
+
+    assert sessions.delete_session("s_old") is True
+    assert "s_old" not in fake.items
+    assert sessions.delete_session(sessions.QUEUE_COUNTER_SESSION_ID) is False

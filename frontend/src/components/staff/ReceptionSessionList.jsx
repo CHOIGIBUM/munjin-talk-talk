@@ -3,7 +3,7 @@ import { MANUAL_INPUT_STATUSES, SESSION_STATUS_LABEL } from './receptionUtils.js
 import { sessionUrl } from '../../services/api/client.js'
 
 // 오늘 접수된 환자 목록과 각 세션으로 이동하는 버튼들을 보여줍니다.
-export default function ReceptionSessionList({ sessions, onOpenManualInput }) {
+export default function ReceptionSessionList({ sessions, onOpenManualInput, onDeleteSession }) {
   return (
     <section className="rp-panel">
       <div className="rp-panel-title">
@@ -26,6 +26,11 @@ export default function ReceptionSessionList({ sessions, onOpenManualInput }) {
               <Link to={sessionUrl(`/guide/${session.sessionId}`, session.patientToken)}>안내문</Link>
               {MANUAL_INPUT_STATUSES.has(session.status) && (
                 <button type="button" onClick={() => onOpenManualInput(session)}>직원 입력</button>
+              )}
+              {onDeleteSession && (
+                <button type="button" className="rp-danger-link" onClick={() => onDeleteSession(session)}>
+                  삭제
+                </button>
               )}
             </div>
           </article>

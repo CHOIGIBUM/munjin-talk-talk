@@ -147,3 +147,29 @@ def update_question_trace(
 ) -> None:
     """최종 LangGraph trace는 답변 artifact가 아니라 별도 최소 trace에만 반영합니다."""
     save_trace(session, question_id, {"orchestration": orchestration, "pipeline_trace": trace})
+
+
+def delete_session_artifacts(session: dict[str, Any]) -> None:
+    """세션에 연결된 S3 산출물을 prefix 단위로 정리합니다.
+
+    접수 화면에서 잘못 생성한 세션을 삭제할 때 DynamoDB item만 지우면
+    S3에 answers/onepaper/guide artifact가 남을 수 있습니다. 이 함수는 세션의
+    artifact prefix 아래 객체를 모두 지우되, 실패하더라도 상위 삭제 흐름이
+    멈추지 않도록 호출부에서 예외를 잡습니다.
+    """
+    bucket = require_bucket()
+    artifact = session.get("artifact") or {}
+    prefix = artifact.get("prefix") or session_prefix(session.get("session_id"), session.get("created_at"))
+    continuation = None
+
+    while True:
+        list_args: dict[str, Any] = {"Bucket": bucket, "Prefix": prefix}
+        if continuation:
+            list_args["ContinuationToken"] = continuation
+        result = s3.list_objects_v2(**list_args)
+        objects = [{"Key": item["Key"]} for item in result.get("Contents", [])]
+        if objects:
+            s3.delete_objects(Bucket=bucket, Delete={"Objects": objects})
+        if not result.get("IsTruncated"):
+            break
+        continuation = result.get("NextContinuationToken")

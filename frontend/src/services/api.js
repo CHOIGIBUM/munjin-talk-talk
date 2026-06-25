@@ -6,6 +6,7 @@ export {
 
 export {
   createIntakeSession,
+  deleteIntakeSession,
   getDoctorQueue,
   getIntakeSession,
   recordPatientConsent,

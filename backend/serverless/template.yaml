@@ -153,6 +153,12 @@ Resources:
             ApiId: !Ref MunjinHttpApi
             Path: /sessions/{session_id}
             Method: GET
+        DeleteSession:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MunjinHttpApi
+            Path: /sessions/{session_id}
+            Method: DELETE
         StaffHelp:
           Type: HttpApi
           Properties:
