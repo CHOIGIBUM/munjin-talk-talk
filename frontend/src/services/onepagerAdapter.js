@@ -153,11 +153,11 @@ function safetyFlagToSymptomSlot(flag, existingSlots) {
 
   return {
     name,
-    sub: flag.category || '안전 확인',
+    sub: '있음',
     sourceQuote,
     sourceQuestion: flag.source_question || '',
     normalizedText: flag.message || '',
-    status: 'safety_flag',
+    status: '있음',
     explain: flag.message || '문진 중 우선 확인이 필요한 표현으로 감지되었습니다.',
     alert: true,
   }
