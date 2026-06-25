@@ -99,16 +99,27 @@ def parse_args() -> argparse.Namespace:
 
 
 def load_cases(path: Path) -> list[dict[str, Any]]:
-    text = path.read_text(encoding="utf-8").strip()
+    """JSON 배열, {data:[...]}, {cases:[...]}, JSONL 모두 읽는다.
+
+    JSONL은 첫 줄이 `{`로 시작할 수 있으므로, 파일 전체를 무조건 json.loads 하면
+    `JSONDecodeError: Extra data`가 난다. 먼저 전체 JSON 파싱을 시도하고 실패하면
+    줄 단위 JSONL로 fallback한다.
+    """
+    text = path.read_text(encoding="utf-8-sig").strip()
     if not text:
         return []
-    if text.startswith("[") or text.startswith("{"):
-        data = json.loads(text)
-        if isinstance(data, dict):
-            data = data.get("data") or data.get("cases") or []
-        if not isinstance(data, list):
-            raise ValueError("JSON 입력은 list 또는 {data:[...]} 형태여야 합니다.")
-        return [item for item in data if isinstance(item, dict)]
+
+    if text[0] in "[{":
+        try:
+            data = json.loads(text)
+            if isinstance(data, dict):
+                data = data.get("data") or data.get("cases") or []
+            if not isinstance(data, list):
+                raise ValueError("JSON 입력은 list 또는 {data:[...]} 형태여야 합니다.")
+            return [item for item in data if isinstance(item, dict)]
+        except json.JSONDecodeError:
+            # JSONL일 가능성이 높으므로 아래 줄 단위 파서로 이어간다.
+            pass
 
     rows = []
     for line_no, line in enumerate(text.splitlines(), start=1):
@@ -118,7 +129,7 @@ def load_cases(path: Path) -> list[dict[str, Any]]:
         try:
             obj = json.loads(line)
         except json.JSONDecodeError as exc:
-            raise ValueError(f"{path}:{line_no} JSON 파싱 실패: {exc}") from exc
+            raise ValueError(f"{path}:{line_no} JSONL 파싱 실패: {exc}") from exc
         if isinstance(obj, dict):
             rows.append(obj)
     return rows
@@ -217,8 +228,7 @@ omitted_fact=true 조건:
 사투리/구어체 원문:
 {original}
 
-{gold_block}
-모델 표준어 변환문:
+{gold_block}모델 표준어 변환문:
 {predicted}
 
 JSON만 반환하라.
