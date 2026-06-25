@@ -30,6 +30,41 @@ def install_review_stubs():
     sys.modules["llm"] = llm
 
 
+def install_onepager_stubs():
+    for name in ["settings", "artifact_store", "llm", "onepager_review", "sessions", "privacy", "onepager"]:
+        sys.modules.pop(name, None)
+
+    settings = types.ModuleType("settings")
+    settings.REVIEWER_MODEL_ID = "apac.amazon.nova-pro-v1:0"
+    settings.REVIEW_MAX_TOKENS = 900
+    settings.REVIEW_RETRY_ATTEMPTS = 1
+    sys.modules["settings"] = settings
+
+    artifact_store = types.ModuleType("artifact_store")
+    artifact_store.ONEPAPER_FILE = "onepaper.redacted.json"
+    artifact_store.artifact_meta = lambda session_id, created_at=None: {"session_id": session_id, "created_at": created_at}
+    artifact_store.get_json = lambda *_args, **_kwargs: {}
+    artifact_store.load_answers = lambda _session: {}
+    artifact_store.put_json = lambda *_args, **_kwargs: None
+    artifact_store.save_answers = lambda *_args, **_kwargs: None
+    artifact_store.save_trace = lambda *_args, **_kwargs: None
+    sys.modules["artifact_store"] = artifact_store
+
+    onepager_review = types.ModuleType("onepager_review")
+    onepager_review.apply_bedrock_onepager_review = lambda _session, onepager: onepager
+    sys.modules["onepager_review"] = onepager_review
+
+    sessions = types.ModuleType("sessions")
+    sessions.create_session = lambda _body: {}
+    sessions.get_session = lambda _session_id: {}
+    sessions.update_session = lambda _session_id, _updates: {}
+    sys.modules["sessions"] = sessions
+
+    privacy = types.ModuleType("privacy")
+    privacy.safety_summary = lambda flag: flag
+    sys.modules["privacy"] = privacy
+
+
 def test_review_fallback_keeps_doctor_checklist_non_empty():
     install_review_stubs()
     sys.modules.pop("onepager_review", None)
@@ -78,3 +113,37 @@ def test_transfer_text_filter_rejects_patient_facing_prose():
 
     assert is_transfer_text_safe(narrative, onepager) is False
     assert is_transfer_text_safe(chart_like, onepager) is True
+
+
+def test_safety_flag_is_preserved_as_symptom_card_when_ir_misses_it():
+    install_onepager_stubs()
+    from onepager import ensure_safety_matched_slot  # noqa: E402
+
+    slots = ensure_safety_matched_slot([], {
+        "category": "chest_discomfort",
+        "label": "가슴 답답",
+        "matched_pattern": "가심이 답답",
+    })
+
+    assert slots[0]["slot_id"] == "chest_discomfort"
+    assert slots[0]["name"] == "가슴 답답"
+    assert slots[0]["alert"] is True
+
+
+def test_hongsam_medication_question_is_supplement_agenda():
+    from onepager_sections import normalize_agenda  # noqa: E402
+
+    agenda = normalize_agenda({
+        "structured": {
+            "questions": [
+                {
+                    "category": "other",
+                    "summary": "홍삼과 약 병용 가능 여부 문의",
+                    "original_quote": "홍삼이랑 약 주는 거 같이 타먹어도 되나",
+                }
+            ]
+        }
+    })
+
+    assert agenda[0]["category"] == "supplement_drug_interaction"
+    assert agenda[0]["type_label"] == "영양제 병용"

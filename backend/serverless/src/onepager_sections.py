@@ -11,6 +11,7 @@ from clinical_state import (
     is_progress_improved_state,
     span_type_of,
 )
+from agenda_categories import infer_agenda_category
 from clinical_terms import find_symptom_quote, is_symptom_like_span, slot_to_name
 from utils import clean_quote, unique, visit_label
 
@@ -171,14 +172,21 @@ def normalize_agenda(q4):
     """Q4 patient questions를 원페이퍼 우측 질문 카드 목록으로 변환합니다."""
     structured = q4.get("structured", {})
     questions = structured.get("questions") or q4.get("questions") or []
-    return [{
-        "type": item.get("category", "other"),
-        "category": item.get("category", "other"),
-        "type_label": agenda_label(item.get("category")),
-        "summary": item.get("summary", ""),
-        "original_quote": item.get("original_quote", ""),
-        "source_question": "Q4",
-    } for item in questions]
+    out = []
+    for item in questions:
+        category = infer_agenda_category(
+            " ".join([item.get("summary", ""), item.get("original_quote", "")]),
+            item.get("category", "other"),
+        )
+        out.append({
+            "type": category,
+            "category": category,
+            "type_label": agenda_label(category),
+            "summary": item.get("summary", ""),
+            "original_quote": item.get("original_quote", ""),
+            "source_question": "Q4",
+        })
+    return out
 
 
 def agenda_label(category):

@@ -29,6 +29,7 @@ REQUIRED_DOMAIN_KEYS = {
     "excluded_ir_symptom_names",
     "alert_slot_ids",
     "reviewer_domain_rules",
+    "agenda_category_rules",
 }
 
 
@@ -101,3 +102,9 @@ def reviewer_domain_rules() -> dict[str, str]:
     """원페이퍼 review prompt에 주입할 도메인별 금지/우선 규칙입니다."""
     rules = get_domain_pack().get("reviewer_domain_rules") or {}
     return {str(key): str(value) for key, value in rules.items()}
+
+
+def agenda_category_rules() -> list[dict[str, Any]]:
+    """Q4 환자 질문을 agenda category로 보정하기 위한 도메인별 규칙입니다."""
+    rules = get_domain_pack().get("agenda_category_rules") or []
+    return [rule for rule in rules if isinstance(rule, dict)]

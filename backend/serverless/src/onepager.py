@@ -19,7 +19,7 @@ from artifact_store import (
     save_trace,
 )
 from artifact_policy import prepare_artifact_payload
-from clinical_terms import find_safety_flag
+from clinical_terms import ALERT_SLOT_IDS, find_safety_flag, slot_to_name
 from onepager_review import apply_bedrock_onepager_review
 from onepager_sections import (
     build_clinical_clues,
@@ -51,6 +51,7 @@ def validate_and_save(body: dict[str, Any]):
     orchestration = body.get("orchestration") or {}
     pipeline_trace = body.get("pipeline_trace") or orchestration.get("trace") or []
     safety_flag = scan_safety(transcript, matched_slots)
+    matched_slots = ensure_safety_matched_slot(matched_slots, safety_flag)
 
     answers = load_answers(session)
     answers[question_id] = {
@@ -119,6 +120,40 @@ def next_session_status(session: dict[str, Any], question_id: str, safety_flag: 
 def scan_safety(transcript: str, matched_slots: list[dict[str, Any]]):
     """위험 표현은 LLM이 아니라 deterministic rule로 재확인합니다."""
     return find_safety_flag(transcript, matched_slots)
+
+
+def ensure_safety_matched_slot(matched_slots: list[dict[str, Any]], safety_flag: dict[str, Any] | None) -> list[dict[str, Any]]:
+    """안전 플래그가 감지된 핵심 증상은 원페이퍼 카드에서도 보존합니다.
+
+    LLM이 방언 표현을 span으로 놓치거나 IR이 확정하지 못해도, deterministic
+    safety rule이 잡은 고위험 호소는 의사 화면에서 사라지면 안 됩니다.
+    """
+    if not safety_flag:
+        return matched_slots
+
+    category = str(safety_flag.get("category") or "")
+    if category not in ALERT_SLOT_IDS:
+        return matched_slots
+
+    if any((slot.get("slot_id") or slot.get("slot_ref")) == category for slot in matched_slots):
+        return matched_slots
+
+    name = slot_to_name(category)
+    return [
+        *matched_slots,
+        {
+            "slot_id": category,
+            "name": name,
+            "score": 1.0,
+            "source_quote": safety_flag.get("matched_pattern") or name,
+            "span_type": "symptom",
+            "alert": True,
+            "normalized_text": name,
+            "status": "있음",
+            "explain": "안전 플래그 규칙으로 감지된 표현이라 의료진 우선 확인 카드로 보존했습니다.",
+            "ir_method": "safety_flag_alias",
+        },
+    ]
 
 
 def get_onepager_payload(session: dict[str, Any]) -> dict[str, Any]:

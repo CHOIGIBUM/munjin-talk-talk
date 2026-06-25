@@ -121,13 +121,14 @@ def test_find_safety_flag_uses_domain_pack_alert_slots():
     assert flag["severity"] == "high"
 
 
-def test_safety_flag_rules_cover_six_domain_categories():
+def test_safety_flag_rules_cover_domain_categories():
     install_settings_stub()
     from clinical_terms import find_safety_flag  # noqa: E402
 
     cases = [
         ("가래에 피가 섞여 나와요", "hemoptysis"),
         ("숨이 너무 차서 말을 못 하겠어요", "dyspnea"),
+        ("가심이 답답허고 코물이 줄줄 나와요", "chest_discomfort"),
         ("가슴이 쥐어짜듯 아파요", "chest_pain"),
         ("입술이 파래졌어요", "cyanosis"),
         ("갑자기 기절하고 의식을 잃었어요", "consciousness"),

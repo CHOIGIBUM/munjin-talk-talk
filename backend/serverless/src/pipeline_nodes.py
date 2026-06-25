@@ -7,6 +7,7 @@
 import hashlib
 from typing import Any
 
+from agenda_categories import infer_agenda_category
 from artifact_policy import sanitize_dialect_normalization, sanitize_matched_slot, sanitize_span
 from dialect_normalization import normalize_dialect_text
 from clinical_terms import find_safety_flag
@@ -549,12 +550,13 @@ def preserve_non_symptom_context(
 def preserved_context_structured(question_type: str, question_id: str, transcript: str) -> dict[str, Any] | None:
     """검증 실패한 비증상 문항을 onepaper가 읽을 수 있는 최소 구조로 바꿉니다."""
     if question_type in {"patient_questions", "unresolved_questions"}:
+        category = infer_agenda_category(transcript)
         return {
             "standardized_text": transcript,
             "clinical_clues": [],
             "questions": [
                 {
-                    "category": "other",
+                    "category": category,
                     "summary": transcript,
                     "original_quote": transcript,
                 }

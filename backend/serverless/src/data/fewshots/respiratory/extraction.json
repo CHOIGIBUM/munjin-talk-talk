@@ -160,6 +160,53 @@
       }
     },
     {
+      "title": "dialect chest tightness and rhinorrhea are split and flagged",
+      "visit_type": "initial",
+      "question_id": "Q1",
+      "question_type": "chief_complaint",
+      "patient_answer": "가심이 답답허고 코물이 줄줄 나와.",
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "가심이 답답허고",
+            "type": "symptom",
+            "slot_ref": "chest_discomfort",
+            "name": "가슴 답답",
+            "normalized_text": "가슴이 답답합니다.",
+            "status": "있음",
+            "alert": true,
+            "explain": "방언 표현 '가심이 답답허고'는 현재 가슴 답답함을 뜻합니다."
+          },
+          {
+            "source_quote": "코물이 줄줄 나와",
+            "type": "symptom",
+            "slot_ref": "rhinorrhea",
+            "name": "콧물",
+            "normalized_text": "콧물이 줄줄 나옵니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "콧물을 현재 동반 증상으로 말했습니다."
+          }
+        ],
+        "structured": {
+          "standardized_text": "가슴이 답답하고 콧물이 줄줄 나옵니다.",
+          "clinical_clues": [
+            {
+              "category": "증상맥락",
+              "label": "현재양상",
+              "summary": "가슴 답답함과 콧물이 현재 있습니다.",
+              "source_quote": "가심이 답답허고 코물이 줄줄 나와",
+              "source_question": "Q1",
+              "priority": "우선",
+              "related_symptoms": ["가슴 답답", "콧물"]
+            }
+          ],
+          "questions": [],
+          "unresolved_items": []
+        }
+      }
+    },
+    {
       "title": "improved old symptom is not active but remaining dyspnea is active",
       "visit_type": "followup",
       "question_id": "Q1",
@@ -242,6 +289,28 @@
               "category": "drug_drug_interaction",
               "summary": "혈압약과 감기약 병용 가능 여부 문의",
               "original_quote": "혈압약이랑 감기약 같이 먹어도 되는지만 궁금해요"
+            }
+          ],
+          "unresolved_items": []
+        }
+      }
+    },
+    {
+      "title": "supplement and medication coadministration question is agenda",
+      "visit_type": "initial",
+      "question_id": "Q4",
+      "question_type": "patient_questions",
+      "patient_answer": "홍삼이랑 약 주는 거 같이 타먹어도 되나.",
+      "expected_json": {
+        "spans": [],
+        "structured": {
+          "standardized_text": "홍삼과 약을 같이 먹어도 되는지 묻고 있습니다.",
+          "clinical_clues": [],
+          "questions": [
+            {
+              "category": "supplement_drug_interaction",
+              "summary": "홍삼과 약 병용 가능 여부 문의",
+              "original_quote": "홍삼이랑 약 주는 거 같이 타먹어도 되나"
             }
           ],
           "unresolved_items": []
