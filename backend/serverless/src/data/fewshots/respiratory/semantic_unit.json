@@ -57,6 +57,17 @@
           {"source_quote": "혈압약이랑 감기약 같이 먹어도 되는지만 궁금해요", "normalized_text": "혈압약과 감기약을 같이 먹어도 되는지 궁금합니다.", "role": "patient_question"}
         ]
       }
+    },
+    {
+      "title": "split followup weakness and dizziness",
+      "original": "몸에 힘이 잘 안들어가고 머리가 어지러움.",
+      "standardized": "몸에 힘이 잘 들어가지 않고 머리가 어지럽습니다.",
+      "expected_json": {
+        "meaning_units": [
+          {"source_quote": "몸에 힘이 잘 안들어가고", "normalized_text": "몸에 힘이 잘 들어가지 않습니다.", "role": "clinical_meaning"},
+          {"source_quote": "머리가 어지러움", "normalized_text": "머리가 어지럽습니다.", "role": "clinical_meaning"}
+        ]
+      }
     }
   ]
 }

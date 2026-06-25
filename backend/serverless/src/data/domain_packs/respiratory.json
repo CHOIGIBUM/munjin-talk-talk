@@ -51,6 +51,8 @@
     {"name": "호흡곤란", "slot_id": "dyspnea", "keywords": ["숨", "호흡", "답답"], "alert": true},
     {"name": "가슴 답답", "slot_id": "chest_discomfort", "keywords": ["가슴 답답", "가슴이 답답", "가심", "답답허", "답답하"], "alert": true},
     {"name": "흉통", "slot_id": "chest_pain", "keywords": ["가슴", "흉통"], "alert": true},
+    {"name": "기운없음", "slot_id": "low_energy", "keywords": ["기운없", "기운 없", "힘이 없", "힘 없음", "힘이 안", "힘이 잘 안", "몸에 힘", "무기력"], "alert": false},
+    {"name": "어지러움", "slot_id": "dizziness", "keywords": ["어지러", "어질", "현기"], "alert": false},
     {"name": "두통", "slot_id": "headache", "keywords": ["머리", "두통"], "alert": false}
   ],
   "symptom_quote_patterns": {
@@ -76,6 +78,13 @@
     ],
     "chest_discomfort": [
       "가(?:슴|심)(?:이|은|도)?\\s*(?:답답(?:하고|해요|합니다|하다|허고|허다)?)"
+    ],
+    "low_energy": [
+      "(?:몸에\\s*)?힘(?:이|은|도)?\\s*(?:잘\\s*)?(?:안\\s*)?(?:들어가요|들어가|들어갑니다|없어요|없어|없습니다)",
+      "기운(?:이|은|도)?\\s*(?:없어요|없어|없습니다)"
+    ],
+    "dizziness": [
+      "(?:머리(?:가|는|도)?\\s*)?(?:어지러워요|어지러움|어지러워|어지럽습니다|어질어질해요|어질어질)"
     ]
   },
   "ir_stable_slot_ids": {
@@ -109,6 +118,10 @@
     "dyspnea": "호흡곤란",
     "chest_discomfort": "가슴 답답",
     "chest_pain": "흉통",
+    "low_energy": "기운없음",
+    "dizziness": "어지러움",
+    "fatigue": "피로감",
+    "malaise": "권태감",
     "wheezing": "천명음",
     "headache": "두통",
     "voice_change": "목소리 변화"
@@ -123,6 +136,8 @@
     {"pattern": "숨|호흡곤란|숨참", "canonical_name": "호흡곤란"},
     {"pattern": "가(?:슴|심).{0,4}답답", "canonical_name": "가슴 답답"},
     {"pattern": "가슴.{0,4}(아프|통증)|흉통", "canonical_name": "흉통"},
+    {"pattern": "몸에\\s*힘|힘.{0,4}(없|안\\s*들)|기운\\s*없|무기력", "canonical_name": "기운없음"},
+    {"pattern": "어지러|어질|현기", "canonical_name": "어지러움"},
     {"pattern": "쌕쌕|천명", "canonical_name": "천명음"},
     {"pattern": "열|발열|고열", "canonical_name": "열"}
   ],

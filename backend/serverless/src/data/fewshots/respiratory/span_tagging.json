@@ -86,6 +86,37 @@
           }
         ]
       }
+    },
+    {
+      "title": "followup weakness and dizziness are new active symptoms",
+      "meaning_units": [
+        {"source_quote": "몸에 힘이 잘 안들어가고", "normalized_text": "몸에 힘이 잘 들어가지 않습니다.", "role": "clinical_meaning"},
+        {"source_quote": "머리가 어지러움", "normalized_text": "머리가 어지럽습니다.", "role": "clinical_meaning"}
+      ],
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "몸에 힘이 잘 안들어가고",
+            "type": "new",
+            "slot_ref": "other",
+            "name": "기운없음",
+            "normalized_text": "몸에 힘이 잘 들어가지 않습니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "새로 생긴 현재 증상입니다."
+          },
+          {
+            "source_quote": "머리가 어지러움",
+            "type": "new",
+            "slot_ref": "other",
+            "name": "어지러움",
+            "normalized_text": "머리가 어지럽습니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "새로 생긴 현재 증상입니다."
+          }
+        ]
+      }
     }
   ]
 }

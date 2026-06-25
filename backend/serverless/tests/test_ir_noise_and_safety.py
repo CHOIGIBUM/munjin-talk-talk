@@ -152,6 +152,17 @@ def test_rag_alias_hint_maps_colloquial_nasal_obstruction():
     assert any(item["canonical_hint"] == "코막힘" for item in hints)
 
 
+def test_rag_alias_hint_maps_followup_weakness_and_dizziness():
+    install_settings_stub()
+    from rag_context import retrieve_intake_rag_context  # noqa: E402
+
+    context = retrieve_intake_rag_context("몸에 힘이 잘 안들어가고 머리가 어지러움", top_k=3)
+    hints = {item["canonical_hint"] for item in context["alias_hints"]}
+
+    assert "기운없음" in hints
+    assert "어지러움" in hints
+
+
 def test_hybrid_ir_acceptance_gate_matrix():
     install_settings_stub()
     from retrieval import is_hybrid_candidate_accepted  # noqa: E402

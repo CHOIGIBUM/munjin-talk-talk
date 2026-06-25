@@ -207,6 +207,53 @@
       }
     },
     {
+      "title": "followup new weakness and dizziness are active symptoms",
+      "visit_type": "followup",
+      "question_id": "Q3",
+      "question_type": "new_symptoms",
+      "patient_answer": "몸에 힘이 잘 안들어가고 머리가 어지러움.",
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "몸에 힘이 잘 안들어가고",
+            "type": "new",
+            "slot_ref": "low_energy",
+            "name": "기운없음",
+            "normalized_text": "몸에 힘이 잘 들어가지 않습니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "몸에 힘이 잘 들어가지 않는 새 증상을 말했습니다."
+          },
+          {
+            "source_quote": "머리가 어지러움",
+            "type": "new",
+            "slot_ref": "dizziness",
+            "name": "어지러움",
+            "normalized_text": "머리가 어지럽습니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "어지러움을 새로 생긴 현재 증상으로 말했습니다."
+          }
+        ],
+        "structured": {
+          "standardized_text": "몸에 힘이 잘 들어가지 않고 머리가 어지럽습니다.",
+          "clinical_clues": [
+            {
+              "category": "증상맥락",
+              "label": "현재양상",
+              "summary": "몸에 힘이 없고 머리가 어지럽습니다.",
+              "source_quote": "몸에 힘이 잘 안들어가고 머리가 어지러움",
+              "source_question": "Q3",
+              "priority": "일반",
+              "related_symptoms": ["기운없음", "어지러움"]
+            }
+          ],
+          "questions": [],
+          "unresolved_items": []
+        }
+      }
+    },
+    {
       "title": "improved old symptom is not active but remaining dyspnea is active",
       "visit_type": "followup",
       "question_id": "Q1",

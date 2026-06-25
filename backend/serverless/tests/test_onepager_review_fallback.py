@@ -168,3 +168,28 @@ def test_hongsam_medication_question_is_supplement_agenda():
 
     assert agenda[0]["category"] == "supplement_drug_interaction"
     assert agenda[0]["type_label"] == "영양제 병용"
+
+
+def test_clinical_clue_priority_requires_safety_evidence():
+    from onepager_sections import normalize_clinical_clue  # noqa: E402
+
+    normal = normalize_clinical_clue({
+        "category": "증상맥락",
+        "label": "현재양상",
+        "summary": "몸에 힘이 없는 상태가 현재 있습니다.",
+        "source_quote": "몸에 힘이 잘 안들어가고",
+        "priority": "우선",
+        "related_symptoms": ["기운없음"],
+    }, "Q3")
+
+    safety = normalize_clinical_clue({
+        "category": "증상맥락",
+        "label": "현재양상",
+        "summary": "숨이 너무 찬 상태가 현재 있습니다.",
+        "source_quote": "숨이 너무 차요",
+        "priority": "우선",
+        "related_symptoms": ["호흡곤란"],
+    }, "Q1")
+
+    assert normal["priority"] == "일반"
+    assert safety["priority"] == "우선"

@@ -12,7 +12,13 @@ from clinical_state import (
     span_type_of,
 )
 from agenda_categories import infer_agenda_category
-from clinical_terms import find_symptom_quote, is_symptom_like_span, slot_to_name
+from clinical_terms import (
+    IR_RED_FLAG_NAMES,
+    find_safety_flag,
+    find_symptom_quote,
+    is_symptom_like_span,
+    slot_to_name,
+)
 from utils import clean_quote, unique, visit_label
 
 
@@ -146,11 +152,22 @@ def normalize_clinical_clue(item, default_qid):
         "summary": summary or source_quote,
         "source_question": item.get("source_question") or default_qid,
         "source_quote": source_quote,
-        "priority": item.get("priority") if item.get("priority") in ("일반", "우선") else "일반",
+        "priority": normalize_clue_priority(item, source_quote),
         "related_symptoms": item.get("related_symptoms") if isinstance(item.get("related_symptoms"), list) else [],
         "action_hint": item.get("action_hint") or f"{label} 확인",
         "explain": item.get("explain") or "Bedrock LLM이 문진 원문에서 추출한 진료 맥락입니다.",
     }
+
+
+def normalize_clue_priority(item, source_quote):
+    if item.get("priority") != "우선":
+        return "일반"
+    if find_safety_flag(source_quote):
+        return "우선"
+    related = item.get("related_symptoms") if isinstance(item.get("related_symptoms"), list) else []
+    if any(str(name) in IR_RED_FLAG_NAMES for name in related):
+        return "우선"
+    return "일반"
 
 
 def unique_clues(clues):

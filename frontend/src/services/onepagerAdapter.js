@@ -330,6 +330,7 @@ function getStandardizedText(payload) {
   if (!payload || typeof payload === 'string') return ''
   return (
     payload.structured?.standardized_text ||
+    payload.dialect_normalization?.standardized_text ||
     payload.standardized_text ||
     payload.standard ||
     payload.normalized_text ||

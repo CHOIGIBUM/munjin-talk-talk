@@ -137,6 +137,55 @@
           }
         ]
       }
+    },
+    {
+      "title": "weakness and dizziness map to Asan symptom labels",
+      "tagged_spans": [
+        {
+          "source_quote": "몸에 힘이 잘 안들어가고",
+          "type": "new",
+          "slot_ref": "other",
+          "name": "힘 없음",
+          "normalized_text": "몸에 힘이 잘 들어가지 않습니다.",
+          "status": "있음",
+          "alert": false,
+          "explain": "새로 생긴 현재 증상입니다."
+        },
+        {
+          "source_quote": "머리가 어지러움",
+          "type": "new",
+          "slot_ref": "other",
+          "name": "머리 어지러움",
+          "normalized_text": "머리가 어지럽습니다.",
+          "status": "있음",
+          "alert": false,
+          "explain": "새로 생긴 현재 증상입니다."
+        }
+      ],
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "몸에 힘이 잘 안들어가고",
+            "type": "new",
+            "slot_ref": "low_energy",
+            "name": "기운없음",
+            "normalized_text": "몸에 힘이 잘 들어가지 않습니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "아산 표준 증상 후보인 기운없음으로 검색되도록 힌트를 보강합니다."
+          },
+          {
+            "source_quote": "머리가 어지러움",
+            "type": "new",
+            "slot_ref": "dizziness",
+            "name": "어지러움",
+            "normalized_text": "머리가 어지럽습니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "아산 표준 증상 후보인 어지러움으로 검색되도록 힌트를 보강합니다."
+          }
+        ]
+      }
     }
   ]
 }
