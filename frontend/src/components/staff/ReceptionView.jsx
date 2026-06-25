@@ -5,7 +5,7 @@ import {
   deleteIntakeSession,
   getDoctorQueue,
   getIntakeSession,
-  processTranscript,
+  processTranscriptsBatch,
   updateIntakeSession,
 } from '../../services/api.js'
 import { QUESTIONS } from '../../config/questions.js'
@@ -34,6 +34,7 @@ export default function ReceptionView() {
   const [manualSubmitting, setManualSubmitting] = useState(false)
   const [formError, setFormError] = useState('')
   const [isCreatingSession, setIsCreatingSession] = useState(false)
+  const [notice, setNotice] = useState(null)
 
   const loadSessions = useCallback(async () => {
     try {
@@ -49,6 +50,12 @@ export default function ReceptionView() {
     const timer = setInterval(loadSessions, 5000)
     return () => clearInterval(timer)
   }, [loadSessions])
+
+  useEffect(() => {
+    if (!notice) return undefined
+    const timer = setTimeout(() => setNotice(null), 3600)
+    return () => clearTimeout(timer)
+  }, [notice])
 
   const waitingCount = useMemo(
     () => sessions.filter((session) => ['waiting_tablet', 'in_progress', 'staff_help'].includes(session.status)).length,
@@ -138,7 +145,7 @@ export default function ReceptionView() {
     )
   }
 
-  const handleManualSubmit = async (event) => {
+  const handleManualSubmit = (event) => {
     event.preventDefault()
     if (!manualSession || manualSubmitting) return
 
@@ -150,40 +157,63 @@ export default function ReceptionView() {
       return
     }
 
+    const sessionForProcessing = manualSession
+    const questionSetId = sessionForProcessing.questionSetId || 'default'
+    const answers = filled.map(({ question, transcript }) => ({
+      questionId: question.id,
+      question_type: question.question_type,
+      questionText: questionTextForBackend(question),
+      transcript,
+    }))
+
     setManualSubmitting(true)
-    setManualStatus('직원 입력을 저장하고 있습니다.')
-    try {
-      let sessionForProcessing = manualSession
-      if (visitTypeChanged) {
-        sessionForProcessing = await updateIntakeSession(manualSession.sessionId, {
-          visit_type: selectedVisitType,
-          question_set_id: manualSession.questionSetId || 'default',
+    closeManualInput()
+    setNotice({
+      type: 'success',
+      title: '저장되었습니다',
+      message: '분석은 백그라운드에서 진행됩니다.',
+    })
+
+    ;(async () => {
+      try {
+        let updatedSession = sessionForProcessing
+        if (visitTypeChanged) {
+          updatedSession = await updateIntakeSession(sessionForProcessing.sessionId, {
+            visit_type: selectedVisitType,
+            question_set_id: questionSetId,
+          })
+        }
+
+        if (answers.length) {
+          await processTranscriptsBatch({
+            sessionId: sessionForProcessing.sessionId,
+            questionSetId: updatedSession?.questionSetId || questionSetId,
+            visitType: selectedVisitType,
+            answers,
+            role: 'staff',
+          })
+        }
+        await loadSessions()
+      } catch (error) {
+        console.error('manual intake failed:', error)
+        setNotice({
+          type: 'error',
+          title: '저장 요청 실패',
+          message: '네트워크와 백엔드 상태를 확인해 주세요.',
         })
       }
-      for (const { question, transcript } of filled) {
-        await processTranscript({
-          sessionId: manualSession.sessionId,
-          questionId: question.id,
-          questionType: question.question_type,
-          questionText: questionTextForBackend(question),
-          questionSetId: sessionForProcessing?.questionSetId || manualSession.questionSetId || 'default',
-          visitType: selectedVisitType,
-          transcript,
-          role: 'staff',
-        })
-      }
-      await loadSessions()
-      closeManualInput()
-    } catch (error) {
-      console.error('manual intake failed:', error)
-      setManualStatus('저장 중 오류가 발생했습니다. 네트워크와 백엔드 상태를 확인해 주세요.')
-    } finally {
-      setManualSubmitting(false)
-    }
+    })()
   }
 
   return (
     <div className="reception-page">
+      {notice ? (
+        <div className={`rp-toast ${notice.type}`} role="status" aria-live="polite">
+          <strong>{notice.title}</strong>
+          <span>{notice.message}</span>
+        </div>
+      ) : null}
+
       <header className="reception-header">
         <div>
           <p className="rp-eyebrow">접수 데스크</p>
