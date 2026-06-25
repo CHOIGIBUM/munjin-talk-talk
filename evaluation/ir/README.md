@@ -37,9 +37,11 @@
 | `run_pipeline_eval.py` | 평가 문장을 운영 파이프라인에 넣어 `normalized_text`, `status`, `symptom_hint` 생성 |
 | `run_ir_eval.py` | 생성된 span으로 IR 후보 검색과 Linker 평가 수행 |
 | `run_eval_suite.py` | 파이프라인 생성과 IR 평가를 이어서 실행하는 보조 스크립트 |
+| `run_baseline.ps1` | 데이터 검증, 빠른 IR baseline, 선택적 전체 파이프라인 baseline을 한 번에 실행 |
+| `validate_eval_data.py` | gold/negative 증상명과 방문유형-문항 조합 검증 |
 | `data/eval_cases.sample.jsonl` | 공개 가능한 샘플 평가 데이터 |
-| `data/eval_cases.jsonl` | 실제 평가 데이터 위치. 공개 저장소에는 포함하지 않음 |
-| `outputs/` | 실행 결과. Git 관리 대상 아님 |
+| `data/eval_cases.json` | 현재 baseline 평가에 사용하는 100건 합성 데이터셋 |
+| `outputs/` | 실행 결과. baseline 비교가 필요하면 함께 커밋 가능 |
 | `cache/` | embedding cache. Git 관리 대상 아님 |
 
 ---
@@ -72,7 +74,7 @@
 cd C:\Users\CGB\munjin-talk-talk-mvp
 
 python evaluation\ir\run_pipeline_eval.py `
-  --input evaluation\ir\data\eval_cases.jsonl `
+  --input evaluation\ir\data\eval_cases.json `
   --output-dir evaluation\ir\outputs\pipeline
 ```
 
@@ -103,6 +105,25 @@ python evaluation\ir\run_ir_eval.py `
   --input evaluation\ir\outputs\pipeline\pipeline_ir_eval_cases.jsonl `
   --output-dir evaluation\ir\outputs\ir_candidate_only `
   --skip-llm-judge
+```
+
+### 한 번에 baseline 돌리기
+
+LLM 없이 빠르게 IR 후보군 baseline과 oracle upper-bound를 확인합니다.
+
+```powershell
+.\evaluation\ir\run_baseline.ps1 `
+  -InputPath evaluation\ir\data\eval_cases.json `
+  -OutputDir evaluation\ir\outputs\baseline_20260626_fast
+```
+
+Bedrock extraction/linker까지 포함해 전체 운영 흐름을 확인하려면 `-FullPipeline`을 붙입니다.
+
+```powershell
+.\evaluation\ir\run_baseline.ps1 `
+  -InputPath evaluation\ir\data\eval_cases.json `
+  -OutputDir evaluation\ir\outputs\baseline_20260626_full `
+  -FullPipeline
 ```
 
 ---
@@ -141,14 +162,12 @@ python evaluation\ir\run_ir_eval.py `
 
 ## 7. Git 관리 기준
 
-공개 저장소에는 평가 코드와 샘플 데이터만 포함합니다.
+공개 저장소에는 평가 코드와 합성 테스트 데이터를 포함합니다. 현재 100건 데이터는 실제 환자 데이터가 아닌 테스트 데이터이므로 Git에 올릴 수 있습니다.
 
 커밋하지 않는 항목:
 
 ```text
-evaluation/ir/data/eval_cases.jsonl
-evaluation/ir/outputs/
 evaluation/ir/cache/
 ```
 
-실제 100개 평가 데이터, Bedrock 응답 trace, 환자 발화 원문, 실행 결과물은 공개 저장소에 올리지 않습니다.
+`outputs/`는 baseline 비교가 필요할 때 커밋할 수 있습니다. 단, 실제 운영 데이터나 민감한 trace가 섞였을 때는 커밋하지 않습니다.

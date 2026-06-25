@@ -19,6 +19,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PIPELINE_SCRIPT = PROJECT_ROOT / "evaluation" / "ir" / "run_pipeline_eval.py"

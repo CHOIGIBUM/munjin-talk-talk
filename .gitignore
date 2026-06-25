@@ -19,6 +19,7 @@ backend/serverless/src/data/diseases_cleaned.json
 backend/serverless/src/data/symptom_index.json
 backend/serverless/src/data/symptom_embeddings_*.json
 backend/serverless/src/data/ir_sources/**
+evaluation/ir/cache/
 
 # Frontend generated files
 frontend/node_modules/

@@ -17,6 +17,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 BACKEND_SRC = PROJECT_ROOT / "backend" / "serverless" / "src"
@@ -281,12 +286,16 @@ def load_cases(path: Path) -> list[dict[str, Any]]:
     if not text:
         return []
     if text.startswith("[") or text.startswith("{"):
-        data = json.loads(text)
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError:
+            data = None
         if isinstance(data, list):
             return data
         if isinstance(data, dict) and isinstance(data.get("data"), list):
             return data["data"]
-        return []
+        if data is not None:
+            return []
     rows = []
     for line_no, line in enumerate(text.splitlines(), start=1):
         line = line.strip()
