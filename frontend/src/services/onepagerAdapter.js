@@ -65,7 +65,11 @@ function normalizeCurrentBackend(raw) {
     clinicalClues,
     doctorBrief,
     reviewItems: normalizeReviewItems(onepager.review_items || [], onepager),
-    transferText: onepager.transfer_text || '',
+    transferText: normalizeTransferText(
+      onepager.transfer_text || '',
+      { ...onepager, symptom_slots: symptomSlots, agenda, clinical_clues: clinicalClues },
+      patient
+    ),
     safety_flag: safetyFlag,
     safety_flags: normalizedSafetyFlags,
     unresolvedItems: onepager.unresolved_items || [],
@@ -212,6 +216,45 @@ function uniqueTexts(items) {
     seen.add(key)
     return true
   })
+}
+
+function normalizeTransferText(text, onepager = {}, patient = DEFAULT_PATIENT) {
+  const cleaned = cleanText(text)
+  if (cleaned && isChartLikeTransferText(cleaned)) return cleaned
+  return buildChartTransferText(onepager, patient)
+}
+
+function isChartLikeTransferText(text) {
+  if (/환자는|언급했습니다|궁금합니다|필요합니다/.test(text)) return false
+  if (/\bO\s*[:)]|객관소견/i.test(text)) return false
+  return /S\)|CC\s*:/.test(text)
+}
+
+function buildChartTransferText(onepager = {}, patient = DEFAULT_PATIENT) {
+  const visitLabel = patient.visit_type === 'followup' ? '재진' : '초진'
+  const demographics = `${patient.age || '-'}세 ${patient.gender || ''} ${visitLabel}`.replace(/\s+/g, ' ').trim()
+  const symptomSlots = Array.isArray(onepager.symptom_slots) ? onepager.symptom_slots : []
+  const clinicalClues = Array.isArray(onepager.clinical_clues) ? onepager.clinical_clues : []
+  const agenda = Array.isArray(onepager.agenda) ? onepager.agenda : []
+  const symptoms = uniqueTexts(symptomSlots.map(slot => cleanText(slot.name || slot.display_text || slot.normalized_text))).join(', ')
+  const contexts = uniqueTexts(clinicalClues.map(clue => cleanText(clue.summary || clue.source_quote)))
+  const medContexts = contexts.filter(text => /약|복용|병용|처방/.test(text))
+  const piContexts = contexts.filter(text => !medContexts.includes(text))
+  const questions = uniqueTexts(agenda.map(item => cleanText(item.summary || item.original_quote || item.originalQuote || item.display_text)))
+
+  const parts = [`S) ${demographics}`]
+  if (symptoms) parts.push(`CC: ${symptoms}`)
+  if (piContexts.length) parts.push(`PI: ${piContexts.slice(0, 2).join('; ')}`)
+  if (medContexts.length) parts.push(`Med: ${medContexts.slice(0, 2).join('; ')}`)
+  if (questions.length) parts.push(`Q: ${questions.slice(0, 2).join('; ')}`)
+
+  const checks = []
+  if (symptoms) checks.push('증상 지속시간/중증도')
+  if (medContexts.length || questions.length) checks.push('복약/병용 가능 여부')
+  if (!checks.length) checks.push('문진 내용')
+  parts.push(`확인: ${uniqueTexts(checks).join(', ')}`)
+
+  return parts.join(' / ')
 }
 
 function normalizeDoctorBrief(brief) {

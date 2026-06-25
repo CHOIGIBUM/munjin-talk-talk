@@ -213,20 +213,21 @@ Review item rules:
 15. The backend validates this with a strict Pydantic schema. Missing required fields, invalid keys, or extra fields will fail.
 
 EMR transfer_text rules:
-1. Write transfer_text as a Korean outpatient charting draft, not as a patient-facing explanation.
-2. Use a compact SOAP-like intake-note style in one line because this is generated before the physical exam:
-   "S: ... | O: 문진 기반 객관소견 없음 | A/P: 진료 시 확인 필요 - ..."
-3. The S section may include only intake-grounded items:
+1. Write transfer_text as a concise Korean outpatient EMR memo, not as a patient-facing explanation.
+2. Use compact charting labels in one line:
+   "S) ... / CC: ... / PI: ... / Med: ... / Q: ... / 확인: ..."
+3. Do NOT write narrative phrases such as "환자는 현재", "언급했습니다", "궁금합니다", or "필요합니다".
+4. Do NOT include O) or objective findings because this system only has pre-visit intake, not exam/vital data.
+5. The S/CC/PI/Med/Q sections may include only intake-grounded items:
    - age/sex/visit type exactly from draft_onepager.patient_summary
    - chief complaints from symptom_slots
    - onset/progression/current context from clinical_clues
    - medication/adherence context from clinical_clues
    - patient questions from agenda
-4. Do NOT invent diagnosis, prescriptions, test orders, vital signs, physical exam findings, or clinician decisions.
-5. If there is no objective finding in the provided intake, write exactly "O: 문진 기반 객관소견 없음".
-6. Keep it concise and copyable. Good style:
-   "S: 23세 남성 초진. CC 목통증, 콧물. 어제부터 시작. 복용약 없음. Q 매운 음식 섭취 가능 여부 문의 | O: 문진 기반 객관소견 없음 | A/P: 진료 시 지속기간/발열 여부 확인"
-7. If transfer_text mentions age or sex, copy them exactly from draft_onepager.patient_summary. Never change patient sex or age.
+6. Do NOT invent diagnosis, prescriptions, test orders, vital signs, physical exam findings, or clinician decisions.
+7. Keep it concise and copyable. Good style:
+   "S) 23세 남성 초진 / CC: 목통증, 콧물 / PI: 어제부터 시작 / Med: 복용약 없음 / Q: 매운 음식 섭취 가능 여부 / 확인: 지속기간, 발열 여부"
+8. If transfer_text mentions age or sex, copy them exactly from draft_onepager.patient_summary. Never change patient sex or age.
 
 Output quality target:
 - Ordinary low-risk cases: 2 to 5 review_items.
@@ -287,6 +288,9 @@ def is_transfer_text_safe(text, onepager):
     접수 메타데이터를 바꾸면 안 됩니다. 충돌이 있으면 LLM 문장을 채택하지 않고
     onepager_sections.build_transfer_text가 만든 deterministic 초안을 유지합니다.
     """
+    if not is_chart_like_transfer_text(text):
+        return False
+
     patient = onepager.get("patient_summary") or {}
     age_text = clean_quote(patient.get("age_text") or "")
     sex = clean_quote(patient.get("sex") or "")
@@ -304,6 +308,17 @@ def is_transfer_text_safe(text, onepager):
             return False
 
     return is_grounded_text(text, onepager)
+
+
+def is_chart_like_transfer_text(text):
+    """Reject patient-facing prose and objective/exam placeholders in EMR copy text."""
+    if re.search(r"환자는|언급했습니다|궁금합니다|필요합니다", text):
+        return False
+    if re.search(r"\bO\s*[:)]|객관소견|physical exam|vital", text, flags=re.I):
+        return False
+    if not re.search(r"S\s*\)|CC\s*:", text):
+        return False
+    return True
 
 
 def evidence_text(onepager):

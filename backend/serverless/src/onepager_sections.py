@@ -201,29 +201,34 @@ def build_transfer_text(patient, slots, clinical, agenda, visit_type):
     진찰 전 문진 자료이므로 객관소견/진단/처방을 만들지 않고, S 중심의 간단한
     SOAP-like 문장으로 제한합니다.
     """
-    demographics = f"{patient.get('age') or '-'}세 {patient.get('gender') or ''} {visit_label(visit_type)}"
+    demographics = f"{patient.get('age') or '-'}세 {patient.get('gender') or ''} {visit_label(visit_type)}".strip()
     symptoms = ", ".join(unique([slot.get("name") for slot in slots if slot.get("name")]))
-    contexts = [
-        c.get("summary")
+    contexts = unique([
+        clean_quote(c.get("summary") or "")
         for c in clinical
         if c.get("summary") and c.get("category") in {"증상맥락", "재진경과", "복약정보", "복약순응도", "약물반응"}
-    ]
-    agenda_texts = [item.get("summary") for item in agenda if item.get("summary")]
+    ])
+    med_contexts = [text for text in contexts if any(token in text for token in ("약", "복용", "병용", "처방"))]
+    pi_contexts = [text for text in contexts if text not in med_contexts]
+    agenda_texts = unique([clean_quote(item.get("summary") or "") for item in agenda if item.get("summary")])
 
-    s_parts = [demographics]
+    parts = [f"S) {demographics}"]
     if symptoms:
-        s_parts.append(f"CC {symptoms}")
-    s_parts.extend(unique(contexts)[:3])
+        parts.append(f"CC: {symptoms}")
+    if pi_contexts:
+        parts.append(f"PI: {'; '.join(pi_contexts[:2])}")
+    if med_contexts:
+        parts.append(f"Med: {'; '.join(med_contexts[:2])}")
     if agenda_texts:
-        s_parts.append(f"Q {agenda_texts[0]}")
+        parts.append(f"Q: {'; '.join(agenda_texts[:2])}")
 
-    subjective = ". ".join(part for part in s_parts if part)
-    plan_basis = []
+    check_items = []
     if symptoms:
-        plan_basis.append("증상 지속기간/중증도 확인")
-    if agenda_texts:
-        plan_basis.append("환자 질문 답변")
-    if not plan_basis:
-        plan_basis.append("문진 내용 확인")
+        check_items.append("증상 지속시간/중증도")
+    if med_contexts or agenda_texts:
+        check_items.append("복약/병용 가능 여부")
+    if not check_items:
+        check_items.append("문진 내용")
+    parts.append(f"확인: {', '.join(unique(check_items))}")
 
-    return f"S: {subjective} | O: 문진 기반 객관소견 없음 | A/P: 진료 시 {' 및 '.join(plan_basis)} 필요"
+    return " / ".join(part for part in parts if part)

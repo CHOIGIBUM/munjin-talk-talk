@@ -58,3 +58,23 @@ def test_review_fallback_keeps_doctor_checklist_non_empty():
     assert reviewed["review_item_generation"]["method"] == "rule_based_fallback"
     assert any(item.startswith("[우선]") for item in reviewed["review_items"])
     assert any("흉통" in item for item in reviewed["review_items"])
+
+
+def test_transfer_text_filter_rejects_patient_facing_prose():
+    install_review_stubs()
+    sys.modules.pop("onepager_review", None)
+    from onepager_review import is_transfer_text_safe  # noqa: E402
+
+    onepager = {
+        "patient_summary": {"age_text": "80세", "sex": "남성"},
+        "symptom_slots": [{"name": "천명음", "source_quote": "쌕쌕 나와", "normalized_text": "천명음"}],
+        "clinical_clues": [],
+        "agenda": [],
+        "safety_flags": [],
+    }
+
+    narrative = "S: 80세 남성 초진. 환자는 현재 가슴이 답답하다고 언급했습니다 | O: 문진 기반 객관소견 없음"
+    chart_like = "S) 80세 남성 초진 / CC: 천명음 / 확인: 증상 지속시간/중증도"
+
+    assert is_transfer_text_safe(narrative, onepager) is False
+    assert is_transfer_text_safe(chart_like, onepager) is True
