@@ -21,11 +21,13 @@
   <img src="https://img.shields.io/badge/Demo-%EC%84%9C%EB%B9%84%EC%8A%A4%20%EB%B0%94%EB%A1%9C%EA%B0%80%EA%B8%B0-0ea5e9?style=for-the-badge" alt="데모 서비스 바로가기" />
 </a>
 
-<sub>심사용 직원/의사 접근 코드는 최종 제출 자료에 별도로 기재합니다.</sub>
+<sub>직원/의사 접근 코드는 최종 제출 자료에 별도로 기재합니다.</sub>
 
 </div>
 
-> ⚠️ 문진톡톡은 진단·처방·질병 예측을 하지 않습니다. 환자 발화를 의료진이 확인하기 쉬운 형태로 정리하는 *진료 보조 도구*이며, 모든 의료 판단은 의료진이 수행합니다.
+> ⚠️ 문진톡톡은 진단·처방·질병 예측을 하지 않습니다.
+>
+> 환자 발화를 의료진이 확인하기 쉬운 형태로 정리하는 *진료 보조 도구*이며, 모든 의료 판단은 의료진이 수행합니다.
 
 ---
 
@@ -39,13 +41,27 @@
 
 이 문제는 단순한 불편이 아니라 고령화, 높은 외래 진료량, 건강정보 이해 격차, 디지털 문진 장벽이 겹친 구조적 문제입니다.
 
-- 통계청·국가데이터처의 2025년 고령자 통계에 따르면 우리나라 65세 이상 인구 비중은 20.3%이며, 강원 지역은 25.7%로 전국 평균보다 높습니다. ([국가데이터처 2025 고령자 통계](https://mods.go.kr/board.es?act=view&bid=10820&list_no=438832&mid=a10301010000&ref_bid=&tag=))
-- 국회입법조사처는 우리나라 국민의 외래 진료 횟수가 1인당 연간 16.6회로 OECD 국가 중 가장 많으며, 짧은 시간에 많은 환자를 진찰해야 하는 구조를 지적합니다. ([국회입법조사처 의료서비스 이용 현황](https://www.nars.go.kr/fileDownload2.do?doc_id=1N19WkRJPsG&fileName=%28%EC%A7%80%ED%91%9C%EB%A1%9C+%EB%B3%B4%EB%8A%94+%EC%9D%B4%EC%8A%88+150%ED%98%B8-20200221%29%EC%9A%B0%EB%A6%AC%EB%82%98%EB%9D%BC+%EA%B5%AD%EB%AF%BC%EC%9D%98+%EC%9D%98%EB%A3%8C%EC%84%9C%EB%B9%84%EC%8A%A4+%EC%9D%B4%EC%9A%A9+%ED%98%84%ED%99%A9%EA%B3%BC+%EC%8B%9C%EC%82%AC%EC%A0%90.pdf))
-- 건강정보이해능력이 낮은 고령자·취약계층은 질병 치료 방법을 찾고, 추가 진료 필요 여부를 판단하고, 복약 지시를 이해·이행하는 과정에서 어려움을 겪을 수 있습니다. ([건강정보이해력 연구](https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART003247633))
-- 2024년 디지털정보격차 실태조사에서 취약계층의 디지털 정보화 수준은 일반 국민 대비 77.5%, 고령층은 71.4%로 나타납니다. 단말기 접근성은 높아졌지만, 앱·웹 기반 서비스를 스스로 찾아 설치하고 활용하는 역량은 여전히 낮습니다. ([KOSIS 디지털정보화 수준](https://kosis.kr/statHtml/statHtml.do?orgId=127&tblId=DT_12017N008))
-- 분당서울대병원 연구팀이 65세 이상 505명을 조사한 결과, 87.1%가 앱을 사용한다고 답했지만 63.2%는 앱 설치·삭제를 스스로 하지 못한다고 응답했습니다. 즉 의료 서비스가 "앱을 설치하고, 로그인해서, 스스로 문항을 입력하는 방식"에 머물면, 실제로 의료가 더 필요한 고령 환자가 첫 단계에서부터 소외될 위험이 큽니다. ([고령층 앱 활용 실태 보도](https://www.kukinews.com/article/view/kuk202401170004))
+- 통계청·국가데이터처의 2025년 고령자 통계에 따르면 우리나라 65세 이상 인구 비중은 20.3%이며, 강원 지역은 25.7%로 전국 평균보다 높습니다.
 
-기존 앱·웹 기반 문진은 새 앱 설치, 로그인, 작은 화면의 문항 읽기, 직접 입력을 전제로 하기 때문에 고령층에게 진입 장벽이 높습니다. 반대로 단순 LLM 챗봇은 *환각·임의 진단* 가능성 때문에 의료 영역에서 단독 사용이 어렵습니다.
+([국가데이터처 2025 고령자 통계](https://mods.go.kr/board.es?act=view&bid=10820&list_no=438832&mid=a10301010000&ref_bid=&tag=))
+
+- 국회입법조사처는 우리나라 국민의 외래 진료 횟수가 1인당 연간 16.6회로 OECD 국가 중 가장 많으며, 짧은 시간에 많은 환자를 진찰해야 하는 구조를 지적합니다.
+
+([국회입법조사처 의료서비스 이용 현황](https://www.nars.go.kr/fileDownload2.do?doc_id=1N19WkRJPsG&fileName=%28%EC%A7%80%ED%91%9C%EB%A1%9C+%EB%B3%B4%EB%8A%94+%EC%9D%B4%EC%8A%88+150%ED%98%B8-20200221%29%EC%9A%B0%EB%A6%AC%EB%82%98%EB%9D%BC+%EA%B5%AD%EB%AF%BC%EC%9D%98+%EC%9D%98%EB%A3%8C%EC%84%9C%EB%B9%84%EC%8A%A4+%EC%9D%B4%EC%9A%A9+%ED%98%84%ED%99%A9%EA%B3%BC+%EC%8B%9C%EC%82%AC%EC%A0%90.pdf))
+
+- 건강정보이해능력이 낮은 고령자·취약계층은 질병 치료 방법을 찾고, 추가 진료 필요 여부를 판단하고, 복약 지시를 이해·이행하는 과정에서 어려움을 겪을 수 있습니다.
+
+ ([건강정보이해력 연구](https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART003247633))
+
+- 2024년 디지털정보격차 실태조사에서 취약계층의 디지털 정보화 수준은 일반 국민 대비 77.5%, 고령층은 71.4%로 나타납니다. 단말기 접근성은 높아졌지만, 앱·웹 기반 서비스를 스스로 찾아 설치하고 활용하는 역량은 여전히 낮습니다.
+
+([KOSIS 디지털정보화 수준](https://kosis.kr/statHtml/statHtml.do?orgId=127&tblId=DT_12017N008))
+
+- 분당서울대병원 연구팀이 65세 이상 505명을 조사한 결과, 87.1%가 앱을 사용한다고 답했지만 63.2%는 앱 설치·삭제를 스스로 하지 못한다고 응답했습니다. 즉 의료 서비스가 "앱을 설치하고, 로그인해서, 스스로 문항을 입력하는 방식"에 머물면, 실제로 의료가 더 필요한 고령 환자가 첫 단계에서부터 소외될 위험이 큽니다.
+
+([고령층 앱 활용 실태 보도](https://www.kukinews.com/article/view/kuk202401170004))
+
+기존 앱·온라인 기반 사전 문진은 새 앱 설치, 로그인, 작은 화면의 문항 읽기, 직접 입력을 전제로 하기 때문에 고령층에게 진입 장벽이 높습니다. 반대로 단순 LLM 챗봇은 *환각·임의 진단* 가능성 때문에 의료 영역에서 단독 사용이 어렵습니다.
 
 문진톡톡은 "앱을 잘 쓰는 환자"가 아니라 "말로 설명하는 환자"를 전제로 설계합니다. 환자는 말로 답하고, AI는 정리만 하며, 최종 판단은 의료진이 하는 원칙으로 이 병목을 풉니다.
 
@@ -53,10 +69,10 @@
 
 ## ✨ 어떻게 동작하나
 
-접수처 직원이 세션을 만들면, 환자는 태블릿에서 음성으로 문진에 답합니다. 백엔드는 발화를 구조화하고 표준 증상과 매칭·검증한 뒤, 의료진이 빠르게 확인할 수 있는 원페이퍼를 만듭니다. 진료 후 의사가 답변과 강조사항을 남기면, 환자가 읽을 안내문이 생성됩니다.
+접수처 직원이 세션을 만들면, 환자는 태블릿에서 음성으로 문진에 답합니다. 백엔드는 환자의 발화를 구조화하고 표준 증상과 매칭·검증한 뒤, 의료진이 빠르게 확인할 수 있는 원페이퍼를 만듭니다. 진료 후 의사가 답변과 강조사항을 남기면, 환자가 읽을 안내문이 생성됩니다.
 
 ```text
-[직원 접수] → [환자 동의] → [Q1~Q4 음성 문진] → [실시간 전사]
+[직원 접수] → [환자 동의] → [Q1~Q4 음성 문진] → [실시간 텍스트 전사]
                                       │
                                       ▼
                        [확정 텍스트 일괄 저장 /process-answers]
@@ -77,37 +93,12 @@
 
 ### 화면 구성
 
-<table>
-  <thead>
-    <tr>
-      <th width="22%">화면</th>
-      <th width="22%">경로</th>
-      <th>역할</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><strong>직원 접수</strong></td>
-      <td><code>/staff</code></td>
-      <td>환자 정보 입력, 초진/재진 선택, 문진 세션 생성</td>
-    </tr>
-    <tr>
-      <td><strong>환자 태블릿</strong></td>
-      <td><code>/patient/:sessionId</code></td>
-      <td>음성 문진, STT 결과 확인, 동의 모달, 직원 도움 요청</td>
-    </tr>
-    <tr>
-      <td><strong>의료진 원페이퍼</strong></td>
-      <td><code>/doctor/:sessionId</code></td>
-      <td>증상, 환자 원문, 문진 맥락, 확인 항목, EMR 초안 확인</td>
-    </tr>
-    <tr>
-      <td><strong>환자 안내문</strong></td>
-      <td><code>/guide/:sessionId</code></td>
-      <td>의사 답변을 어르신 표현으로 정리하고 종이로 출력</td>
-    </tr>
-  </tbody>
-</table>
+| 화면 | 경로 | 역할 |
+|:---:|:---:|:---|
+| 직원 접수 | `/staff` | 환자 정보 입력<br>초진/재진 선택<br>문진 세션 생성 |
+| 환자 태블릿 | `/patient/:sessionId` | 음성 문진<br>STT 결과 확인<br>동의 모달·직원 도움 요청 |
+| 의료진 원페이퍼 | `/doctor/:sessionId` | 증상·환자 원문 확인<br>문진 맥락·확인 항목 확인<br>EMR 초안 확인 |
+| 환자 안내문 | `/guide/:sessionId` | 의사 답변을 어르신 표현으로 정리<br>종이 출력 |
 
 ## 🛡️ 의료 안전을 위한 LLM 통제 구조
 
@@ -121,7 +112,7 @@
 | LLM이 임의 증상명을 확정할 수 있음 | LLM 증상 후보를 Hybrid IR(BM25 + Titan Vector + label bridge)로 표준 증상명에 연결 | 원천 데이터에 있는 표준 증상명만 `matched_slots`에 반영 |
 | 객혈, 흉통 같은 위험 표현이 묻힐 수 있음 | rule-based safety flag를 LLM 분석과 별도로 실행 | 원페이퍼 상단에 우선 확인 경고 표시 |
 
-이 구조의 목적은 LLM을 “의료 판단자”가 아니라 “문진 정리 보조자”로 제한하는 것입니다. 최종 판단과 처치는 항상 의료진이 수행합니다.
+이러한 구조는 LLM을 “의료 판단자”가 아니라 “문진 정리 보조자”로 제한하여 활용합니다. <br>최종 판단과 처치는 항상 의료진이 수행합니다.
 
 ---
 
@@ -139,13 +130,13 @@ flowchart LR
   Amplify["AWS Amplify Hosting<br/>React + Vite"]
   Api["API Gateway HTTP API"]
   Lambda["AWS Lambda Python 3.12"]
-  Pipeline["Lambda 내부 문진 처리<br/>RAG 참고 → LLM 구조화 → 검증 → Hybrid IR"]
-  Dynamo["DynamoDB<br/>최소 세션 상태"]
+  Pipeline["LangGraph Pipeline<br/>RAG → LLM → IR"]
+  Dynamo["DynamoDB<br/>세션 상태"]
   S3["S3 Artifact Bucket<br/>가명처리 JSON"]
   Transcribe["Amazon Transcribe Streaming"]
   Bedrock["Amazon Bedrock<br/>Nova Pro / Nova Lite"]
   Titan["Amazon Titan Text Embeddings"]
-  SourceData["서울아산병원 질병백과 기반 데이터<br/>diseases_cleaned + symptom_index"]
+  SourceData["서울아산병원 질병백과<br/>diseases_cleaned + symptom_index"]
 
   Staff --> Amplify
   Tablet --> Amplify
