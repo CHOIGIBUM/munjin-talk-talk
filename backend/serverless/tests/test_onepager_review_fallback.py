@@ -30,6 +30,27 @@ def install_review_stubs():
     sys.modules["llm"] = llm
 
 
+def install_review_llm_stub(outputs, attempts=2):
+    for name in ["settings", "llm", "onepager_review"]:
+        sys.modules.pop(name, None)
+
+    settings = types.ModuleType("settings")
+    settings.REVIEWER_MODEL_ID = "apac.amazon.nova-pro-v1:0"
+    settings.REVIEW_MAX_TOKENS = 900
+    settings.REVIEW_RETRY_ATTEMPTS = attempts
+    sys.modules["settings"] = settings
+
+    llm = types.ModuleType("llm")
+    queue = list(outputs)
+
+    def fake_review(*_args, **_kwargs):
+        obj = queue.pop(0) if queue else outputs[-1]
+        return obj, str(obj), {"stubbed": True}
+
+    llm.call_bedrock_json_with_meta = fake_review
+    sys.modules["llm"] = llm
+
+
 def install_onepager_stubs():
     for name in ["settings", "artifact_store", "llm", "onepager_review", "sessions", "privacy", "onepager"]:
         sys.modules.pop(name, None)
@@ -113,6 +134,49 @@ def test_transfer_text_filter_rejects_patient_facing_prose():
 
     assert is_transfer_text_safe(narrative, onepager) is False
     assert is_transfer_text_safe(chart_like, onepager) is True
+
+
+def test_review_fallback_preserves_safe_llm_partial_after_retries():
+    llm_output = {
+        "review_items": ["X-ray 검사 필요성 검토"],
+        "transfer_text": "S) 70세 남성 초진 / CC: 콧물 / 확인: 지속기간",
+        "doctor_brief": {
+            "headline": "콧물 지속 여부 확인 필요",
+            "sections": [
+                {
+                    "key": "symptoms",
+                    "title": "증상",
+                    "summary": "콧물 호소가 있습니다.",
+                    "items": ["콧물"],
+                }
+            ],
+        },
+        "issues": [],
+    }
+    install_review_llm_stub([llm_output, llm_output], attempts=2)
+    from onepager_review import apply_bedrock_onepager_review  # noqa: E402
+
+    onepager = {
+        "patient_summary": {"age_text": "70세", "sex": "남성"},
+        "symptom_slots": [
+            {"name": "콧물", "source_quote": "코물이 나와", "normalized_text": "콧물이 나옵니다.", "status": "있음"},
+        ],
+        "clinical_clues": [],
+        "agenda": [],
+        "safety_flags": [],
+        "review_items": [],
+        "transfer_text": "S) 70세 남성 초진 / CC: 콧물 / 확인: 문진 내용",
+        "doctor_brief": {"headline": "", "sections": []},
+    }
+
+    reviewed = apply_bedrock_onepager_review({"visit_type": "initial", "patient": {}, "responses": {}}, onepager)
+
+    assert reviewed["transfer_text"] == llm_output["transfer_text"]
+    assert reviewed["doctor_brief"]["headline"] == llm_output["doctor_brief"]["headline"]
+    assert reviewed["review_item_generation"]["method"] == "rule_based_fallback_with_llm_partial"
+    assert reviewed["llm_review"]["partial_preserved"] is True
+    assert reviewed["review_items"]
+    assert all("X-ray" not in item for item in reviewed["review_items"])
 
 
 def test_safety_flag_is_preserved_as_symptom_card_when_ir_misses_it():

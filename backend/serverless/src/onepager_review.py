@@ -41,6 +41,7 @@ def apply_bedrock_onepager_review(session, onepager):
     """Nova Pro review를 수행하고, 비어 있거나 근거 없는 결과면 제한 횟수만큼 재시도합니다."""
     last_error = ""
     attempts = max(1, REVIEW_RETRY_ATTEMPTS)
+    best_partial = None
     for attempt in range(1, attempts + 1):
         try:
             prompt = build_onepager_review_prompt(session, onepager)
@@ -63,20 +64,24 @@ def apply_bedrock_onepager_review(session, onepager):
         reviewed = merge_review_output(onepager, validated_obj, raw_text, chain_meta, attempt)
         if reviewed.get("review_items") and reviewed.get("review_item_generation", {}).get("method") == "bedrock_nova_pro":
             return reviewed
+        if has_llm_safe_partial(reviewed, onepager):
+            best_partial = reviewed
         last_error = "review_items_empty_or_ungrounded"
 
-    reviewed = dict(onepager)
+    reviewed = dict(best_partial or onepager)
     fallback_items = build_fallback_review_items(onepager)
     if fallback_items:
         reviewed["review_items"] = fallback_items
         reviewed["review_item_generation"] = {
-            "method": "rule_based_fallback",
+            "method": "rule_based_fallback_with_llm_partial" if best_partial else "rule_based_fallback",
             "reason": last_error or "review_failed",
         }
     reviewed["llm_review"] = {
+        **(reviewed.get("llm_review") if isinstance(reviewed.get("llm_review"), dict) else {}),
         "model_id": REVIEWER_MODEL_ID,
         "error": last_error or "review_failed",
         "attempts": attempts,
+        "partial_preserved": bool(best_partial),
     }
     return reviewed
 
@@ -135,6 +140,17 @@ def merge_review_output(onepager, obj, raw_text, chain_meta, attempt):
         "attempts": attempt,
     }
     return reviewed
+
+
+def has_llm_safe_partial(reviewed, original):
+    """Return True when a schema-valid LLM response contributed at least one safe non-checklist field."""
+    if reviewed.get("review_item_generation", {}).get("method") == "bedrock_nova_pro":
+        return True
+    if clean_quote(reviewed.get("transfer_text")) and clean_quote(reviewed.get("transfer_text")) != clean_quote(original.get("transfer_text")):
+        return True
+    brief = reviewed.get("doctor_brief")
+    original_brief = original.get("doctor_brief")
+    return bool(brief and brief != original_brief)
 
 
 def build_onepager_review_prompt(session, onepager):
