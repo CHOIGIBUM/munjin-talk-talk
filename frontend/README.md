@@ -2,7 +2,7 @@
 
 React + Vite 기반 단일 페이지 웹앱입니다. 하나의 Amplify 배포 안에서 직원 접수, 환자 태블릿, 의사 대기열, 원페이퍼, 환자 안내문 화면을 제공합니다.
 
-프론트엔드는 의료 판단을 수행하지 않습니다. 화면 상태, 음성 입력, STT 결과 확인, API 호출, 백엔드 JSON 표시를 담당합니다. LLM extraction, Hybrid IR, schema validation, 원페이퍼 생성은 백엔드에서 처리합니다.
+프론트엔드는 화면 상태, 음성 입력, STT 결과 확인, API 호출, 백엔드 JSON 표시를 담당합니다. LLM extraction, Hybrid IR, schema validation, 원페이퍼 생성은 백엔드에서 처리합니다.
 
 관련 문서:
 
