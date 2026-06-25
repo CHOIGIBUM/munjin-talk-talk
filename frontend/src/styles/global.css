@@ -15,6 +15,39 @@ body {
   letter-spacing: -0.015em;
 }
 
+.drag-scroll-region {
+  scrollbar-width: thin;
+  scrollbar-color: #bfd0e5 transparent;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.drag-scroll-region::-webkit-scrollbar {
+  width: 8px;
+}
+.drag-scroll-region::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: #bfd0e5;
+  background-clip: padding-box;
+}
+.drag-scroll-region::-webkit-scrollbar-track {
+  background: transparent;
+}
+.drag-scroll-region.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+.drag-scroll-region:not(.is-dragging) {
+  cursor: grab;
+}
+.drag-scroll-region a,
+.drag-scroll-region button,
+.drag-scroll-region input,
+.drag-scroll-region textarea,
+.drag-scroll-region select {
+  cursor: pointer;
+}
+
 /* ============== App container ============== */
 .app-stage {
   min-height: 100vh;

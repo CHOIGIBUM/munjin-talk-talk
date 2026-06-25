@@ -122,6 +122,9 @@
 .tablet-queue-list {
   display: grid;
   gap: 12px;
+  max-height: clamp(240px, calc(100dvh - 300px), 560px);
+  overflow-y: auto;
+  padding-right: 4px;
 }
 .tablet-queue-card {
   display: flex;
@@ -215,6 +218,9 @@
   .tablet-queue-title {
     align-items: flex-start;
     flex-direction: column;
+  }
+  .tablet-queue-list {
+    max-height: min(56dvh, 520px);
   }
   .tablet-queue-card {
     align-items: stretch;

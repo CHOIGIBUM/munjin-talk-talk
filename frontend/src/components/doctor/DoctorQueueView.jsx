@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getDoctorQueue } from '../../services/api.js'
 import { sortDoctorQueue } from '../../services/queueOrder.js'
+import { useDragScroll } from '../../hooks/useDragScroll.js'
 import './DoctorQueueView.css'
 
 // 의사 대기열 화면입니다.
@@ -22,6 +23,7 @@ const statusLabel = {
 export default function DoctorQueueView() {
   const [sessions, setSessions] = useState([])
   const [notice, setNotice] = useState(null)
+  const boardRef = useDragScroll()
 
   useEffect(() => {
     const refresh = async () => {
@@ -51,7 +53,7 @@ export default function DoctorQueueView() {
         <Link to="/staff">접수 화면</Link>
       </header>
 
-      <div className="dq-board">
+      <div className="dq-board drag-scroll-region" ref={boardRef}>
         {sorted.map((session, index) => {
           const isGenerating = session.status === 'analysis_pending'
             || ['pending', 'running'].includes(session.analysisStatus || session.analysis_status || '')

@@ -4,6 +4,7 @@ import logoUrl from '../../assets/munjin-logo.svg'
 import { getDoctorQueue } from '../../services/api.js'
 import { sessionUrl } from '../../services/api/client.js'
 import { sortTabletQueue } from '../../services/queueOrder.js'
+import { useDragScroll } from '../../hooks/useDragScroll.js'
 import './PatientKioskView.css'
 
 const TABLET_QUEUE_STATUSES = new Set([
@@ -27,6 +28,7 @@ export default function PatientTabletQueueView() {
   const [sessions, setSessions] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const listRef = useDragScroll()
 
   const loadSessions = useCallback(async () => {
     try {
@@ -84,7 +86,7 @@ export default function PatientTabletQueueView() {
           </div>
         )}
 
-        <div className="tablet-queue-list">
+        <div className="tablet-queue-list drag-scroll-region" ref={listRef}>
           {waitingSessions.map((session) => (
             <article key={session.sessionId} className={`tablet-queue-card ${session.status}`}>
               <div>
