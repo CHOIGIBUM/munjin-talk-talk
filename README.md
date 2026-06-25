@@ -7,7 +7,7 @@
 
 어르신의 말은 쉽게, 의료진의 확인은 빠르게.
 
-고령 환자가 말로 답한 문진을 구조화, 표준 증상 매칭, 검증을 거쳐 진료 전엔 *의료진용 원페이퍼*로, 진료 후엔 *환자용 안내문*으로 바꿔주는 AI 문진 보조 MVP
+고령 환자가 말로 답한 문진을 구조화, 표준 증상 매칭, 검증을 거쳐 진료 전에는 *의료진용 원페이퍼*로, 진료 후에는 *환자용 안내문*으로 바꿔주는 AI 문진 보조 MVP
 
 ![Status](https://img.shields.io/badge/status-MVP-blue)
 ![Frontend](https://img.shields.io/badge/frontend-React%2018%20%2B%20Vite-61dafb)
@@ -41,25 +41,11 @@
 
 이 문제는 단순한 불편이 아니라 고령화, 높은 외래 진료량, 건강정보 이해 격차, 디지털 문진 장벽이 겹친 구조적 문제입니다.
 
-- 통계청·국가데이터처의 2025년 고령자 통계에 따르면 우리나라 65세 이상 인구 비중은 20.3%이며, 강원 지역은 25.7%로 전국 평균보다 높습니다.
-
-([국가데이터처 2025 고령자 통계](https://mods.go.kr/board.es?act=view&bid=10820&list_no=438832&mid=a10301010000&ref_bid=&tag=))
-
-- 국회입법조사처는 우리나라 국민의 외래 진료 횟수가 1인당 연간 16.6회로 OECD 국가 중 가장 많으며, 짧은 시간에 많은 환자를 진찰해야 하는 구조를 지적합니다.
-
-([국회입법조사처 의료서비스 이용 현황](https://www.nars.go.kr/fileDownload2.do?doc_id=1N19WkRJPsG&fileName=%28%EC%A7%80%ED%91%9C%EB%A1%9C+%EB%B3%B4%EB%8A%94+%EC%9D%B4%EC%8A%88+150%ED%98%B8-20200221%29%EC%9A%B0%EB%A6%AC%EB%82%98%EB%9D%BC+%EA%B5%AD%EB%AF%BC%EC%9D%98+%EC%9D%98%EB%A3%8C%EC%84%9C%EB%B9%84%EC%8A%A4+%EC%9D%B4%EC%9A%A9+%ED%98%84%ED%99%A9%EA%B3%BC+%EC%8B%9C%EC%82%AC%EC%A0%90.pdf))
-
-- 건강정보이해능력이 낮은 고령자·취약계층은 질병 치료 방법을 찾고, 추가 진료 필요 여부를 판단하고, 복약 지시를 이해·이행하는 과정에서 어려움을 겪을 수 있습니다.
-
- ([건강정보이해력 연구](https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART003247633))
-
-- 2024년 디지털정보격차 실태조사에서 취약계층의 디지털 정보화 수준은 일반 국민 대비 77.5%, 고령층은 71.4%로 나타납니다. 단말기 접근성은 높아졌지만, 앱·웹 기반 서비스를 스스로 찾아 설치하고 활용하는 역량은 여전히 낮습니다.
-
-([KOSIS 디지털정보화 수준](https://kosis.kr/statHtml/statHtml.do?orgId=127&tblId=DT_12017N008))
-
-- 분당서울대병원 연구팀이 65세 이상 505명을 조사한 결과, 87.1%가 앱을 사용한다고 답했지만 63.2%는 앱 설치·삭제를 스스로 하지 못한다고 응답했습니다. 즉 의료 서비스가 "앱을 설치하고, 로그인해서, 스스로 문항을 입력하는 방식"에 머물면, 실제로 의료가 더 필요한 고령 환자가 첫 단계에서부터 소외될 위험이 큽니다.
-
-([고령층 앱 활용 실태 보도](https://www.kukinews.com/article/view/kuk202401170004))
+- [국가데이터처 2025년 고령자 통계](https://mods.go.kr/board.es?act=view&bid=10820&list_no=438832&mid=a10301010000&ref_bid=&tag=)에 따르면 우리나라 65세 이상 인구 비중은 20.3%이며, 강원 지역은 25.7%로 전국 평균보다 높습니다.
+- [국회입법조사처 의료서비스 이용 현황](https://www.nars.go.kr/fileDownload2.do?doc_id=1N19WkRJPsG&fileName=%28%EC%A7%80%ED%91%9C%EB%A1%9C+%EB%B3%B4%EB%8A%94+%EC%9D%B4%EC%8A%88+150%ED%98%B8-20200221%29%EC%9A%B0%EB%A6%AC%EB%82%98%EB%9D%BC+%EA%B5%AD%EB%AF%BC%EC%9D%98+%EC%9D%98%EB%A3%8C%EC%84%9C%EB%B9%84%EC%8A%A4+%EC%9D%B4%EC%9A%A9+%ED%98%84%ED%99%A9%EA%B3%BC+%EC%8B%9C%EC%82%AC%EC%A0%90.pdf)은 우리나라 국민의 외래 진료 횟수가 1인당 연간 16.6회로 OECD 국가 중 가장 많으며, 짧은 시간에 많은 환자를 진찰해야 하는 구조를 지적합니다.
+- [건강정보이해력 연구](https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART003247633)에 따르면 건강정보이해능력이 낮은 고령자·취약계층은 질병 치료 방법을 찾고, 추가 진료 필요 여부를 판단하고, 복약 지시를 이해·이행하는 과정에서 어려움을 겪을 수 있습니다.
+- [KOSIS 디지털정보화 수준](https://kosis.kr/statHtml/statHtml.do?orgId=127&tblId=DT_12017N008)에 따르면 2024년 취약계층의 디지털 정보화 수준은 일반 국민 대비 77.5%, 고령층은 71.4%로 나타납니다. 단말기 접근성은 높아졌지만, 앱·웹 기반 서비스를 스스로 찾아 설치하고 활용하는 역량은 여전히 낮습니다.
+- [고령층 앱 활용 실태 보도](https://www.kukinews.com/article/view/kuk202401170004)에 따르면 분당서울대병원 연구팀이 65세 이상 505명을 조사한 결과, 87.1%가 앱을 사용한다고 답했지만 63.2%는 앱 설치·삭제를 스스로 하지 못한다고 응답했습니다. 즉 의료 서비스가 "앱을 설치하고, 로그인해서, 스스로 문항을 입력하는 방식"에 머물면 실제로 의료가 더 필요한 고령 환자가 첫 단계에서부터 소외될 위험이 큽니다.
 
 기존 앱·온라인 기반 사전 문진은 새 앱 설치, 로그인, 작은 화면의 문항 읽기, 직접 입력을 전제로 하기 때문에 고령층에게 진입 장벽이 높습니다. 반대로 단순 LLM 챗봇은 *환각·임의 진단* 가능성 때문에 의료 영역에서 단독 사용이 어렵습니다.
 
@@ -98,7 +84,7 @@
 | 직원 접수 | `/staff` | 환자 정보 입력<br>초진/재진 선택<br>문진 세션 생성 |
 | 환자 태블릿 | `/patient/:sessionId` | 음성 문진<br>STT 결과 확인<br>동의 모달·직원 도움 요청 |
 | 의료진 원페이퍼 | `/doctor/:sessionId` | 증상·환자 원문 확인<br>문진 맥락·확인 항목 확인<br>EMR 초안 확인 |
-| 환자 안내문 | `/guide/:sessionId` | 의사 답변을 어르신 표현으로 정리<br>종이 출력<br>링크 공유 |
+| 환자 안내문 | `/guide/:sessionId` | 의사 답변을 어르신 표현으로 정리<br>종이 출력<br>보호자 공유 링크 복사 |
 
 ## 🛡️ 의료 안전을 위한 LLM 통제 구조
 
@@ -186,7 +172,7 @@ flowchart LR
 
 LLM이 정리한 증상 표현을 그대로 진단처럼 쓰지 않고, 서울아산병원 질병백과 기반 증상 데이터의 표준 증상명에 다시 맞춥니다. 이 단계의 목적은 “환자가 한 말”을 “원천 데이터에 존재하는 증상 슬롯”으로 연결하는 것입니다.
 
-IR은 내부 배포 환경의 비공개 런타임 데이터(`diseases_cleaned.json`, `symptom_index.json`, Titan embedding cache)를 사용합니다. 이 데이터는 서울아산병원 질병백과 기반 원천 데이터와 그 파생 인덱스라 공개 Git 저장소에는 포함하지 않습니다. 공개 저장소에는 데이터 구조와 배치 기준만 남기고, 실제 배포 시에는 팀 내부 비공개 경로에서 Lambda 패키지에 주입합니다.
+IR은 내부 배포 환경의 비공개 런타임 데이터(`diseases_cleaned.json`, `symptom_index.json`, Titan embedding cache)를 사용합니다. 이 데이터는 서울아산병원 질병백과 기반 원천 데이터와 그 파생 인덱스라 공개 Git 저장소에는 포함하지 않습니다. 공개 저장소에는 데이터 구조와 배치 기준만 남깁니다. 데모/운영 배포에서는 팀 내부 비공개 경로의 런타임 데이터를 Lambda 패키지에 포함해 Hybrid IR이 동일하게 작동하도록 구성합니다.
 
 1. LLM extraction이 `source_quote`, `normalized_text`, `name`을 가진 증상 span을 생성
 2. IR query는 `normalized_text + name`을 중심으로 구성하고, 원문 quote는 화면 근거와 검증용으로 보존
@@ -311,7 +297,7 @@ sam deploy --guided   # ArtifactsBucketName 에 가명처리 산출물용 S3 버
 
 ### 4. 배포 시 필요한 비공개 데이터
 
-프론트엔드, Lambda 코드, SAM 템플릿, 스키마, 평가 스크립트는 공개 저장소에 포함되어 있습니다. 실제 배포 환경에서는 저작권과 보안 처리가 필요한 서울아산병원 질병백과 기반 IR 런타임 데이터(`diseases_cleaned.json`, `symptom_index.json`, embedding cache`)만 팀 내부 비공개 경로에서 Lambda 패키지에 배치합니다.
+프론트엔드, Lambda 코드, SAM 템플릿, 스키마, 평가 스크립트는 공개 저장소에 포함되어 있습니다. 데모/운영 배포에서는 저작권과 보안 처리가 필요한 서울아산병원 질병백과 기반 IR 런타임 데이터(`diseases_cleaned.json`, `symptom_index.json`, embedding cache`)만 팀 내부 비공개 경로에서 Lambda 패키지에 배치합니다. 공개 저장소만 clone한 환경에서는 해당 파일을 배치하지 않으면 Hybrid IR 증상 매칭이 제한됩니다.
 
 ## 🗂️ 저장소 구조
 

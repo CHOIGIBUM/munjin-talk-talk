@@ -39,7 +39,7 @@ AWS SAM으로 배포하는 문진톡톡 백엔드입니다. API Gateway HTTP API
 | `GET` | `/sessions/{session_id}` | 세션 조회 | 세션/직원/의사 |
 | `GET` | `/sessions` | 오늘 접수 목록 조회 | 직원 |
 | `POST` | `/process-answers` | Q1~Q4 답변 일괄 저장, 분석 큐 등록 | 환자 세션 |
-| `POST` | `/process-answer` | 과거 단일 문항 처리용 보조 API. 일반 환자 문진 화면은 사용하지 않음 | 환자 세션 |
+| `POST` | `/process-answer` | 이전 단일 문항 구조와 내부 테스트 호환을 위한 API. 기본 환자 문진 UI는 `/process-answers`만 사용 | 환자 세션 |
 | `POST` | `/transcribe/stream-url` | Transcribe Streaming presigned URL 발급 | 환자 세션 |
 | `GET` | `/doctor/queue` | 의사 대기열 | 의사 |
 | `GET` | `/onepaper/{session_id}` | 원페이퍼 조회 | 의사 |
@@ -149,7 +149,7 @@ sam deploy `
 
 ## 7. 런타임 데이터 배치
 
-공개 저장소에는 저작권 또는 이용 범위 검토가 필요한 원천 의료 백과 데이터와 파생 인덱스가 포함되지 않습니다. 배포 전 아래 파일을 `src/data/`에 배치해야 Hybrid IR이 정상 동작합니다.
+공개 저장소에는 저작권 또는 이용 범위 검토가 필요한 원천 의료 백과 데이터와 파생 인덱스를 포함하지 않습니다. 데모/운영 Lambda 패키지에는 아래 파일을 `src/data/`에 배치해야 Hybrid IR이 정상 동작합니다. 공개 저장소만 clone한 로컬 환경에서는 해당 파일이 없으면 증상 매칭이 제한됩니다.
 
 ```text
 src/data/diseases_cleaned.json
@@ -212,7 +212,7 @@ $env:SAM_CLI_TELEMETRY="0"
 
 ---
 
-## 11. 최종 동작 확인 기준
+## 11. 배포 후 동작 확인 기준
 
 - `/auth/login`에서 직원/의사 접근 코드가 정상 검증됨
 - `/sessions`로 세션 생성 가능
