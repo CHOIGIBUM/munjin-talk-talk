@@ -18,6 +18,7 @@ from domain_config import get_domain_pack
 from settings import DISEASES_PATH, SYMPTOM_INDEX_PATH
 from retrieval_scoring import BM25Index
 from utils import (
+    compact_ir,
     load_json_file,
     normalize_text,
     sentence_directly_mentions_symptom,
@@ -252,11 +253,16 @@ def preferred_canonical_name(slot_id, *texts):
     """LLM slot_ref/name이 명확할 때 IR 후보에 가벼운 힌트를 줍니다."""
     docs, _ = get_ir_index()
     valid_names = {doc["display_name"] for doc in docs}
-    mapped = IR_SLOT_TO_CANONICAL_NAME.get(str(slot_id or ""))
-    if mapped in valid_names:
-        return mapped
     joined = normalize_text(" ".join(text for text in texts if text))
+    compact_joined = compact_ir(joined)
     for pattern, name in IR_TEXT_ALIASES:
         if name in valid_names and re.search(pattern, joined):
             return name
+    for name in sorted(valid_names, key=lambda item: len(compact_ir(item)), reverse=True):
+        compact_name = compact_ir(name)
+        if compact_name and compact_name in compact_joined:
+            return name
+    mapped = IR_SLOT_TO_CANONICAL_NAME.get(str(slot_id or ""))
+    if mapped in valid_names:
+        return mapped
     return ""

@@ -611,13 +611,19 @@ def summarize_rag_context(rag_context: dict[str, Any]) -> dict[str, Any]:
 def hybrid_ir_match_node(state: AnswerPipelineState) -> dict[str, Any]:
     """증상 문항이면 BM25 + Titan Vector IR로 표준 증상명에 매칭합니다."""
     question_type = state.get("question_type")
-    if question_type not in SYMPTOM_QUESTION_TYPES:
+    extracted = state.get("extracted") or {}
+    spans = extracted.get("spans") or []
+    has_active_symptom_span = any(
+        str(span.get("type") or "") in {"symptom", "new", "progress_worsened", "progress_unchanged"}
+        for span in spans
+        if isinstance(span, dict)
+    )
+    if question_type not in SYMPTOM_QUESTION_TYPES and not has_active_symptom_span:
         matched = {"matched_slots": [], "unmatched_spans": []}
         update = {"matched": matched}
         update.update(trace_update(state, "hybrid_ir_match", "skipped", {"question_type": question_type}))
         return update
 
-    extracted = state.get("extracted") or {}
     matched = match_slots(
         {
             "session_id": state.get("session_id"),

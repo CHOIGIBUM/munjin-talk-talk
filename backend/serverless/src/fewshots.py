@@ -17,7 +17,7 @@ DEFAULT_LIMITS = {
     "standardization": 2,
     "semantic_unit": 3,
     "span_tagging": 3,
-    "symptom_hint": 3,
+    "symptom_hint": 5,
     "onepager_review": 2,
 }
 

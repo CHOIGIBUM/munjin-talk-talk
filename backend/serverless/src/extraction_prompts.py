@@ -73,6 +73,8 @@ Critical rules:
 - If unsure, use status "확인필요" and explain the uncertainty in Korean instead of inventing a number.
 - For medication, medication_denial, adherence_gap, and context spans, slot_ref MUST be "other".
 - Only symptom/new/symptom_absent/progress spans may use symptom slot_ref values such as cough or fever.
+- slot_ref MUST be exactly one of the allowed slot_ref values shown below. If the desired concept is not in that list, use "other" and keep the descriptive Korean hint in `name`.
+- Never invent new English slot_ref values such as throat_pain, sleep_disturbance, smell_loss, body_ache, or weakness.
 - Classify symptom state by the patient's CURRENT meaning, not by keyword presence alone.
 - Apply this decision order before choosing type/status:
   1. If the quote means the symptom is absent now, use type "symptom_absent", status "없음".
@@ -92,6 +94,10 @@ Critical rules:
 - If a symptom improved but is still currently present, split it:
   one active span for the remaining current symptom with status "있음", and one clinical_clue label "호전" for the improvement context.
 - Do NOT convert caregiver fear or concern into dyspnea/chest_pain unless the patient or caregiver states actual breathing difficulty, chest pain, cyanosis, fainting, or inability to breathe.
+- Pain when swallowing saliva/food should stay a throat pain symptom. Use swallowing difficulty only when the patient describes food, water, or pills not passing, getting stuck, or being unable to swallow.
+- Colloquial body aches such as 몸살, 온몸이 쑤심, or muscles aching should be muscle pain unless chills or shaking are explicitly stated.
+- Feeling sluggish, droopy, or generally low should be malaise/low energy. Do not rewrite it as dizziness unless spinning, lightheadedness, or balance trouble is explicit.
+- If reduced smell is mentioned only as a consequence of nasal blockage, keep it attached to nasal obstruction instead of creating a separate active symptom.
 - For Q4 patient_questions/unresolved_questions, a denial such as "없어요", "따로 없어요", "별로 없어요", or "궁금한 건 없어요" is NOT a patient question. Return questions: [].
 - For symptom questions (chief_complaint, progress, new_symptoms), spans MUST contain at least one grounded meaning unit unless the patient clearly denies symptoms.
 - clinical_clues are optional helper context. Include them only when category, label, and source_quote are all valid.
@@ -411,6 +417,7 @@ Hard rules:
 - For active symptom spans, preserve the patient's wording plus key modifiers: body location, color, sputum character, swelling, radiation, timing, severity, and progression.
 - Do not overfit to a closed-set label. Do not invent a diagnosis.
 - If an active symptom name is too generic, rewrite it using the most concrete phrase from source_quote/normalized_text.
+- Prefer a concrete standard symptom hint over a broad parent when the text explicitly states a subtype, such as colored/foamy sputum, choking while eating or drinking, fast pulse, or exercise-related dyspnea.
 - Keep the hint short. Prefer "location + symptom/quality" over a full sentence.
 - For non-active symptom_absent/progress_improved spans, do not convert them into active symptoms and keep slot_ref "other" unless there is a separate active symptom span.
 - For non-symptom spans, keep slot_ref "other".

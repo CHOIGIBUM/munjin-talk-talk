@@ -88,6 +88,214 @@
           }
         ]
       }
+    },
+    {
+      "title": "specific sputum character should not collapse to generic sputum",
+      "visit_type": "initial",
+      "question_id": "Q1",
+      "question_type": "chief_complaint",
+      "tagged_spans": [
+        {
+          "source_quote": "거품 섞인 객담이 올라와요",
+          "type": "symptom",
+          "slot_ref": "sputum",
+          "name": "가래",
+          "normalized_text": "거품이 섞인 객담이 올라옵니다.",
+          "status": "있음",
+          "alert": false,
+          "explain": "현재 증상입니다."
+        },
+        {
+          "source_quote": "검게 보이는 가래도 있어요",
+          "type": "symptom",
+          "slot_ref": "sputum",
+          "name": "가래",
+          "normalized_text": "검게 보이는 가래도 있습니다.",
+          "status": "있음",
+          "alert": false,
+          "explain": "현재 증상입니다."
+        }
+      ],
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "거품 섞인 객담이 올라와요",
+            "type": "symptom",
+            "slot_ref": "other",
+            "name": "거품이 섞인 가래",
+            "normalized_text": "거품이 섞인 객담이 올라옵니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "가래라는 포괄 증상보다 거품이 섞인 양상이 더 구체적인 표준 증상입니다."
+          },
+          {
+            "source_quote": "검게 보이는 가래도 있어요",
+            "type": "symptom",
+            "slot_ref": "black_sputum",
+            "name": "검은색 가래",
+            "normalized_text": "검게 보이는 가래도 있습니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "가래라는 포괄 증상보다 검은색 양상이 더 구체적인 표준 증상입니다."
+          }
+        ]
+      }
+    },
+    {
+      "title": "systemic malaise and myalgia stay distinct",
+      "visit_type": "initial",
+      "question_id": "Q1",
+      "question_type": "chief_complaint",
+      "tagged_spans": [
+        {
+          "source_quote": "몸이 축 처지고 의욕이 없어요",
+          "type": "symptom",
+          "slot_ref": "other",
+          "name": "어지러움",
+          "normalized_text": "몸이 축 처지고 의욕이 없습니다.",
+          "status": "있음",
+          "alert": false,
+          "explain": "현재 증상입니다."
+        },
+        {
+          "source_quote": "온몸 근육이 욱신거려요",
+          "type": "symptom",
+          "slot_ref": "other",
+          "name": "권태감",
+          "normalized_text": "온몸 근육이 욱신거립니다.",
+          "status": "있음",
+          "alert": false,
+          "explain": "현재 증상입니다."
+        }
+      ],
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "몸이 축 처지고 의욕이 없어요",
+            "type": "symptom",
+            "slot_ref": "malaise",
+            "name": "권태감",
+            "normalized_text": "몸이 축 처지고 의욕이 없습니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "전신이 처지고 의욕이 없는 표현은 권태감으로 정리합니다."
+          },
+          {
+            "source_quote": "온몸 근육이 욱신거려요",
+            "type": "symptom",
+            "slot_ref": "myalgia",
+            "name": "근육통",
+            "normalized_text": "온몸 근육이 욱신거립니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "근육 자체의 통증 표현은 권태감이 아니라 근육통입니다."
+          }
+        ]
+      }
+    },
+    {
+      "title": "choking on swallowing is active even in medication context",
+      "visit_type": "initial",
+      "question_id": "Q3",
+      "question_type": "current_medications",
+      "tagged_spans": [
+        {
+          "source_quote": "먹는 약은 없고",
+          "type": "medication_denial",
+          "slot_ref": "other",
+          "name": "복용약 없음",
+          "normalized_text": "현재 복용 중인 약은 없습니다.",
+          "status": "없음",
+          "alert": false,
+          "explain": "복용약 부정입니다."
+        },
+        {
+          "source_quote": "밥 먹을 때 자꾸 사레가 들어요",
+          "type": "symptom",
+          "slot_ref": "other",
+          "name": "기침",
+          "normalized_text": "밥을 먹을 때 자꾸 사레가 듭니다.",
+          "status": "있음",
+          "alert": false,
+          "explain": "현재 증상입니다."
+        }
+      ],
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "먹는 약은 없고",
+            "type": "medication_denial",
+            "slot_ref": "other",
+            "name": "복용약 없음",
+            "normalized_text": "현재 복용 중인 약은 없습니다.",
+            "status": "없음",
+            "alert": false,
+            "explain": "복용약 부정은 증상으로 바꾸지 않습니다."
+          },
+          {
+            "source_quote": "밥 먹을 때 자꾸 사레가 들어요",
+            "type": "symptom",
+            "slot_ref": "other",
+            "name": "사래걸림",
+            "normalized_text": "밥을 먹을 때 자꾸 사레가 듭니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "문진 항목이 복용약이어도 삼킴 중 사레는 현재 증상으로 유지합니다."
+          }
+        ]
+      }
+    },
+    {
+      "title": "cardiac rhythm hints keep palpitation and tachycardia separate",
+      "visit_type": "initial",
+      "question_id": "Q1",
+      "question_type": "chief_complaint",
+      "tagged_spans": [
+        {
+          "source_quote": "가슴이 두근두근해요",
+          "type": "symptom",
+          "slot_ref": "other",
+          "name": "흉통",
+          "normalized_text": "가슴이 두근두근합니다.",
+          "status": "있음",
+          "alert": false,
+          "explain": "현재 증상입니다."
+        },
+        {
+          "source_quote": "맥이 빠르게 뛰어요",
+          "type": "symptom",
+          "slot_ref": "other",
+          "name": "가슴 두근거림",
+          "normalized_text": "맥이 빠르게 뜁니다.",
+          "status": "있음",
+          "alert": false,
+          "explain": "현재 증상입니다."
+        }
+      ],
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "가슴이 두근두근해요",
+            "type": "symptom",
+            "slot_ref": "other",
+            "name": "가슴 두근거림",
+            "normalized_text": "가슴이 두근두근합니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "두근두근하다는 주관적 느낌은 가슴 두근거림입니다."
+          },
+          {
+            "source_quote": "맥이 빠르게 뛰어요",
+            "type": "symptom",
+            "slot_ref": "other",
+            "name": "빈맥",
+            "normalized_text": "맥이 빠르게 뜁니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "맥이 빠르게 뛰는 표현은 빈맥으로 정리합니다."
+          }
+        ]
+      }
     }
   ]
 }

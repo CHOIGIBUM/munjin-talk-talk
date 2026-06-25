@@ -96,9 +96,10 @@ def normalize_non_symptom_span_slots(payload, question_type=""):
         if span_type in NON_SYMPTOM_SPAN_TYPES or is_medication_question:
             span["slot_ref"] = "other"
         elif slot_ref not in SYMPTOM_SLOT_REFS:
-            # 증상 span의 잘못된 slot_ref는 고치지 않습니다.
-            # 그대로 실패해야 LLM repair loop가 다시 작동합니다.
-            continue
+            # 증상 span의 slot_ref는 검색 힌트일 뿐 최종 표준명은 IR/linker가 결정합니다.
+            # LLM이 throat_pain처럼 새 enum을 만들면 schema 실패 대신 other로 낮춰
+            # source_quote/name 기반 검색이 계속 진행되게 합니다.
+            span["slot_ref"] = "other"
 
 
 def remove_negative_patient_questions(payload, question_type=""):

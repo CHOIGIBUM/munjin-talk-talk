@@ -135,7 +135,7 @@ def retrieve_symptom_docs(source_quote, normalized_text, span_name="", preferred
         rank_score = HYBRID_BM25_WEIGHT * bm25_norm[idx] + HYBRID_VECTOR_WEIGHT * vector_norm[idx] + 0.25 * label
         if preferred_hit:
             branch = "preferred_alias"
-            rank_score += 0.45
+            rank_score += 1.0
         if branch == "both":
             rank_score += 0.08
         elif branch == "bm25_only" and vector_raw[idx] < 0.12:
@@ -178,6 +178,10 @@ def is_hybrid_candidate_accepted(candidate):
     bm25 = float(candidate.get("bm25_score") or 0)
     vector = float(candidate.get("vector_score") or 0)
     label = float(candidate.get("label_score") or 0)
+    branch = candidate.get("retrieval_branch") or ""
+    score = float(candidate.get("score") or 0)
+    if branch == "preferred_alias" and label >= 1.0 and score >= 0.9:
+        return True, "preferred_slot_or_label"
     if vector >= HYBRID_MIN_VECTOR_SCORE and (bm25 >= HYBRID_MIN_BM25_SCORE or label >= HYBRID_MIN_LABEL_SCORE):
         return True, "vector_plus_lexical_or_label"
     return False, (

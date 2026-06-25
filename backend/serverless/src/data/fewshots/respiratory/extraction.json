@@ -120,6 +120,62 @@
           "unresolved_items": []
         }
       }
+    },
+    {
+      "title": "medication question can still contain an active symptom",
+      "visit_type": "initial",
+      "question_id": "Q3",
+      "question_type": "current_medications",
+      "patient_answer": "먹는 약은 없고 밥 먹을 때 자꾸 사레가 들어요.",
+      "expected_json": {
+        "spans": [
+          {
+            "source_quote": "먹는 약은 없고",
+            "type": "medication_denial",
+            "slot_ref": "other",
+            "name": "복용약 없음",
+            "normalized_text": "현재 복용 중인 약은 없습니다.",
+            "status": "없음",
+            "alert": false,
+            "explain": "현재 복용약이 없다고 답했습니다."
+          },
+          {
+            "source_quote": "밥 먹을 때 자꾸 사레가 들어요",
+            "type": "symptom",
+            "slot_ref": "other",
+            "name": "사래걸림",
+            "normalized_text": "밥을 먹을 때 자꾸 사레가 듭니다.",
+            "status": "있음",
+            "alert": false,
+            "explain": "복용약 질문 안에 포함되어도 사레가 든다는 표현은 현재 증상입니다."
+          }
+        ],
+        "structured": {
+          "standardized_text": "현재 복용 중인 약은 없고, 밥을 먹을 때 자꾸 사레가 듭니다.",
+          "clinical_clues": [
+            {
+              "category": "투약정보",
+              "label": "처방약 없음",
+              "summary": "현재 복용 중인 약은 없습니다.",
+              "source_quote": "먹는 약은 없고",
+              "source_question": "Q3",
+              "priority": "일반",
+              "related_symptoms": []
+            },
+            {
+              "category": "증상맥락",
+              "label": "현재증상",
+              "summary": "밥을 먹을 때 자꾸 사레가 듭니다.",
+              "source_quote": "밥 먹을 때 자꾸 사레가 들어요",
+              "source_question": "Q3",
+              "priority": "일반",
+              "related_symptoms": ["사래걸림"]
+            }
+          ],
+          "questions": [],
+          "unresolved_items": []
+        }
+      }
     }
   ]
 }
