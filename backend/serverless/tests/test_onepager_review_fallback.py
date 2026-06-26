@@ -130,7 +130,16 @@ def test_transfer_text_filter_rejects_patient_facing_prose():
     }
 
     narrative = "S: 80세 남성 초진. 환자는 현재 가슴이 답답하다고 언급했습니다 | O: 문진 기반 객관소견 없음"
-    chart_like = "S) 80세 남성 초진 / CC: 천명음 / 확인: 증상 지속시간/중증도"
+    chart_like = (
+        "[S]\n"
+        "• Demographics: 80세 남성 초진\n"
+        "• CC: Wheezing\n"
+        "• PI: Not mentioned\n"
+        "• PMHx/Med: Not mentioned\n"
+        "• Allergy/Social: Not mentioned\n\n"
+        "[Need to Check : 대면 보강 문진 필요]\n"
+        "- 증상 지속시간/중증도 확인"
+    )
 
     assert is_transfer_text_safe(narrative, onepager) is False
     assert is_transfer_text_safe(chart_like, onepager) is True
@@ -139,7 +148,16 @@ def test_transfer_text_filter_rejects_patient_facing_prose():
 def test_review_fallback_preserves_safe_llm_partial_after_retries():
     llm_output = {
         "review_items": ["X-ray 검사 필요성 검토"],
-        "transfer_text": "S) 70세 남성 초진 / CC: 콧물 / 확인: 지속기간",
+        "transfer_text": (
+            "[S]\n"
+            "• Demographics: 70세 남성 초진\n"
+            "• CC: Rhinorrhea\n"
+            "• PI: Not mentioned\n"
+            "• PMHx/Med: Not mentioned\n"
+            "• Allergy/Social: Not mentioned\n\n"
+            "[Need to Check : 대면 보강 문진 필요]\n"
+            "- 지속기간 확인"
+        ),
         "doctor_brief": {
             "headline": "콧물 지속 여부 확인 필요",
             "sections": [
@@ -165,7 +183,16 @@ def test_review_fallback_preserves_safe_llm_partial_after_retries():
         "agenda": [],
         "safety_flags": [],
         "review_items": [],
-        "transfer_text": "S) 70세 남성 초진 / CC: 콧물 / 확인: 문진 내용",
+        "transfer_text": (
+            "[S]\n"
+            "• Demographics: 70세 남성 초진\n"
+            "• CC: Rhinorrhea\n"
+            "• PI: Not mentioned\n"
+            "• PMHx/Med: Not mentioned\n"
+            "• Allergy/Social: Not mentioned\n\n"
+            "[Need to Check : 대면 보강 문진 필요]\n"
+            "- 문진 내용 확인"
+        ),
         "doctor_brief": {"headline": "", "sections": []},
     }
 
@@ -250,7 +277,7 @@ def test_rerun_onepager_review_rebuilds_from_saved_answers_before_review():
     stale_onepager = {
         "symptom_slots": [{"name": "오래된 증상", "source_quote": "오래된 표현"}],
         "review_items": ["오래된 확인 항목"],
-        "transfer_text": "S) 오래된 초안",
+        "transfer_text": "[S]\n• Demographics: 오래된 초안",
     }
     captured = {}
 

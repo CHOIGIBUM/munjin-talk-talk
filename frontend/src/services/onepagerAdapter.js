@@ -219,15 +219,23 @@ function uniqueTexts(items) {
 }
 
 function normalizeTransferText(text, onepager = {}, patient = DEFAULT_PATIENT) {
-  const cleaned = cleanText(text)
+  const cleaned = cleanTransferBlock(text)
   if (cleaned && isChartLikeTransferText(cleaned)) return cleaned
   return buildChartTransferText(onepager, patient)
 }
 
 function isChartLikeTransferText(text) {
-  if (/환자는|언급했습니다|궁금합니다|필요합니다/.test(text)) return false
-  if (/\bO\s*[:)]|객관소견/i.test(text)) return false
-  return /S\)|CC\s*:/.test(text)
+  if (/환자는|언급했습니다|궁금합니다|필요합니다|해요|같아요|습니다/.test(text)) return false
+  if (/\b[OAP]\s*[:)]|객관소견|physical exam|vital/i.test(text)) return false
+  return (
+    /\[S\]/.test(text) &&
+    /Demographics\s*:/.test(text) &&
+    /CC\s*:/.test(text) &&
+    /PI\s*:/.test(text) &&
+    /PMHx\/Med\s*:/.test(text) &&
+    /Allergy\/Social\s*:/.test(text) &&
+    /\[Need to Check\s*:\s*대면 보강 문진 필요\]/.test(text)
+  )
 }
 
 function buildChartTransferText(onepager = {}, patient = DEFAULT_PATIENT) {
@@ -242,19 +250,42 @@ function buildChartTransferText(onepager = {}, patient = DEFAULT_PATIENT) {
   const piContexts = contexts.filter(text => !medContexts.includes(text))
   const questions = uniqueTexts(agenda.map(item => cleanText(item.summary || item.original_quote || item.originalQuote || item.display_text)))
 
-  const parts = [`S) ${demographics}`]
-  if (symptoms) parts.push(`CC: ${symptoms}`)
-  if (piContexts.length) parts.push(`PI: ${piContexts.slice(0, 2).join('; ')}`)
-  if (medContexts.length) parts.push(`Med: ${medContexts.slice(0, 2).join('; ')}`)
-  if (questions.length) parts.push(`Q: ${questions.slice(0, 2).join('; ')}`)
-
   const checks = []
-  if (symptoms) checks.push('증상 지속시간/중증도')
+  if (symptoms) checks.push('증상 지속시간, 중증도, 동반증상 확인')
   if (medContexts.length || questions.length) checks.push('복약/병용 가능 여부')
-  if (!checks.length) checks.push('문진 내용')
-  parts.push(`확인: ${uniqueTexts(checks).join(', ')}`)
+  if (!checks.length) checks.push('추가 병력 및 동반증상 확인')
 
-  return parts.join(' / ')
+  return [
+    '[S]',
+    `• Demographics: ${demographics}`,
+    `• CC: ${symptoms || 'Not mentioned'}`,
+    `• PI: ${piContexts.length ? piContexts.slice(0, 3).join('; ') : 'Not mentioned'}`,
+    `• PMHx/Med: ${medContexts.length ? medContexts.slice(0, 3).join('; ') : 'Not mentioned'}`,
+    '• Allergy/Social: Not mentioned',
+    '',
+    '[Need to Check : 대면 보강 문진 필요]',
+    ...uniqueTexts([...checks, ...questions]).slice(0, 5).map(item => `- ${item}`),
+  ].join('\n')
+}
+
+function cleanTransferBlock(value) {
+  const lines = []
+  let previousBlank = false
+  String(value || '')
+    .replace(/\r\n/g, '\n')
+    .replace(/\r/g, '\n')
+    .split('\n')
+    .forEach(rawLine => {
+      const line = rawLine.replace(/[ \t]+/g, ' ').trim()
+      if (line) {
+        lines.push(line)
+        previousBlank = false
+      } else if (lines.length && !previousBlank) {
+        lines.push('')
+        previousBlank = true
+      }
+    })
+  return lines.join('\n').trim()
 }
 
 function normalizeDoctorBrief(brief) {

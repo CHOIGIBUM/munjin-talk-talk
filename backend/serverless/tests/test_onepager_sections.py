@@ -11,7 +11,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from onepager_sections import normalize_agenda  # noqa: E402
+from onepager_sections import build_transfer_text, normalize_agenda  # noqa: E402
 
 
 def test_normalize_agenda_splits_multiple_patient_questions():
@@ -68,3 +68,34 @@ def test_normalize_agenda_preserves_single_patient_question():
             "source_question": "Q4",
         }
     ]
+
+
+def test_build_transfer_text_uses_subjective_scribe_format():
+    text = build_transfer_text(
+        {"age": 80, "gender": "남성"},
+        [{"name": "가슴 답답"}, {"name": "가래"}, {"name": "콧물"}, {"name": "두통"}],
+        [
+            {
+                "category": "증상맥락",
+                "label": "시작시점",
+                "summary": "어제부터 시작",
+                "source_quote": "어제부터",
+            },
+            {
+                "category": "복약정보",
+                "label": "복용중",
+                "summary": "영양제 복용",
+                "source_quote": "영양제 먹고",
+            },
+        ],
+        [{"summary": "약을 같이 먹어도 되는지 문의"}],
+        "initial",
+    )
+
+    assert text.startswith("[S]")
+    assert "• Demographics: 80세 남성 초진" in text
+    assert "• CC: Chest tightness, Sputum, Rhinorrhea" in text
+    assert "• PMHx/Med: 상세불명 영양제 복용" in text
+    assert "• Allergy/Social: Not mentioned" in text
+    assert "[Need to Check : 대면 보강 문진 필요]" in text
+    assert "약을 같이 먹어도 되는지 문의" not in text.split("[Need to Check")[0]

@@ -703,6 +703,7 @@
   line-height: 1.75;
   color: #29364a;
   font-family: 'Noto Sans KR', sans-serif;
+  white-space: pre-wrap;
 }
 .copy-btn {
   display: inline-flex;

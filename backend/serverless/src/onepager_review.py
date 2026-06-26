@@ -126,7 +126,7 @@ def merge_review_output(onepager, obj, raw_text, chain_meta, attempt):
                 "attempts": attempt,
             }
 
-    transfer = clean_quote(obj.get("transfer_text") or "")
+    transfer = clean_transfer_text(obj.get("transfer_text") or "")
     if transfer and is_transfer_text_safe(transfer, onepager):
         reviewed["transfer_text"] = transfer
     if isinstance(obj.get("doctor_brief"), dict) and is_grounded_text(json.dumps(obj.get("doctor_brief"), ensure_ascii=False), onepager):
@@ -231,21 +231,24 @@ Review item rules:
 15. The backend validates this with a strict Pydantic schema. Missing required fields, invalid keys, or extra fields will fail.
 
 EMR transfer_text rules:
-1. Write transfer_text as a concise Korean outpatient EMR memo, not as a patient-facing explanation.
-2. Use compact charting labels in one line:
-   "S) ... / CC: ... / PI: ... / Med: ... / Q: ... / 확인: ..."
-3. Do NOT write narrative phrases such as "환자는 현재", "언급했습니다", "궁금합니다", or "필요합니다".
-4. Do NOT include O) or objective findings because this system only has pre-visit intake, not exam/vital data.
-5. The S/CC/PI/Med/Q sections may include only intake-grounded items:
-   - age/sex/visit type exactly from draft_onepager.patient_summary
-   - chief complaints from symptom_slots
-   - onset/progression/current context from clinical_clues
-   - medication/adherence context from clinical_clues
-   - patient questions from agenda
-6. Do NOT invent diagnosis, prescriptions, test orders, vital signs, physical exam findings, or clinician decisions.
-7. Keep it concise and copyable. Good style:
-   "S) 23세 남성 초진 / CC: 목통증, 콧물 / PI: 어제부터 시작 / Med: 복용약 없음 / Q: 매운 음식 섭취 가능 여부 / 확인: 지속기간, 발열 여부"
-8. If transfer_text mentions age or sex, copy them exactly from draft_onepager.patient_summary. Never change patient sex or age.
+1. Write transfer_text as SOAP [S] only. Do not include O/A/P, diagnosis, prescriptions, orders, vital signs, or exam findings.
+2. Use medical scribe telegraphic style. Do NOT copy patient speech endings such as "~해요", "~같아요", "~습니다".
+3. Convert lay terms into appropriate medical terms in Korean or English:
+   "목이 아픔" -> "Sore throat", "가슴 답답" -> "Chest tightness", "가래" -> "Sputum".
+4. Split transfer_text into exactly this copyable multiline format:
+   [S]
+   • Demographics: age/sex/visit type
+   • CC: max 3 chief complaints
+   • PI: onset, course, symptom character, associated symptoms. Use only intake-grounded facts.
+   • PMHx/Med: past history and medications. If only supplement is mentioned, write "상세불명 영양제".
+   • Allergy/Social: allergy/social history. If absent from intake, write "Not mentioned".
+
+   [Need to Check : 대면 보강 문진 필요]
+   - questions the doctor should ask face to face
+5. Timeline conflict rule: if onset/duration statements conflict, keep the more specific/recent statement in PI and append "[※ 진술 충돌: A vs B]". Also add a Need to Check item for reconfirmation.
+6. Keep todo phrases such as "확인 필요", "물어볼 것", and clinician tasks out of [S] body. Put them only under [Need to Check].
+7. If transfer_text mentions age or sex, copy them exactly from draft_onepager.patient_summary. Never change patient sex or age.
+8. Preserve uncertainty. Do not assert unsupported diagnoses or treatment decisions.
 
 {fewshot_block}
 
@@ -330,13 +333,38 @@ def is_transfer_text_safe(text, onepager):
     return is_grounded_text(text, onepager)
 
 
+def clean_transfer_text(value):
+    """Normalize EMR block whitespace without collapsing line breaks."""
+    raw = str(value or "").replace("\r\n", "\n").replace("\r", "\n")
+    lines = []
+    previous_blank = False
+    for raw_line in raw.split("\n"):
+        line = re.sub(r"[ \t]+", " ", raw_line).strip()
+        if line:
+            lines.append(line)
+            previous_blank = False
+        elif lines and not previous_blank:
+            lines.append("")
+            previous_blank = True
+    return "\n".join(lines).strip()
+
+
 def is_chart_like_transfer_text(text):
     """Reject patient-facing prose and objective/exam placeholders in EMR copy text."""
-    if re.search(r"환자는|언급했습니다|궁금합니다|필요합니다", text):
+    if re.search(r"환자는|언급했습니다|궁금합니다|필요합니다|해요|같아요|습니다", text):
         return False
-    if re.search(r"\bO\s*[:)]|객관소견|physical exam|vital", text, flags=re.I):
+    if re.search(r"\b[OAP]\s*[:)]|객관소견|physical exam|vital", text, flags=re.I):
         return False
-    if not re.search(r"S\s*\)|CC\s*:", text):
+    required = [
+        r"\[S\]",
+        r"Demographics\s*:",
+        r"CC\s*:",
+        r"PI\s*:",
+        r"PMHx/Med\s*:",
+        r"Allergy/Social\s*:",
+        r"\[Need to Check\s*:\s*대면 보강 문진 필요\]",
+    ]
+    if not all(re.search(pattern, text) for pattern in required):
         return False
     return True
 

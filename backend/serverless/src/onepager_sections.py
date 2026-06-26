@@ -24,6 +24,27 @@ from clinical_terms import (
 from utils import clean_quote, unique, visit_label
 
 
+EMR_SYMPTOM_TERMS = {
+    "객혈": "Hemoptysis",
+    "기침": "Cough",
+    "목의 통증": "Sore throat",
+    "목 통증": "Sore throat",
+    "목 불편감": "Sore throat",
+    "코막힘": "Nasal obstruction",
+    "콧물": "Rhinorrhea",
+    "발열": "Fever",
+    "가래": "Sputum",
+    "호흡곤란": "Dyspnea",
+    "가슴 답답": "Chest tightness",
+    "가슴 답답함": "Chest tightness",
+    "흉통": "Chest pain",
+    "기운없음": "General weakness",
+    "어지러움": "Dizziness",
+    "두통": "Headache",
+    "천명음": "Wheezing",
+}
+
+
 def original_source_quote(candidate, transcript, slot_id, hints=None):
     """원페이퍼에는 표준화 문장이 아니라 실제 환자 발화 원문만 인용한다."""
     candidate = clean_quote(candidate or "")
@@ -359,40 +380,113 @@ def agenda_label(category):
 
 
 def build_transfer_text(patient, slots, clinical, agenda, visit_type):
-    """EMR 복사용 초안 문장을 onepaper JSON 근거만으로 만듭니다.
+    """EMR 복사용 S 파트 초안을 onepaper JSON 근거만으로 만듭니다.
 
     LLM review가 실패하더라도 의사가 복사할 수 있는 최소 차팅 초안이 필요합니다.
-    진찰 전 문진 자료이므로 객관소견/진단/처방을 만들지 않고, S 중심의 간단한
-    SOAP-like 문장으로 제한합니다.
+    진찰 전 문진 자료이므로 객관소견/진단/처방을 만들지 않고, SOAP 중 S
+    파트만 5개 구획과 Need to Check로 분리합니다.
     """
-    demographics = f"{patient.get('age') or '-'}세 {patient.get('gender') or ''} {visit_label(visit_type)}".strip()
-    symptoms = ", ".join(unique([slot.get("name") for slot in slots if slot.get("name")]))
+    demographics = build_emr_demographics(patient, visit_type)
+    symptom_terms = unique([
+        emr_symptom_term(slot.get("name") or slot.get("display_text") or "")
+        for slot in slots
+        if slot.get("name") or slot.get("display_text")
+    ])[:3]
     contexts = unique([
         clean_quote(c.get("summary") or "")
         for c in clinical
         if c.get("summary") and c.get("category") in {"증상맥락", "재진경과", "복약정보", "복약순응도", "약물반응"}
     ])
-    med_contexts = [text for text in contexts if any(token in text for token in ("약", "복용", "병용", "처방"))]
-    pi_contexts = [text for text in contexts if text not in med_contexts]
+    med_source_contexts = [text for text in contexts if is_med_context(text)]
+    med_contexts = unique([normalize_med_context(text) for text in med_source_contexts])
+    pi_contexts = [text for text in contexts if text not in med_source_contexts]
     agenda_texts = unique([clean_quote(item.get("summary") or "") for item in agenda if item.get("summary")])
+    timeline_note = timeline_conflict_note(clinical)
+    if timeline_note and pi_contexts:
+        pi_contexts[0] = f"{pi_contexts[0]} {timeline_note}"
 
-    parts = [f"S) {demographics}"]
-    if symptoms:
-        parts.append(f"CC: {symptoms}")
-    if pi_contexts:
-        parts.append(f"PI: {'; '.join(pi_contexts[:2])}")
-    if med_contexts:
-        parts.append(f"Med: {'; '.join(med_contexts[:2])}")
-    if agenda_texts:
-        parts.append(f"Q: {'; '.join(agenda_texts[:2])}")
+    lines = [
+        "[S]",
+        f"• Demographics: {demographics}",
+        f"• CC: {', '.join(symptom_terms) if symptom_terms else 'Not mentioned'}",
+        f"• PI: {'; '.join(pi_contexts[:3]) if pi_contexts else 'Not mentioned'}",
+        f"• PMHx/Med: {'; '.join(med_contexts[:3]) if med_contexts else 'Not mentioned'}",
+        f"• Allergy/Social: {allergy_social_text(contexts)}",
+        "",
+        "[Need to Check : 대면 보강 문진 필요]",
+    ]
+    lines.extend([
+        f"- {item}" for item in build_need_to_check_items(
+            symptom_terms,
+            pi_contexts,
+            med_contexts,
+            agenda_texts,
+            timeline_note,
+        )
+    ])
+    return "\n".join(lines)
 
+
+def build_emr_demographics(patient, visit_type):
+    age = patient.get("age") or patient.get("age_text") or "-"
+    age_text = str(age) if str(age).endswith("세") else f"{age}세"
+    gender = clean_quote(patient.get("gender") or patient.get("sex") or "")
+    return clean_quote(f"{age_text} {gender} {visit_label(visit_type)}")
+
+
+def emr_symptom_term(name):
+    text = clean_quote(name)
+    return EMR_SYMPTOM_TERMS.get(text, text)
+
+
+def is_med_context(text):
+    return any(token in text for token in ("약", "복용", "병용", "처방", "영양제", "한약", "보조제", "홍삼"))
+
+
+def normalize_med_context(text):
+    normalized = clean_quote(text)
+    if normalized in {"영양제", "보조제", "건강보조제"}:
+        return "상세불명 영양제"
+    if "영양제" in normalized and not any(token in normalized for token in ("명", "종류", "제품", "상세불명")):
+        return normalized.replace("영양제", "상세불명 영양제")
+    return normalized
+
+
+def allergy_social_text(contexts):
+    items = []
+    for text in contexts:
+        if any(token in text for token in ("알레르기", "흡연", "음주", "직업", "거주", "사회력")):
+            items.append(text)
+    return "; ".join(unique(items[:3])) if items else "Not mentioned"
+
+
+def timeline_conflict_note(clinical):
+    timeline = []
+    for item in clinical:
+        label = clean_quote(item.get("label") or "")
+        if label not in {"시작시점", "기간"}:
+            continue
+        text = clean_quote(item.get("summary") or item.get("source_quote") or "")
+        if text:
+            timeline.append(text)
+    timeline = unique(timeline)
+    if len(timeline) < 2:
+        return ""
+    return f"[※ 진술 충돌: {timeline[0]} vs {timeline[1]}]"
+
+
+def build_need_to_check_items(symptoms, pi_contexts, med_contexts, agenda_texts, timeline_note):
     check_items = []
+    if timeline_note:
+        check_items.append("발병 시점/기간 진술 충돌 재확인")
     if symptoms:
-        check_items.append("증상 지속시간/중증도")
-    if med_contexts or agenda_texts:
-        check_items.append("복약/병용 가능 여부")
+        check_items.append("주증상 지속시간, 중증도, 악화/완화 요인 확인")
+    if not pi_contexts:
+        check_items.append("발병 시점 및 동반증상 확인")
+    if med_contexts:
+        check_items.append("복약명, 용량, 복용 간격 및 병용 가능성 확인")
+    if agenda_texts:
+        check_items.append("환자 질문에 대한 복약/생활 안내 필요")
     if not check_items:
-        check_items.append("문진 내용")
-    parts.append(f"확인: {', '.join(unique(check_items))}")
-
-    return " / ".join(part for part in parts if part)
+        check_items.append("추가 병력 및 환자 우려 사항 확인")
+    return unique(check_items)[:5]
