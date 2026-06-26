@@ -1,2 +1,0 @@
-﻿variant,case_id,failure_type,missing_gold,negative_hits,gold_symptoms,evaluated_k,predicted_top_k,queries_used,span_names,span_statuses,span_types,active_span_count,skipped_span_count
-G,eval_025,no_prediction|extraction_gold_mismatch,흉통,,흉통,20,,숨을 쉴 때마다 가슴 한쪽이 결립니다 가슴 한쪽 결림,가슴 한쪽 결림,있음,symptom,1,0

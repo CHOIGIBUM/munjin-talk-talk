@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MunjinTalkTalk IR Generation Blueprint",
+  "type": "object",
+  "required": ["meta", "cases"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["name", "version", "split", "count", "created_for"],
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "split": { "enum": ["train_100", "test_1000"] },
+        "count": { "type": "integer", "minimum": 1 },
+        "created_for": { "type": "string" }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "visit_type",
+          "question_id",
+          "dialect_type",
+          "gold_symptoms",
+          "negative_symptoms",
+          "expression_policy",
+          "difficulty",
+          "generation_notes"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "case_id": { "type": "string" },
+          "visit_type": { "enum": ["초진", "재진"] },
+          "question_id": { "enum": ["Q1", "Q3"] },
+          "dialect_type": { "enum": ["standard", "kangwon"] },
+          "gold_symptoms": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string" }
+          },
+          "negative_symptoms": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "expression_policy": {
+            "enum": ["direct_allowed", "lay_preferred", "direct_label_forbidden"]
+          },
+          "difficulty": { "enum": ["easy", "medium", "hard"] },
+          "generation_notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}
