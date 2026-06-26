@@ -70,9 +70,9 @@ export default function RoleLoginModal() {
         <div className="role-login-kicker">문진톡톡</div>
         <h2 id="role-login-title">{ROLE_TITLE[role] || '접속 확인'}</h2>
         <p>
-          {label} 화면은 개인정보와 문진 결과를 다루는 보호 화면입니다.
+          {label} 업무용 보호 화면입니다.
           <br />
-          접수처에서 안내받은 접근 코드를 입력해 주세요.
+          접근 코드를 입력해 주세요.
         </p>
 
         <label className="role-login-field">

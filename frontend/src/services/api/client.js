@@ -12,6 +12,12 @@ let authPromptHandler = null
 const pendingAuthRequests = []
 let activeAuthPrompt = null
 
+function normalizeHonorific(value) {
+  const honorific = String(value || '').trim()
+  if (!honorific || honorific === '어르신') return '환자님'
+  return honorific
+}
+
 export function isRemoteApiEnabled() {
   return Boolean(API_BASE_URL)
 }
@@ -52,7 +58,7 @@ export function normalizeSession(session) {
       gender: patient.gender || '-',
       department: patient.department || '이비인후과',
       doctor: patient.doctor || '',
-      honorific: patient.honorific || '어르신',
+      honorific: normalizeHonorific(patient.honorific),
     },
   }
 }

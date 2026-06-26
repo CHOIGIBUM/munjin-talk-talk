@@ -117,7 +117,7 @@ export default function PatientGuideScreen() {
   const handleShareSMS = async () => {
     const shareUrl = window.location.href
     const shareTitle = guide?.patient_name_masked
-      ? `${guide.patient_name_masked} 어르신 안내문`
+      ? `${guide.patient_name_masked} 환자님 안내문`
       : '문진톡톡 환자 안내문'
     if (navigator.share) {
       await navigator.share({ title: shareTitle, url: shareUrl })
@@ -162,7 +162,7 @@ export default function PatientGuideScreen() {
         <header className="pg-header pg-print-header">
           <div>
             <p className="pg-kicker">진료 후 안내문</p>
-            <h1>{guide?.patient_name_masked ? `${guide.patient_name_masked} 어르신 안내문` : '환자 안내문'}</h1>
+            <h1>{guide?.patient_name_masked ? `${guide.patient_name_masked} 환자님 안내문` : '환자 안내문'}</h1>
             <p className="pg-sub">오늘 진료에서 안내받은 내용을 집에서도 다시 확인하실 수 있게 정리했습니다</p>
           </div>
           <div className="pg-print-meta">

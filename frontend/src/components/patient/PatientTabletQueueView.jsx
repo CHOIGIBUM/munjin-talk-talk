@@ -93,7 +93,7 @@ export default function PatientTabletQueueView() {
                 <span className="tablet-queue-badge">
                   {TABLET_STATUS_LABEL[session.status] || session.status}
                 </span>
-                <h3>{session.patient.name} 어르신</h3>
+                <h3>{session.patient.name} 환자님</h3>
                 <p>
                   #{session.patient.receiptId} · {session.patient.age}세 {session.patient.gender}
                   {' · '}

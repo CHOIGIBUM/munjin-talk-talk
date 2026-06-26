@@ -320,7 +320,7 @@ def public_session(
             "receiptId": patient.get("receipt_id", ""),
             "department": patient.get("department", "이비인후과"),
             "doctor": patient.get("doctor", ""),
-            "honorific": patient.get("honorific", "어르신"),
+            "honorific": patient.get("honorific", "환자님"),
         },
         "privacyConsent": session.get("privacy_consent", {}),
         "privacy_consent": session.get("privacy_consent", {}),

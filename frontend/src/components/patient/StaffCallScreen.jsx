@@ -26,7 +26,7 @@ export default function StaffCallScreen({
   return (
     <>
       <ScreenHeader
-        patientName={patient.name + ' 어르신'}
+        patientName={`${patient.name} 환자님`}
         subtitle="직원에게 알림 전송됨"
         showVisitTag={false}
       />

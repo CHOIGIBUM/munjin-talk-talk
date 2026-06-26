@@ -61,7 +61,7 @@ def sanitize_reception_patient(patient_input: dict[str, Any]) -> dict[str, Any]:
         "receipt_id": receipt_id,
         "department": patient_input.get("department") or "이비인후과",
         "doctor": patient_input.get("doctor") or "이민우",
-        "honorific": "어르신",
+        "honorific": "환자님",
     }
 
 

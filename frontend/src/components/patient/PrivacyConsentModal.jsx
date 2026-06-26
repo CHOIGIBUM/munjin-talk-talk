@@ -109,7 +109,7 @@ export default function PrivacyConsentModal({
         {error && <p className="privacy-consent-error">{error}</p>}
         {rejected && (
           <p className="privacy-consent-rejected">
-            음성 문진은 시작하지 않습니다. 접수 직원에게 수기 문진을 요청해 주세요.
+            음성 문진을 시작하지 않습니다. 접수 직원에게 수기 문진을 요청해 주세요.
           </p>
         )}
 
