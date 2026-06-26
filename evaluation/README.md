@@ -2,7 +2,7 @@
 
 The previous IR evaluation folder, generated datasets, run outputs, hand-built aliases, few-shots, and domain-pack-derived tuning artifacts have been removed.
 
-This directory is intentionally empty except for this reset marker. The next evaluation pipeline should be rebuilt from a documented design in this folder.
+This directory now starts from a clean reset marker and rebuilds evaluation assets from documented design files only.
 
 Planned rebuild order:
 
@@ -14,3 +14,7 @@ Planned rebuild order:
 6. Run evaluation once before inspecting individual test failures.
 
 Do not restore the old `evaluation/ir` data or outputs as training material.
+
+Current rebuild entry point:
+
+- `train_100_blueprint/`: blueprint and LLM rendering instructions for the first 100 training cases.
