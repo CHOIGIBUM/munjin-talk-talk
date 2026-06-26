@@ -5,9 +5,11 @@ This module therefore splits the flow into two paths:
 
 1. `/process-answers` stores the confirmed Q1-Q4 text, marks the session as
    `analysis_pending`, and asynchronously invokes the same Lambda.
-2. The internal Lambda event runs the existing LangGraph pipeline, builds S3
-   artifacts, and finally marks the session as `waiting_doctor` or
-   `analysis_failed`.
+2. The internal Lambda event runs the per-question LangGraph pipeline. If the
+   remaining Lambda time is low, it re-enqueues the remaining answers as another
+   internal event instead of leaving the session stuck in a timeout.
+3. The final batch builds S3 artifacts and marks the session as
+   `waiting_doctor`, `needs_priority`, or `analysis_failed`.
 """
 
 from __future__ import annotations
@@ -160,7 +162,7 @@ def handle_internal_event(event: dict[str, Any], context: Any = None) -> dict[st
 
 
 def run_queued_answer_analysis(payload: dict[str, Any], context: Any = None) -> dict[str, Any]:
-    """Run Q1-Q4 analysis after the patient has already completed the flow."""
+    """Run queued answer analysis after patient completion and finalize the session."""
     session_id = payload.get("session_id") or payload.get("sessionId")
     answers = payload.get("answers") or []
     if not session_id or not isinstance(answers, list) or not answers:
@@ -250,7 +252,7 @@ def run_queued_answer_analysis(payload: dict[str, Any], context: Any = None) -> 
 
 
 def run_answers_pipeline_sync(body: dict[str, Any], context: Any = None) -> dict[str, Any]:
-    """Run the existing per-question LangGraph pipeline for an answer batch."""
+    """Run per-question LangGraph analysis, continuing later if Lambda time is low."""
     session_id = body.get("session_id") or body.get("sessionId")
     visit_type = body.get("visit_type") or body.get("visitType")
     question_set_id = body.get("question_set_id") or body.get("questionSetId") or "default"
@@ -414,7 +416,7 @@ def persist_pending_answers(session: dict[str, Any], answers: list[dict[str, Any
 
 
 def mark_analysis_pending(session_id: str, answers: list[dict[str, Any]]) -> None:
-    """Move session to doctor-waiting pipeline state without waiting for LLM."""
+    """Mark stored answers as queued for background analysis without blocking patient UX."""
     session = get_session(session_id) or {}
     question_status = dict(session.get("question_status") or {})
     for item in answers:

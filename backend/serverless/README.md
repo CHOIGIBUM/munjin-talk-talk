@@ -135,9 +135,9 @@ sam deploy `
   --resolve-s3 `
   --parameter-overrides `
     SessionsTableName=MunjinSessions `
-    ArtifactsBucketName=munjin-mvp-artifacts-cgb-289984444869-ap-northeast-2-an `
-    LambdaRoleArn=arn:aws:iam::289984444869:role/munjin-lambda-role `
-    CorsAllowOrigin=https://main.dv5herezqtt1t.amplifyapp.com `
+    ArtifactsBucketName=<s3-artifact-bucket-name> `
+    LambdaRoleArn=<lambda-role-arn> `
+    CorsAllowOrigin=https://<amplify-branch-domain> `
     StaffAccessToken=<직원접근코드> `
     DoctorAccessToken=<의료진접근코드> `
     AuthSigningSecret=<긴난수>

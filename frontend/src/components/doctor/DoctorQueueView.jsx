@@ -7,7 +7,8 @@ import './DoctorQueueView.css'
 
 // 의사 대기열 화면입니다.
 // 환자 문진 완료 직후에는 analysis_pending으로 올라오고,
-// 백그라운드 분석이 끝나면 waiting_doctor 상태로 전환됩니다.
+// 백그라운드 분석이 끝나면 일반 대기는 waiting_doctor, 위험 표현은 needs_priority,
+// 실패는 analysis_failed 상태로 전환됩니다.
 const statusLabel = {
   waiting_tablet: '문진 대기',
   in_progress: '문진 진행 중',

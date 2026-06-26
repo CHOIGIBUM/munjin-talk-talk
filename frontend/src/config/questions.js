@@ -1,9 +1,9 @@
 // 초진과 재진의 4문항 정의. 흐름 단계의 진실의 원천(single source of truth).
 //
-// 각 질문의 question_type은 백엔드 extract Lambda에 전달되어
+// 각 질문의 question_type은 백엔드 extraction pipeline에 전달되어
 // LLM 프롬프트 분기에 사용됨:
-//   - chief_complaint / progress / new_symptoms: Nova Pro와 Hybrid IR을 쓰는 증상 중심 문항
-//   - onset / current_medications / adherence / patient_questions: Nova Lite로 구조화하는 경량 문항
+//   - chief_complaint / progress / new_symptoms: 강한 extraction 모델과 Hybrid IR을 쓰는 증상 중심 문항
+//   - onset / current_medications / adherence / patient_questions / unresolved_questions: 경량 모델로 구조화하는 문항
 
 // 환자 문진 질문 스키마입니다.
 // question_type은 백엔드 extraction prompt와 IR 분기 기준이므로 UI 문구를 바꿔도 이 값은 신중히 수정해야 합니다.
@@ -16,7 +16,7 @@ export const QUESTIONS = {
       sub: '증상을 한두 문장으로 짧게\n말씀해 주시면 됩니다',
       example: '"어제부터 목이 칼칼하고 코가 막혀요."',
       question_type: 'chief_complaint',
-      processing: 'llm_with_match'  // Nova + Titan/Hybrid IR
+      processing: 'llm_with_match'  // Strong LLM + Titan/Hybrid IR
     },
     {
       id: 'Q2',

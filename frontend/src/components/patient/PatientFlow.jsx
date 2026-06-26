@@ -40,8 +40,9 @@ function consentStorageKey(sessionId) {
 }
 
 // 환자 태블릿 문진의 상태 머신입니다.
-// 환자는 각 문항의 STT 결과를 직접 확인하고, LLM/LangGraph 처리는 Q1~Q4가
-// 모두 모인 뒤 한 번에 실행합니다. 문항마다 LLM 대기 시간을 만들지 않기 위함입니다.
+// 환자는 각 문항의 STT 결과를 직접 확인하고, Q1~Q4가 모두 모인 뒤
+// 한 번의 배치 요청으로 저장과 백그라운드 LangGraph 분석을 큐에 넣습니다.
+// 문항마다 LLM 대기 시간을 만들지 않기 위함입니다.
 export default function PatientFlow({
   initialVisitType = null,
   patient = null,

@@ -13,7 +13,7 @@ from utils import visit_label
 
 
 def select_extraction_model(visit_type, question_id, question_type):
-    """문항 난이도에 따라 Nova Pro/Lite를 선택합니다."""
+    """문항 난이도에 따라 강/경량 Bedrock extraction 모델을 선택합니다."""
     if question_type in ("chief_complaint", "progress", "new_symptoms") or question_id in ("Q1",):
         return STRONG_MODEL_ID
     return LIGHT_MODEL_ID
@@ -31,7 +31,7 @@ def build_extraction_prompt(
     dialect_standardized_text="",
     dialect_replacements=None,
 ):
-    """Nova가 반드시 지켜야 할 quote grounding과 fixed schema를 명시합니다."""
+    """Bedrock extraction 모델이 지켜야 할 quote grounding과 fixed schema를 명시합니다."""
     visit = visit_label(visit_type)
     server_text = prompt_question_text(visit_type, question_id, question_set_id or None)
     # 알려진 기본 문항은 서버 정의가 항상 우선입니다.
