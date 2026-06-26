@@ -1,6 +1,6 @@
 {
   "version": "train100-training-report-v1",
-  "generated_at": "2026-06-26T03:09:23.985981+00:00",
+  "generated_at": "2026-06-26T03:28:07.553480+00:00",
   "input": "evaluation/generated/train_100/cases.jsonl",
   "test_data_used": false,
   "case_count": 100,
@@ -13,6 +13,12 @@
     "dialect_type": {
       "standard": 50,
       "kangwon": 50
+    },
+    "dialect_source_layer": {
+      "none": 50,
+      "train_validated_medical_colloquial": 17,
+      "light_dialect_flavor": 32,
+      "rag_pack_anchored": 1
     },
     "symptom_group": {
       "upper_airway_common": 22,

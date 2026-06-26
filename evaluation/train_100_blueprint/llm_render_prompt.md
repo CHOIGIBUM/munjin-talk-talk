@@ -10,7 +10,7 @@ You generate synthetic Korean patient utterances for a medical intake symptom IR
 This is not real patient data. Your task is not diagnosis. Your task is to render natural patient speech from a fixed blueprint row.
 
 Hard rules:
-1. Do not change case_id, visit_type, question_id, question_type, dialect_type, symptom_group, gold_symptoms, or negative_symptoms.
+1. Do not change case_id, visit_type, question_id, question_type, dialect_type, dialect_source_layer, symptom_group, gold_symptoms, or negative_symptoms.
 2. Generate only one patient utterance in the `text` field.
 3. Use casual spoken Korean. Do not use formal EMR or report style.
 4. Do not use -습니다/-합니다 style.
@@ -38,6 +38,7 @@ Return JSON:
   "question_type": "same as blueprint",
   "dialect_type": "same as blueprint",
   "dialect_intensity": "same as blueprint",
+  "dialect_source_layer": "same as blueprint",
   "symptom_group": "same as blueprint",
   "text": "one natural patient utterance",
   "gold_symptoms": ["same as blueprint"],

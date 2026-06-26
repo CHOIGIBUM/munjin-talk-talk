@@ -19,3 +19,4 @@ Current rebuild entry point:
 
 - `train_100_blueprint/`: blueprint and LLM rendering instructions for the first 100 training cases.
 - `test_1000_blueprint/`: held-out test design, rendering rules, and first-evaluation lock for the 1000 case evaluation set.
+- `RESEARCH_DESIGN.md`: clean train/test order, dialect source-layer policy, and reporting rules.

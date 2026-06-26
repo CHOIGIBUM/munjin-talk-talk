@@ -13,6 +13,7 @@ The important rule is that this folder does not generate final patient utterance
 | `case_blueprint.schema.json` | JSON schema for each blueprint row |
 | `llm_render_prompt.md` | Prompt template for LLM-based utterance rendering |
 | `quality_gate.md` | Manual and automated checks before accepting rendered data |
+| `dialect_source_policy.md` | Clarifies whether Kangwon rows are RAG-pack anchored, medical colloquial, or light dialect flavor |
 
 ## Workflow
 
@@ -24,3 +25,7 @@ The important rule is that this folder does not generate final patient utterance
 6. Use only this accepted `train_100` to derive aliases, few-shots, and domain-pack candidates.
 
 No `test_1000` cases should be generated until the train-derived runtime artifacts are frozen.
+
+## Dialect Note
+
+The 50 Kangwon-labeled training rows are not all grounded in the current Gangwon dialect RAG pack. They now carry a `dialect_source_layer` field so later reporting can distinguish standard rows, actual dialect-pack anchored rows, train-validated medical colloquial rows, and light dialect-flavored rows.

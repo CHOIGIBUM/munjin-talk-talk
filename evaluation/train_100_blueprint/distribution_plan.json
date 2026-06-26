@@ -22,6 +22,13 @@
     "medium": 15,
     "strong": 5
   },
+  "dialect_source_layer_distribution": {
+    "none": 50,
+    "rag_pack_anchored": 1,
+    "train_validated_medical_colloquial": 17,
+    "light_dialect_flavor": 32
+  },
+  "dialect_source_layer_note": "This is an observed provenance classification added after checking the current dialect_kangwon pack. Most Kangwon train rows are medical colloquial or light dialect flavor, not direct dialect-RAG-pack examples.",
   "symptom_group_distribution": {
     "upper_airway_common": 22,
     "cough_sputum_lower_airway": 18,

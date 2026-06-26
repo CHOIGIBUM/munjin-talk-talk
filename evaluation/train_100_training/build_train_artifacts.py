@@ -938,6 +938,7 @@ def build_report(cases: list[dict[str, Any]], domain_pack: dict[str, Any], fewsh
         "distribution": {
             "visit_question": dict(Counter(f"{case['visit_type']}_{case['question_id']}" for case in cases)),
             "dialect_type": dict(Counter(case["dialect_type"] for case in cases)),
+            "dialect_source_layer": dict(Counter(case.get("dialect_source_layer", "unspecified") for case in cases)),
             "symptom_group": dict(Counter(case["symptom_group"] for case in cases)),
         },
         "outputs": {

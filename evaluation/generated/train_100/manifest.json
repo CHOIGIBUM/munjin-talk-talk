@@ -11,6 +11,7 @@
   "notes": [
     "No code-based phrase combinator was used to render patient utterances.",
     "Metadata and labels are copied from the fixed blueprint.",
-    "The text field is synthetic patient speech rendered from each blueprint row."
+    "The text field is synthetic patient speech rendered from each blueprint row.",
+    "dialect_source_layer was added after checking the current Gangwon dialect RAG pack, to separate pack-grounded dialect from medical colloquial and light dialect flavor."
   ]
 }

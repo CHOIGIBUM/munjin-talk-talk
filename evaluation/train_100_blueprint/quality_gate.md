@@ -19,6 +19,9 @@ Accept a rendered case only when all checks pass.
 - Kangwon colloquial: 50.
 - Quadrants are 25 each.
 - Symptom group counts match `distribution_plan.json`.
+- `dialect_source_layer` counts match `distribution_plan.json`.
+- Standard rows have `dialect_source_layer: none`.
+- Kangwon rows are interpreted by source layer, not assumed to be entirely dialect-RAG-grounded.
 
 ## Leakage Checks
 

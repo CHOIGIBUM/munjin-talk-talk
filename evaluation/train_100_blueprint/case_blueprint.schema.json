@@ -9,6 +9,7 @@
     "question_type",
     "dialect_type",
     "dialect_intensity",
+    "dialect_source_layer",
     "symptom_group",
     "gold_symptoms",
     "negative_symptoms",
@@ -25,6 +26,14 @@
     "question_type": { "enum": ["chief_complaint", "new_symptoms"] },
     "dialect_type": { "enum": ["standard", "kangwon"] },
     "dialect_intensity": { "enum": ["none", "light", "medium", "strong"] },
+    "dialect_source_layer": {
+      "enum": [
+        "none",
+        "rag_pack_anchored",
+        "train_validated_medical_colloquial",
+        "light_dialect_flavor"
+      ]
+    },
     "symptom_group": {
       "enum": [
         "upper_airway_common",
