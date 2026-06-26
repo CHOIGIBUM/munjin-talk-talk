@@ -108,7 +108,7 @@ export default function DoctorView() {
         additionalNotes
       })
       if (result.guide_generation_valid !== false) {
-        setSubmitStatus('success')
+        setSubmitStatus(result.patient_guide_generated ? 'success' : 'completed_no_guide')
       } else {
         setSubmitStatus('invalid')
       }

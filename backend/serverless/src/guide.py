@@ -28,6 +28,8 @@ def save_doctor_response(body: dict[str, Any]):
         return None, response(404, {"error": "session_not_found"})
 
     answers = body.get("answers") or []
+    if not isinstance(answers, list):
+        answers = []
     patient_instruction = (
         body.get("patient_instruction")
         or body.get("patientInstruction")
@@ -35,9 +37,12 @@ def save_doctor_response(body: dict[str, Any]):
         or body.get("additionalNotes")
         or ""
     )
+    patient_instruction = clean_quote(patient_instruction)
     onepager = get_json(session, ONEPAPER_FILE, default={}) or {}
     guide = generate_patient_guide(session, onepager, answers, patient_instruction)
     validator_passed = not answers or bool(guide.get("items"))
+    guide_ready = bool(guide.get("items") or patient_instruction)
+    no_patient_guide_needed = not answers and not patient_instruction
 
     doctor_review = {
         "answers": answers,
@@ -50,13 +55,14 @@ def save_doctor_response(body: dict[str, Any]):
     response_guide = prepare_artifact_payload(GUIDE_FILE, guide)
 
     update_session(session_id, {
-        "guide_ready": bool(guide.get("items") or patient_instruction),
+        "guide_ready": guide_ready,
         "reviewed_at": doctor_review["reviewed_at"],
         "status": "reviewed",
     })
     return {
         "doctor_review_saved": True,
         "patient_guide_generated": bool(guide.get("items")),
+        "no_patient_guide_needed": no_patient_guide_needed,
         "guide_generation_valid": validator_passed,
         "guide_validator_passed": validator_passed,
         # 이전 프론트와의 호환성을 위해 남기지만, 신규 UI에서는 환자 문진 validator와 혼동하지 않습니다.

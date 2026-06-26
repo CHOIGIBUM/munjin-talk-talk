@@ -24,6 +24,16 @@ const CATEGORY_LABEL = {
   other:                 '기타'
 }
 
+function isNoQuestionTranscript(text) {
+  const normalized = String(text || '').replace(/\s+/g, ' ').trim()
+  if (!normalized) return false
+  return (
+    /^(따로\s*)?(없어요|없습니다|없음|없어|없다|아니요|아뇨|괜찮아요|괜찮습니다)/.test(normalized) ||
+    /(궁금한\s*(건|거|것)?|질문)\s*(은|는|이|가)?\s*(따로\s*)?(없어요|없습니다|없음|없어|없다)/.test(normalized) ||
+    /(딱히|별로)\s*(궁금한\s*(건|거|것)?|질문)?\s*(없어요|없습니다|없음|없어|없다)/.test(normalized)
+  )
+}
+
 export default function DoctorAgendaPanel({ sessionData, submitStatus, onSubmit }) {
   // 백엔드 onepager에서 validator를 통과한 Q4 agenda만 사용합니다.
   // 프론트에서 질문을 임의 생성하지 않아야 저장된 JSON과 화면이 어긋나지 않습니다.
@@ -58,7 +68,12 @@ export default function DoctorAgendaPanel({ sessionData, submitStatus, onSubmit 
   }
 
   const filledCount = answers.filter(a => a.answer_text.trim().length > 0).length
-  const canSubmit = filledCount > 0 || patientInstruction.trim().length > 0
+  const noPatientQuestion = answers.length === 0 && isNoQuestionTranscript(fullTranscript)
+  const hasPatientInstruction = patientInstruction.trim().length > 0
+  const canSubmit = filledCount > 0 || hasPatientInstruction || noPatientQuestion
+  const submitButtonLabel = noPatientQuestion && !hasPatientInstruction
+    ? '문진 완료 처리'
+    : '환자 안내문 생성'
 
   const handleSubmit = () => {
     if (!canSubmit) return
@@ -112,7 +127,9 @@ export default function DoctorAgendaPanel({ sessionData, submitStatus, onSubmit 
       <section className="dap-questions">
         {answers.length === 0 && (
           <div className="dap-empty-state">
-            환자 질문이 아직 없습니다. 문진 완료 후 답변 입력 항목이 표시됩니다.
+            {noPatientQuestion
+              ? '환자가 별도 질문이 없다고 답했습니다. 안내문 없이 문진 완료 처리가 가능합니다.'
+              : '환자 질문이 아직 없습니다. 문진 완료 후 답변 입력 항목이 표시됩니다.'}
           </div>
         )}
         {answers.map((answer, idx) => {
@@ -167,16 +184,17 @@ export default function DoctorAgendaPanel({ sessionData, submitStatus, onSubmit 
         <div className="dap-status">
           {submitStatus === 'submitting' && '안내문 생성 중...'}
           {submitStatus === 'success' && '✓ 안내문 생성 완료. 안내문 출력 화면에서 확인할 수 있습니다.'}
+          {submitStatus === 'completed_no_guide' && '✓ 별도 안내문 없이 문진 완료 처리되었습니다.'}
           {submitStatus === 'invalid' && '⚠ 안내문 문장 생성에 실패했습니다. 답변을 조금 더 구체적으로 작성해 주세요.'}
           {submitStatus === 'error' && '⚠ 전송 실패. 다시 시도해 주세요'}
-          {!submitStatus && `${filledCount}/${answers.length} 답변 입력됨`}
+          {!submitStatus && (noPatientQuestion ? '환자 질문 없음 · 안내문 없이 완료 가능' : `${filledCount}/${answers.length} 답변 입력됨`)}
         </div>
         <button
           className="dap-submit"
           disabled={!canSubmit || submitStatus === 'submitting'}
           onClick={handleSubmit}
         >
-          {submitStatus === 'submitting' ? '생성 중...' : '환자 안내문 생성'}
+          {submitStatus === 'submitting' ? '처리 중...' : submitButtonLabel}
         </button>
       </div>
     </div>
