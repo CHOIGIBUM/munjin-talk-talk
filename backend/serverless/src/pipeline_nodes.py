@@ -5,6 +5,7 @@
 """
 
 import hashlib
+import re
 from typing import Any
 
 from agenda_categories import infer_agenda_category
@@ -27,7 +28,23 @@ from question_sets import prompt_question_text
 from rag_context import retrieve_intake_rag_context
 from retrieval import match_slots
 from settings import EXTRACTION_RETRY_ATTEMPTS, MAX_LLM_TOKENS
-from utils import normalize_visit_type, response
+from utils import clean_quote, normalize_visit_type, response
+
+
+SYMPTOM_RESCUE_RULES = [
+    {
+        "slot_ref": "chest_discomfort",
+        "name": "가슴 답답",
+        "normalized_text": "가슴이 답답해집니다.",
+        "summary": "가슴 답답함이 새로 있거나 악화되는 양상입니다.",
+        "priority": "우선",
+        "alert": True,
+        "patterns": [
+            r"가슴[이은는도이가\s]*(?:좀\s*)?답답(?:해지는|해지|하다|한|함|해|허고|허)?",
+            r"가심[이은는도이가\s]*(?:좀\s*)?답답(?:해지는|해지|하다|한|함|해|허고|허)?",
+        ],
+    },
+]
 
 
 def input_transcript_node(state: AnswerPipelineState) -> dict[str, Any]:
@@ -268,6 +285,13 @@ def schema_quote_validation_node(state: AnswerPipelineState) -> dict[str, Any]:
                 )
             )
             return update
+        rescued = preserve_known_symptom_context(
+            state,
+            reason="semantic_extraction_failed_before_payload",
+            extracted_error=extracted.get("error"),
+        )
+        if rescued:
+            return rescued
         preserved = preserve_non_symptom_context(
             state,
             reason="bedrock_or_schema_failed_before_payload",
@@ -417,6 +441,15 @@ def schema_quote_validation_node(state: AnswerPipelineState) -> dict[str, Any]:
         )
         return update
 
+    rescued = preserve_known_symptom_context(
+        state,
+        reason="schema_quote_failed_after_retries",
+        validation_errors=validation_errors,
+        extracted_error=extracted.get("error"),
+    )
+    if rescued:
+        return rescued
+
     preserved = preserve_non_symptom_context(
         state,
         reason="schema_quote_failed_after_retries",
@@ -545,6 +578,142 @@ def preserve_non_symptom_context(
         )
     )
     return update
+
+
+def preserve_known_symptom_context(
+    state: AnswerPipelineState,
+    reason: str,
+    validation_errors: list[dict[str, Any]] | None = None,
+    extracted_error: str | None = None,
+) -> dict[str, Any] | None:
+    """LLM이 명확한 주요 증상 span을 놓친 경우 최소 span을 복원합니다."""
+    question_type = state.get("question_type") or ""
+    transcript = (state.get("transcript") or "").strip()
+    if question_type not in SYMPTOM_QUESTION_TYPES or not transcript:
+        return None
+
+    spans = deterministic_symptom_rescue_spans(transcript, question_type)
+    if not spans:
+        return None
+
+    question_id = state.get("question_id") or ""
+    visit_type = normalize_visit_type(state.get("visit_type"))
+    clue_category = "재진경과" if visit_type == "followup" else "증상맥락"
+    clue_label = "새 증상" if question_type == "new_symptoms" else "현재양상"
+    clinical_clues = [
+        {
+            "category": clue_category,
+            "label": clue_label,
+            "summary": span["rescue_summary"],
+            "source_quote": span["source_quote"],
+            "source_question": question_id,
+            "priority": "우선" if span.get("alert") else "일반",
+            "related_symptoms": [span["name"]],
+        }
+        for span in spans
+    ]
+    clean_spans = [
+        {key: value for key, value in span.items() if key != "rescue_summary"}
+        for span in spans
+    ]
+    structured = {
+        "standardized_text": deterministic_rescue_standardized_text(transcript, spans),
+        "clinical_clues": clinical_clues,
+        "questions": [],
+        "unresolved_items": [],
+    }
+    chain_meta = state.get("extraction_chain_meta") or {}
+    attempt = int(state.get("extraction_attempt") or 1)
+    extracted = {
+        "spans": clean_spans,
+        "structured": structured,
+        "transcript": transcript,
+        "method": "deterministic_symptom_rescue",
+        "validator_passed": True,
+        "llm_meta": {
+            "model_id": chain_meta.get("model_id"),
+            "raw_sha256": hashlib.sha256((state.get("extraction_raw_text") or "").encode("utf-8")).hexdigest(),
+            "langchain": chain_meta,
+            "rag_context": summarize_rag_context(state.get("rag_context") or {}),
+            "validation_errors": validation_errors or [],
+            "attempts": attempt,
+            "retry_loop": "langgraph_schema_quote_repair",
+            "symptom_rescue": {
+                "type": "deterministic_known_symptom_rescue",
+                "reason": reason,
+                "error": extracted_error,
+                "rescued_slot_refs": [span["slot_ref"] for span in clean_spans],
+            },
+        },
+    }
+    update = {
+        "extracted": extracted,
+        "semantic_failed": False,
+        "safety_only": False,
+        "retry_extraction": False,
+        "extraction_validation_errors": validation_errors or [],
+        "repair_note": "",
+    }
+    update.update(
+        trace_update(
+            state,
+            "schema_quote_validation",
+            "rescued_symptom",
+            {
+                "reason": reason,
+                "question_type": question_type,
+                "rescued_count": len(clean_spans),
+                "rescued_slot_refs": [span["slot_ref"] for span in clean_spans],
+                "validation_error_count": len(validation_errors or []),
+                "attempt": attempt,
+            },
+        )
+    )
+    return update
+
+
+def deterministic_symptom_rescue_spans(transcript: str, question_type: str) -> list[dict[str, Any]]:
+    """Known symptom expressions that are safe to restore before IR."""
+    span_type = "new" if question_type == "new_symptoms" else "symptom"
+    spans: list[dict[str, Any]] = []
+    seen_quotes: set[str] = set()
+    for rule in SYMPTOM_RESCUE_RULES:
+        for pattern in rule["patterns"]:
+            match = re.search(pattern, transcript)
+            if not match:
+                continue
+            source_quote = clean_quote(match.group(0))
+            if not source_quote or source_quote in seen_quotes:
+                continue
+            seen_quotes.add(source_quote)
+            spans.append({
+                "source_quote": source_quote,
+                "type": span_type,
+                "slot_ref": rule["slot_ref"],
+                "name": rule["name"],
+                "normalized_text": rule["normalized_text"],
+                "status": "있음",
+                "alert": bool(rule.get("alert")),
+                "explain": "환자 원문에서 표준 증상과 직접 대응되는 표현이 확인되어 보존했습니다.",
+                "rescue_summary": rule["summary"],
+            })
+            break
+    return spans
+
+
+def deterministic_rescue_standardized_text(transcript: str, spans: list[dict[str, Any]]) -> str:
+    symptom_text = ", ".join(unique_ordered([span["normalized_text"].rstrip(".") for span in spans]))
+    return f"{symptom_text}." if symptom_text else transcript
+
+
+def unique_ordered(items: list[str]) -> list[str]:
+    seen = set()
+    out = []
+    for item in items:
+        if item and item not in seen:
+            seen.add(item)
+            out.append(item)
+    return out
 
 
 def preserved_context_structured(question_type: str, question_id: str, transcript: str) -> dict[str, Any] | None:

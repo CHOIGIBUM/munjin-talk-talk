@@ -359,12 +359,20 @@ function normalizePatientQuestionnaire(responses = {}) {
 
 function getStandardizedText(payload) {
   if (!payload || typeof payload === 'string') return ''
+  const structured = payload.structured || payload.result?.structured || {}
+  const dialect = payload.dialect_normalization || payload.result?.dialect_normalization || {}
+  const spans = Array.isArray(payload.spans)
+    ? payload.spans
+    : (Array.isArray(payload.result?.spans) ? payload.result.spans : [])
+  const spanText = uniqueTexts(spans.map(span => cleanText(span.normalized_text || span.name))).join(' / ')
   return (
-    payload.structured?.standardized_text ||
-    payload.dialect_normalization?.standardized_text ||
+    structured.standardized_text ||
+    dialect.standardized_text ||
     payload.standardized_text ||
+    payload.result?.standardized_text ||
     payload.standard ||
     payload.normalized_text ||
+    spanText ||
     ''
   )
 }

@@ -178,6 +178,9 @@ def is_hybrid_candidate_accepted(candidate):
     bm25 = float(candidate.get("bm25_score") or 0)
     vector = float(candidate.get("vector_score") or 0)
     label = float(candidate.get("label_score") or 0)
+    branch = candidate.get("retrieval_branch") or ""
+    if branch == "preferred_alias" and bm25 >= HYBRID_MIN_BM25_SCORE and label >= HYBRID_MIN_LABEL_SCORE:
+        return True, "preferred_alias_lexical_label"
     if vector >= HYBRID_MIN_VECTOR_SCORE and (bm25 >= HYBRID_MIN_BM25_SCORE or label >= HYBRID_MIN_LABEL_SCORE):
         return True, "vector_plus_lexical_or_label"
     return False, (
