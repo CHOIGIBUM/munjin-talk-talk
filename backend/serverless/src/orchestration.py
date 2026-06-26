@@ -26,6 +26,7 @@ from utils import now_iso, response
 
 INTERNAL_SOURCE = "munjin.analysis"
 INTERNAL_ACTION_PROCESS_BATCH = "process_answers_batch"
+MIN_CONTINUATION_TIME_MS = 30_000
 
 
 def process_answer(body: dict[str, Any]):
@@ -155,10 +156,10 @@ def handle_internal_event(event: dict[str, Any], context: Any = None) -> dict[st
     """Handle asynchronous Lambda self-invocation events."""
     if event.get("source") != INTERNAL_SOURCE or event.get("action") != INTERNAL_ACTION_PROCESS_BATCH:
         return {"ok": False, "error": "unknown_internal_event"}
-    return run_queued_answer_analysis(event.get("payload") or {})
+    return run_queued_answer_analysis(event.get("payload") or {}, context)
 
 
-def run_queued_answer_analysis(payload: dict[str, Any]) -> dict[str, Any]:
+def run_queued_answer_analysis(payload: dict[str, Any], context: Any = None) -> dict[str, Any]:
     """Run Q1-Q4 analysis after the patient has already completed the flow."""
     session_id = payload.get("session_id") or payload.get("sessionId")
     answers = payload.get("answers") or []
@@ -170,21 +171,65 @@ def run_queued_answer_analysis(payload: dict[str, Any]) -> dict[str, Any]:
         "analysis_started_at": now_iso(),
         "analysis_error": "",
     })
+    print(json.dumps({
+        "level": "info",
+        "event": "queued_analysis_started",
+        "session_id": session_id,
+        "answer_count": len(answers),
+        "continuation": bool(payload.get("continuation")),
+    }, ensure_ascii=False))
 
     try:
-        result = run_answers_pipeline_sync(payload)
+        result = run_answers_pipeline_sync(payload, context)
+        if result.get("continuation_queued"):
+            update_session(session_id, {
+                "analysis_status": "running",
+                "analysis_updated_at": now_iso(),
+                "analysis_error": "",
+            })
+            print(json.dumps({
+                "level": "info",
+                "event": "queued_analysis_continued",
+                "session_id": session_id,
+                "processed_question_count": result.get("processed_question_count"),
+                "remaining_question_count": result.get("remaining_question_count"),
+            }, ensure_ascii=False))
+            return {
+                "ok": True,
+                "analysis_status": "running",
+                "continuation_queued": True,
+                "remaining_question_count": result.get("remaining_question_count"),
+            }
+        if result.get("continuation_error"):
+            raise RuntimeError(result["continuation_error"])
+
         failed = result.get("failed_results") or []
+        total_failed_count = int((result.get("pipeline") or {}).get("failed_question_count") or len(failed))
         onepager_ready = bool(result.get("onepager_ready"))
-        final_status = "waiting_doctor" if onepager_ready else "analysis_failed"
-        final_analysis_status = "partial_failed" if failed and onepager_ready else ("succeeded" if onepager_ready else "failed")
+        current_session = get_session(session_id) or {}
+        final_status = "analysis_failed"
+        if onepager_ready:
+            final_status = "needs_priority" if (
+                current_session.get("risk") == "high" or current_session.get("status") == "needs_priority"
+            ) else "waiting_doctor"
+        final_analysis_status = "partial_failed" if total_failed_count and onepager_ready else ("succeeded" if onepager_ready else "failed")
         update_session(session_id, {
             "status": final_status,
             "analysis_status": final_analysis_status,
             "analysis_completed_at": now_iso(),
             "analysis_error": "" if onepager_ready else "onepager_not_ready",
             "onepager_ready": onepager_ready,
-            "analysis_failed_count": len(failed),
+            "analysis_failed_count": total_failed_count,
         })
+        print(json.dumps({
+            "level": "info",
+            "event": "queued_analysis_completed",
+            "session_id": session_id,
+            "status": final_status,
+            "analysis_status": final_analysis_status,
+            "onepager_ready": onepager_ready,
+            "failed_count": total_failed_count,
+        }, ensure_ascii=False))
         return {"ok": True, "analysis_status": final_analysis_status, "onepager_ready": onepager_ready}
     except Exception as exc:  # Lambda async event cannot surface errors to the patient.
         update_session(session_id, {
@@ -204,17 +249,56 @@ def run_queued_answer_analysis(payload: dict[str, Any]) -> dict[str, Any]:
         return {"ok": False, "error": "queued_analysis_failed", "exception_type": exc.__class__.__name__}
 
 
-def run_answers_pipeline_sync(body: dict[str, Any]) -> dict[str, Any]:
+def run_answers_pipeline_sync(body: dict[str, Any], context: Any = None) -> dict[str, Any]:
     """Run the existing per-question LangGraph pipeline for an answer batch."""
     session_id = body.get("session_id") or body.get("sessionId")
     visit_type = body.get("visit_type") or body.get("visitType")
     question_set_id = body.get("question_set_id") or body.get("questionSetId") or "default"
     answers = body.get("answers") or []
+    previous_processed = int(body.get("previous_processed_question_count") or 0)
+    previous_failed = int(body.get("previous_failed_question_count") or 0)
 
     results = []
     failed_results = []
     for index, answer in enumerate(answers, start=1):
+        if results and should_continue_later(context):
+            remaining_answers = answers[index - 1:]
+            enqueued, enqueue_error = enqueue_answer_analysis({
+                "session_id": session_id,
+                "visit_type": visit_type,
+                "question_set_id": question_set_id,
+                "answers": remaining_answers,
+                "continuation": True,
+                "previous_processed_question_count": previous_processed + len(results),
+                "previous_failed_question_count": previous_failed + len(failed_results),
+            })
+            return {
+                "validator_passed": False,
+                "onepager_ready": False,
+                "results": results,
+                "failed_results": failed_results,
+                "continuation_queued": enqueued,
+                "continuation_error": "" if enqueued else enqueue_error or "failed_to_enqueue_analysis_continuation",
+                "processed_question_count": previous_processed + len(results),
+                "remaining_question_count": len(remaining_answers),
+                "pipeline": {
+                    "graph": PIPELINE_GRAPH["name"],
+                    "mode": "async_batch_after_patient_confirmation",
+                    "processed_question_count": previous_processed + len(results),
+                    "failed_question_count": previous_failed + len(failed_results),
+                    "remaining_question_count": len(remaining_answers),
+                },
+            }
+
         item = normalize_batch_answer(answer, session_id, visit_type, question_set_id)
+        print(json.dumps({
+            "level": "info",
+            "event": "queued_answer_started",
+            "session_id": session_id,
+            "question_id": item.get("question_id"),
+            "batch_index": previous_processed + index,
+            "remaining_time_ms": remaining_time_ms(context),
+        }, ensure_ascii=False))
         payload, err = run_answer_pipeline(item)
         if err:
             status, err_body = unwrap_error_response(err)
@@ -240,6 +324,14 @@ def run_answers_pipeline_sync(body: dict[str, Any]) -> dict[str, Any]:
             })
             continue
 
+        print(json.dumps({
+            "level": "info",
+            "event": "queued_answer_completed",
+            "session_id": session_id,
+            "question_id": item.get("question_id"),
+            "onepager_ready": bool(payload.get("onepager_ready")),
+            "remaining_time_ms": remaining_time_ms(context),
+        }, ensure_ascii=False))
         results.append({
             "question_id": item.get("question_id"),
             "question_type": item.get("question_type"),
@@ -248,6 +340,8 @@ def run_answers_pipeline_sync(body: dict[str, Any]) -> dict[str, Any]:
         })
 
     successful_results = [row for row in results if not row.get("result", {}).get("error")]
+    processed_count = previous_processed + len(results)
+    failed_count = previous_failed + len(failed_results)
     return {
         "validator_passed": bool(results) and not failed_results and all(
             bool(row.get("result", {}).get("validator_passed")) for row in results
@@ -255,13 +349,30 @@ def run_answers_pipeline_sync(body: dict[str, Any]) -> dict[str, Any]:
         "onepager_ready": any(bool(row.get("result", {}).get("onepager_ready")) for row in successful_results),
         "results": results,
         "failed_results": failed_results,
+        "processed_question_count": processed_count,
+        "remaining_question_count": 0,
         "pipeline": {
             "graph": PIPELINE_GRAPH["name"],
             "mode": "async_batch_after_patient_confirmation",
-            "processed_question_count": len(results),
-            "failed_question_count": len(failed_results),
+            "processed_question_count": processed_count,
+            "failed_question_count": failed_count,
         },
     }
+
+
+def remaining_time_ms(context: Any = None) -> int | None:
+    getter = getattr(context, "get_remaining_time_in_millis", None)
+    if not callable(getter):
+        return None
+    try:
+        return int(getter())
+    except Exception:
+        return None
+
+
+def should_continue_later(context: Any = None) -> bool:
+    remaining = remaining_time_ms(context)
+    return remaining is not None and remaining < MIN_CONTINUATION_TIME_MS
 
 
 def enqueue_answer_analysis(payload: dict[str, Any]) -> tuple[bool, str]:
