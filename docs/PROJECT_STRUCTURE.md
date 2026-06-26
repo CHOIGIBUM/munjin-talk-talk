@@ -341,16 +341,13 @@ backend/serverless/src/
 ```text
 backend/serverless/src/data/
 ├── README.md
-├── domain_packs/respiratory.json
-├── domain_packs/respiratory_fewshot.txt
 ├── question_sets/default.json
 └── (비공개 배치) diseases_cleaned / symptom_index / embedding cache
 ```
 
 | 파일 | 역할 |
 | --- | --- |
-| `domain_packs/respiratory.json` | 호흡기계 MVP의 증상 slot, 제한 alias bridge, safety flag |
-| `domain_packs/respiratory_fewshot.txt` | LLM extraction few-shot 예시 |
+| reset 이후 domain pack | 새 `train_100_v2` 승인 후 재생성 |
 | `question_sets/default.json` | 초진/재진 문진 질문 세트 |
 | `diseases_cleaned.json` | 비공개 배치 파일. 질환별 설명, 증상, 관련 정보 원천 데이터 |
 | `symptom_index.json` | 비공개 배치 파일. 표준 증상명과 질환 문서 연결 인덱스 |
@@ -375,7 +372,7 @@ backend/serverless/src/data/
 | source_quote 검증 수정 | `schemas/extraction.py`, `extraction_schema.py` |
 | LangGraph 노드 추가 | `pipeline_state.py`, `pipeline_nodes.py`, `pipeline_graph.py` |
 | 증상 매칭 점수 조정 | `retrieval_scoring.py`, `settings.py` |
-| 도메인 slot/alias/safety 수정 | `data/domain_packs/respiratory.json` |
+| reset 이후 domain pack | 새 `train_100_v2` 승인 후 재생성 |
 | 표준 증상 인덱스 수정 | 비공개 런타임 데이터 `data/symptom_index.json` |
 | 원페이퍼 화면 표시 수정 | `frontend/src/components/doctor/DoctorOnePager.jsx` |
 | onepaper JSON 조립 수정 | `onepager.py`, `onepager_sections.py` |

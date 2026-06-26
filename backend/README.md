@@ -244,8 +244,6 @@ sam validate
 | --- | --- |
 | `test_schema_and_artifact_policy.py` | schema와 저장 artifact 정책 검증 |
 | `test_schema_slots.py` | 증상 slot schema 검증 |
-| `test_ir_noise_and_safety.py` | IR noise와 안전 플래그 검증 |
-| `test_prompts_golden.py` | 핵심 프롬프트 회귀 검증 |
 | `test_question_sets.py` | 질문셋 구조 검증 |
 | `test_sessions_queue.py` | 대기열 상태 전환 검증 |
 

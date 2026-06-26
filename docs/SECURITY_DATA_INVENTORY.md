@@ -33,7 +33,7 @@
 | 환자 세션별 접근 토큰 발급·검증 | 완료 | `sessions.py`, `security.py`, `frontend/src/services/api/client.js` |
 | S3 artifact 객체 단위 암호화 명시 | 완료 | `artifact_store.py`, `template.yaml` |
 | 환자 화면 질문 문구를 백엔드 extraction에 전달 | 완료 | `frontend/src/services/api/transcripts.js`, `pipeline_nodes.py`, `extraction_prompts.py` |
-| 증상 slot, alias, safety flag를 도메인팩으로 분리 | 완료 | `domain_config.py`, `data/domain_packs/respiratory.json`, `clinical_terms.py` |
+| 증상 slot, alias, safety flag를 도메인팩으로 분리 | reset | `domain_config.py`, `clinical_terms.py`; train-derived `data/domain_packs/respiratory.json`은 제거됨 |
 | LLM 임의 confidence/score 필드 차단 회귀 검증 | 완료 | `backend/serverless/tests/test_schema_and_artifact_policy.py` |
 
 제출용 AWS 환경에서 확인한 운영 설정은 다음과 같습니다. 이 항목은 코드에 포함되는 설정이 아니라 AWS 콘솔/계정 정책으로 적용되는 보안 장치입니다.
