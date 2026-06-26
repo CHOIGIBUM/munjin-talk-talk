@@ -1,6 +1,6 @@
 # Separated Evaluation Report
 
-- generated_at: `2026-06-26T05:25:31.329032+00:00`
+- generated_at: `2026-06-26T06:10:14.124246+00:00`
 - dataset: `evaluation/train_100_v2/train_100_v2.jsonl`
 - dataset_rows: `100`
 - held_out_test: `False`
@@ -23,17 +23,17 @@ Runs no Bedrock. Combines alias hints and local BM25 symptom references.
 
 - persistence: `monkeypatched_no_s3_dynamodb`
 - rows: `100/100` completed
-- precision: `0.9091`
-- recall: `0.7207`
-- F1: `0.804`
+- precision: `1.0`
+- recall: `0.9279`
+- F1: `0.9626`
 - schema/runtime failures: `0`
 - source quote grounding rate: `1.0`
 - RAG context node seen rate: `1.0`
-- negative false-positive rate: `0.1364`
+- negative false-positive rate: `0.0`
 
 ## Interpretation
 
 - Track A is candidate-search quality, not final model F1.
 - Track C is the first model/pipeline score, but this run is on train_100_v2 unless a locked test dataset is supplied.
 - Held-out reporting still requires test_1000_v2 generation and a frozen first-pass report before any test-driven tuning.
-- See `pipeline_error_analysis.md` for failure pattern interpretation.
+- See `pipeline_error_analysis.md` for the remaining mismatch breakdown and policy interpretation.

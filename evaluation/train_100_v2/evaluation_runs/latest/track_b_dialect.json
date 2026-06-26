@@ -208,6 +208,12 @@
           "source_file": "dialect_kangwon.json"
         },
         {
+          "dialect": "(가슴이) 제리제리하네",
+          "standard": "저리다",
+          "match_type": "partial",
+          "source_file": "dialect_kangwon.json"
+        },
+        {
           "dialect": "(가슴이) 제리제리하다",
           "standard": "저리다",
           "match_type": "partial",
@@ -220,13 +226,7 @@
           "source_file": "dialect_kangwon.json"
         },
         {
-          "dialect": "(가슴이) 제리제리하네",
-          "standard": "저리다",
-          "match_type": "partial",
-          "source_file": "dialect_kangwon.json"
-        },
-        {
-          "dialect": "가슴이 제리제리하다",
+          "dialect": "가슴이 제리제리하네",
           "standard": "저리다",
           "match_type": "partial",
           "source_file": "dialect_kangwon.json"

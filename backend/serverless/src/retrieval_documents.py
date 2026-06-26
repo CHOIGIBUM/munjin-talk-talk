@@ -253,16 +253,45 @@ def preferred_canonical_name(slot_id, *texts):
     """LLM slot_ref/name이 명확할 때 IR 후보에 가벼운 힌트를 줍니다."""
     docs, _ = get_ir_index()
     valid_names = {doc["display_name"] for doc in docs}
+    mapped = IR_SLOT_TO_CANONICAL_NAME.get(str(slot_id or ""))
     joined = normalize_text(" ".join(text for text in texts if text))
-    compact_joined = compact_ir(joined)
+    if mapped in valid_names and _text_mentions_canonical(mapped, joined):
+        return mapped
+    name_hint = _preferred_canonical_from_text(texts[0] if texts else "", valid_names)
+    if name_hint:
+        return name_hint
+    if mapped in valid_names:
+        return mapped
+    return _preferred_canonical_from_text(joined, valid_names)
+
+
+def _preferred_canonical_from_text(text, valid_names):
+    text = normalize_text(text or "")
+    if not text:
+        return ""
+    compact_text = compact_ir(text)
     for pattern, name in IR_TEXT_ALIASES:
-        if name in valid_names and re.search(pattern, joined):
+        if name in valid_names and re.search(pattern, text):
             return name
     for name in sorted(valid_names, key=lambda item: len(compact_ir(item)), reverse=True):
         compact_name = compact_ir(name)
-        if compact_name and compact_name in compact_joined:
+        if compact_name and compact_name in compact_text:
             return name
-    mapped = IR_SLOT_TO_CANONICAL_NAME.get(str(slot_id or ""))
-    if mapped in valid_names:
-        return mapped
     return ""
+
+
+def _text_mentions_canonical(canonical_name, text):
+    text = normalize_text(text or "")
+    if not canonical_name or not text:
+        return False
+    if compact_ir(canonical_name) in compact_ir(text):
+        return True
+    for pattern, name in IR_TEXT_ALIASES:
+        if name == canonical_name and re.search(pattern, text):
+            return True
+    for rule_name, slot_id, keywords, _alert in SYMPTOM_RULES:
+        if rule_name != canonical_name and IR_SLOT_TO_CANONICAL_NAME.get(slot_id) != canonical_name:
+            continue
+        if any(normalize_text(keyword) in text for keyword in keywords if normalize_text(keyword)):
+            return True
+    return False

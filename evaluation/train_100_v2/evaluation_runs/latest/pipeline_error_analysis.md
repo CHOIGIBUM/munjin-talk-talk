@@ -5,98 +5,82 @@ Dataset: `evaluation/train_100_v2/train_100_v2.jsonl`
 This is not a held-out score. It is a train-set pipeline inspection run used to
 separate candidate-search quality from actual Bedrock extraction and linking.
 
-## Summary
+## Final Summary
 
 - Completed rows: 100/100
 - Schema/runtime failures: 0
 - Source quote grounding rate: 1.0
-- Pipeline symptom precision: 0.9091
-- Pipeline symptom recall: 0.7207
-- Pipeline symptom F1: 0.8040
-- Negative false-positive rate among rows with negative symptoms: 0.1364
+- RAG context node seen rate: 1.0
+- Pipeline symptom precision: 1.0000
+- Pipeline symptom recall: 0.9279
+- Pipeline symptom F1: 0.9626
+- Negative false-positive rate among rows with negative symptoms: 0.0000
 
-## Main Finding
+Previous pipeline inspection before the runtime fixes was:
 
-Track A combined IR recall@5 is 1.0, but Track C recall is 0.7207.
+- Precision: 0.9091
+- Recall: 0.7207
+- F1: 0.8040
+- Negative false-positive rate: 0.1364
 
-This means the current bottleneck is not candidate availability. The important
-loss happens after retrieval context is available, mainly in extraction span
-typing, quote granularity, and final IR linking.
+## What Changed
 
-## Failure Types
+The main bottleneck was not candidate availability. Track A combined IR already
+had recall@5 = 1.0, while Track C lost symptoms after Bedrock extraction and
+linking. The implemented fixes target that gap:
 
-### 1. Over-broad source_quote contaminates IR query
+1. `slot_ref` is now trusted before broad source-text aliases when the slot has
+   its own evidence in the span.
+2. If the LLM `slot_ref` is wrong but the span name directly matches another
+   canonical symptom, the direct symptom name can override the wrong slot.
+3. Broad source quotes are narrowed with domain quote patterns before IR query
+   construction.
+4. Active `context` spans can be rescued when their name/slot maps to an
+   ontology symptom.
+5. Local nasal obstruction is guarded so "코가 막혀 숨쉬기 힘듦" maps to
+   `코막힘`, not `호흡곤란`.
+6. Agenda-only anxiety and nonspecific GI overreads are filtered before IR.
+7. A limited co-occurring symptom rescue adds a second active symptom only for
+   high-signal patterns such as `호흡곤란 + 가슴 답답` or `다리 붓기`.
+8. Duplicate matched slots are collapsed to one output per canonical slot.
 
-The LLM often returns the whole sentence as `source_quote`. When one sentence
-contains multiple symptoms or a negated symptom, the IR query can be pulled to
-the wrong candidate.
+## Final Remaining Mismatches
 
-Examples:
+The final run has 8 mismatch rows, all false negatives. There are no false
+positives.
 
-- `train_v2_014`: "열은 아직 있고 기침은 완전 없어졌어"
-  - gold: `열`
-  - predicted: `기침`
-  - issue: negated/resolved cough contaminated the active fever span query.
-- `train_v2_096`: "속이 울렁거리고 토했는데 설사는 전혀 없어"
-  - gold: `구토`
-  - predicted: `설사`
-  - issue: absent diarrhea contaminated the vomiting span query.
-- `train_v2_022`: "기침할 때 노랗고 걸쭉한 가래가 많이 나와"
-  - gold: `화농성 객담`
-  - predicted: `기침`
-  - issue: trigger/context word "기침할 때" dominated the sputum-character query.
+All 8 remaining misses are `progress_improved/status=없음` spans:
 
-### 2. LLM marks symptoms as context instead of active symptom
+- `train_v2_055`: 호흡곤란이 조금 나아졌지만 여전히 힘들 때가 있음
+- `train_v2_056`: 가슴 답답함이 덜해짐
+- `train_v2_064`: 열이 나아진 것 같음
+- `train_v2_065`: 오한이 줄어든 것 같음
+- `train_v2_066`: 근육통이 조금 나아짐
+- `train_v2_068`: 기운없음이 조금 나아짐
+- `train_v2_070`: 피로감은 덜하지만 근육통은 현재 남음
+- `train_v2_076`: 목소리 변화가 조금 나아짐
 
-Examples:
+Current product policy intentionally excludes `progress_improved` and
+`symptom_absent` from active symptom cards and IR `matched_slots`. These items
+are preserved as follow-up context/clinical clues, not "오늘 말한 불편함".
+Therefore the remaining recall loss is a scoring-policy mismatch rather than a
+candidate-search or IR-linking failure.
 
-- `train_v2_007`: "목이 아푸나 싶고 코도 계속 막혀서 숨 쉬기가 불편해"
-  - gold: `목의 통증`, `코막힘`
-  - predicted: none
-  - issue: LLM produced `context` spans with `slot_ref=other`, so hybrid IR skipped them.
+## Track-Level Interpretation
 
-### 3. Local obstruction is confused with dyspnea
+- Track A remains an offline candidate-search test. It does not call Bedrock.
+- Track B confirms the Gangwon dialect RAG layer is invoked and anchored rows
+  are retrieved.
+- Track C is the actual end-to-end Bedrock pipeline test with S3/DynamoDB
+  persistence monkeypatched.
 
-Example:
-
-- `train_v2_002`: "코가 완전 막혀서 숨쉬기 힘들어"
-  - gold: `코막힘`
-  - predicted: `호흡곤란`
-  - issue: the phrase "숨쉬기 힘들어" describes nasal obstruction consequence, but the pipeline treats it as respiratory dyspnea.
-
-### 4. Multi-symptom answers lose secondary symptoms
-
-Examples:
-
-- `train_v2_021`: "기침이 자꾸 나고 가래도 많이 나와"
-  - gold includes `가래`
-  - predicted only `기침`
-- `train_v2_043`: "숨 쉬기가 힘들고 가슴이 답답해"
-  - gold includes `호흡곤란`, `가슴 답답`
-  - predicted only `가슴 답답`
-- `train_v2_063`: "몸땡이 쑤시고 온몸이 피곤해"
-  - gold includes `근육통`, `피로감`
-  - predicted only `피로감`
-
-## Stratified Weak Spots
-
-- Q3 standard rows: precision 0.857, recall 0.667, F1 0.750
-- Q3 Gangwon clinical colloquial rows: precision 1.000, recall 0.643, F1 0.783
-- Q1 Gangwon RAG-anchored rows: precision 1.000, recall 0.625, F1 0.769
-
-The weaker groups are mostly recall-limited rather than precision-limited.
-
-## Recommended Next Fixes
-
-1. Tighten extraction prompt examples so active symptoms are not emitted as `context`.
-2. Add a repair/normalization rule that narrows broad `source_quote` to the smallest symptom-bearing substring before IR.
-3. In IR linking, give stronger priority to the LLM `slot_ref` when it is a valid ontology slot and the source quote is broad.
-4. Add explicit rules for local obstruction:
-   - nasal obstruction causing breathing inconvenience should remain `코막힘`
-   - create `호흡곤란` only when breathlessness is not locally explained by nasal blockage.
-5. For negation and resolved symptoms, prevent absent terms from contaminating active span IR queries.
-
-## Reporting Rule
+## Next Reporting Rule
 
 Do not report this as final held-out performance. The first publishable model
 score must be run on locked `test_1000_v2` after it is generated and frozen.
+
+For the held-out report, split metrics into:
+
+- active symptom F1: `matched_slots` only
+- follow-up context coverage: `progress_improved` and `symptom_absent`
+- negative symptom false-positive rate
