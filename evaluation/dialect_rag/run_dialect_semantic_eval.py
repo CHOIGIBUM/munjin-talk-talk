@@ -78,7 +78,7 @@ def main() -> int:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="RAG 기반 사투리→표준어 의미 동등성 평가")
     parser.add_argument("--input", type=Path, required=True, help="평가 JSONL 또는 JSON 배열/객체 파일")
-    parser.add_argument("--output-dir", type=Path, default=Path("evaluation/dialect/outputs/semantic_lite"))
+    parser.add_argument("--output-dir", type=Path, default=Path("evaluation/dialect_rag/reports/run_latest"))
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument(
         "--model-id",
