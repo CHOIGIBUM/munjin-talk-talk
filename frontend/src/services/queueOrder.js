@@ -6,6 +6,7 @@ const DOCTOR_QUEUE_PRIORITY = {
   analysis_pending: 3,
   in_progress: 4,
   staff_help: 5,
+  consent_rejected: 5,
   waiting_tablet: 6,
   reviewed: 7,
 }

@@ -13,6 +13,7 @@ const statusLabel = {
   waiting_tablet: '문진 대기',
   in_progress: '문진 진행 중',
   staff_help: '직원 도움 요청',
+  consent_rejected: '수기 문진 대기',
   analysis_pending: 'AI 분석 중',
   waiting_doctor: '의사 확인 대기',
   analysis_failed: '분석 재실행 필요',

@@ -147,7 +147,8 @@
 }
 .dq-status.needs_priority,
 .dq-status.analysis_failed,
-.dq-status.staff_help {
+.dq-status.staff_help,
+.dq-status.consent_rejected {
   background: #ffedd5;
   color: #c2410c;
 }
