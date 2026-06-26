@@ -32,6 +32,26 @@ NEGATIVE_PATIENT_QUESTION_PATTERNS = [
     r"(묻고\s*싶|물어\s*볼|궁금|질문).{0,16}(없|아니)",
     r"(없|아니).{0,10}(묻고\s*싶|물어\s*볼|궁금|질문)",
 ]
+CONTEXT_ONLY_ACTIVE_PATTERNS = [
+    r"(좀\s*)?불편(해|함|감)?$",
+    r"(그래서\s*)?(좀\s*)?불편(해|함|감)?",
+    r"(오늘|아침|밤|오후|누워|쉬어).{0,12}(더\s*)?(불편|뚜렷|남아)",
+    r"(전보다|요즘|요즘\s*들어|가끔).{0,12}(더\s*)?(자주|잦|심|뚜렷)",
+    r"왔다\s*갔다\s*반복",
+    r"(더\s*)?(자주|잦아|심해|뚜렷해|신경\s*쓰)",
+]
+CONTEXT_FORCE_SOURCE_PATTERNS = [
+    r"기침.{0,12}움직.{0,16}(더|심|느껴|그래|불편|신경)",
+    r"움직.{0,16}(더\s*)?(신경|불편)",
+    r"평소에도.{0,8}(자꾸\s*)?느껴",
+]
+CONTEXT_ONLY_HINT_PATTERNS = [
+    r"(불편|불편함|불편감)",
+    r"(증상\s*)?(악화|반복|빈도\s*증가)",
+    r".*증가$",
+    r"(기침|움직임).{0,8}(악화|시\s*증상\s*악화)",
+    r"(야간|오후|아침).{0,8}증상\s*악화",
+]
 
 
 def normalize_extraction_output(obj, transcript, question_id, question_type=""):
@@ -62,6 +82,7 @@ def prepare_extraction_payload(obj, question_id, question_type=""):
     """
     payload = deepcopy(obj) if isinstance(obj, dict) else {}
     normalize_non_symptom_span_slots(payload, question_type)
+    demote_context_only_active_spans(payload)
     remove_negative_patient_questions(payload, question_type)
     structured = payload.get("structured")
     if isinstance(structured, dict) and isinstance(structured.get("clinical_clues"), list):
@@ -100,6 +121,43 @@ def normalize_non_symptom_span_slots(payload, question_type=""):
             # LLM이 throat_pain처럼 새 enum을 만들면 schema 실패 대신 other로 낮춰
             # source_quote/name 기반 검색이 계속 진행되게 합니다.
             span["slot_ref"] = "other"
+
+
+def demote_context_only_active_spans(payload):
+    """악화요인/빈도/일반 불편감을 active symptom으로 잘못 낸 span을 context로 낮춥니다.
+
+    새 증상을 만들거나 증상명을 재해석하지 않습니다. LLM이 이미 만든 span 중
+    source_quote/name/normalized_text가 독립 증상 의미 없이 경과 문맥만 담을 때만
+    IR 대상에서 제외합니다.
+    """
+    spans = payload.get("spans")
+    if not isinstance(spans, list):
+        return
+    for span in spans:
+        if not isinstance(span, dict):
+            continue
+        if str(span.get("type") or "") not in ACTIVE_SYMPTOM_SPAN_TYPES:
+            continue
+        if not is_context_only_active_span(span):
+            continue
+        span["type"] = "context"
+        span["slot_ref"] = "other"
+        span["alert"] = False
+
+
+def is_context_only_active_span(span):
+    source_quote = str(span.get("source_quote") or "")
+    name = str(span.get("name") or "")
+    normalized_text = str(span.get("normalized_text") or "")
+    joined_hint = " ".join([name, normalized_text]).strip()
+    if any(re.search(pattern, source_quote) for pattern in CONTEXT_FORCE_SOURCE_PATTERNS):
+        return True
+    if any(re.search(pattern, source_quote) for pattern in CONTEXT_ONLY_ACTIVE_PATTERNS):
+        if not joined_hint or any(re.search(pattern, joined_hint) for pattern in CONTEXT_ONLY_HINT_PATTERNS):
+            return True
+    if any(re.fullmatch(pattern, joined_hint.strip()) for pattern in CONTEXT_ONLY_HINT_PATTERNS):
+        return True
+    return False
 
 
 def remove_negative_patient_questions(payload, question_type=""):

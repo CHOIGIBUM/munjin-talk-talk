@@ -87,6 +87,41 @@ Final prompt-included smoke validation on the first 50 synthetic cases:
 - Validator pass: `1.0000`
 - Error rate: `0.0000`
 
+Full synthetic 1000 after v2 confusion fix, before the follow-up cleanup patch:
+
+- Micro F1: `0.9788`
+- Macro F1: `0.9765`
+- Exact match: `0.9520`
+- FPR: `0.0270`
+- FNR: `0.0153`
+- Validator pass: `0.9980`
+- Error rate: `0.0020`
+
+IR/linker on that full v2 run:
+
+- CandidateRecall@20: `0.9842`
+- SelectedRecall@20: `0.9453`
+- Linker Micro F1: `0.9552`
+- Linker Macro F1: `0.9459`
+- Linker Exact match: `0.9100`
+
+Targeted recheck on the 48 failing cases after the follow-up cleanup patch:
+
+- Micro F1: `0.9459`
+- Macro F1: `0.9456`
+- Exact match: `0.8333`
+- FPR: `0.0789`
+- FNR: `0.0278`
+- Validator pass: `1.0000`
+- Error rate: `0.0000`
+
+The targeted 48-case failure count dropped from `48` to `8`.
+The remaining 8 failures are mostly dataset policy issues:
+
+- 6 cases say "배가 아프고 설사를 해" but the gold label omits abdominal pain.
+- 1 case says "지난 진료 이후 구토가 있었어" but the extraction only kept chest pain.
+- 1 case says "얼굴빛이 창백해 보여" but no active pallor span was produced.
+
 IR/linker on the same 200-case v2 run:
 
 - CandidateRecall@20: `0.9742`

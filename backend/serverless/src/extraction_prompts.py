@@ -95,6 +95,8 @@ Critical rules:
   one active span for the remaining current symptom with status "있음", and one clinical_clue label "호전" for the improvement context.
 - Do NOT convert caregiver fear or concern into dyspnea/chest_pain unless the patient or caregiver states actual breathing difficulty, chest pain, cyanosis, fainting, or inability to breathe.
 - If "답답해" only describes a blocked nose, throat, or another stated local symptom, keep it as context for that symptom. Create chest discomfort only when the chest/가슴/가심 is the stated location.
+- Generic discomfort, concern, frequency, timing, or worsening phrases such as "좀 불편해", "더 신경 쓰여", "더 자주", "왔다 갔다 반복돼", "밤에 더 불편해", "오후에 더 뚜렷해", or "누워 있어도 남아 있어" are clinical context, not standalone active symptoms.
+- Phrases such as "기침하거나 움직이면 더 그래" describe an aggravating factor. Do not create a cough symptom unless cough itself is a current complaint, and do not create exertional dyspnea unless breathlessness with exertion is explicitly stated.
 - Pain when swallowing saliva/food should stay a throat pain symptom. Use swallowing difficulty only when the patient describes food, water, or pills not passing, getting stuck, or being unable to swallow.
 - Colloquial body aches such as 몸살, 온몸이 쑤심, or muscles aching should be muscle pain unless chills or shaking are explicitly stated.
 - Feeling sluggish, droopy, or generally low should be malaise/low energy. Do not rewrite it as dizziness unless spinning, lightheadedness, or balance trouble is explicit.
@@ -104,16 +106,21 @@ Critical rules:
 - Blood seen while coughing, blood-streaked sputum, or coughing up blood is hemoptysis. Do not add a separate cough symptom unless the patient complains of cough itself beyond the blood event.
 - Wheezing or a whistling sound while breathing is wheezing, not generic dyspnea unless the patient also says they are short of breath.
 - Chest pain spreading to the arm or shoulder is radiating pain, not plain chest pain.
-- A heart or pulse described as fast/rapid/racing is tachycardia. Pounding/thumping/fluttering without explicit speed is palpitation.
+- Pain that "spreads", "radiates", or "extends" to the shoulder/arm should remain radiating pain even if the sentence also says it is uncomfortable or worse with movement/coughing.
+- A pulse described as too fast, or a heart described as 빠르게/rapid/racing, is tachycardia. The colloquial phrase "심장이 빨리 뛰는 느낌" should be treated as palpitation unless a measured pulse, pulse rate, or explicit tachycardia wording is stated.
 - A skipped, irregular, or uneven pulse/heartbeat is arrhythmia, not swallowing difficulty or rapid breathing.
 - A blocked/stuffy/tight chest feeling is chest discomfort unless the patient describes pressure, crushing, or being pressed down.
 - Facial/skin flushing, redness, or feeling hot in the face is skin flushing, not nausea/vomiting.
+- Facial paleness, pale complexion, or looking pale is pallor.
+- Eye crust, eye discharge, or sticky eye mucus is eye discharge, not heavy eyes.
 - If one quote contains two active symptom meanings joined by "그리고", "및", or a comma, split them into separate symptom spans when both concepts are in the allowed symptom list.
 - Whole-body shaking without coldness/chills is body tremor. Coldness, chills, feeling cold, or shaking because the patient feels cold is chills.
 - Whole-body energy drained or strength feeling gone is low energy; limb-specific weakness or strength becoming weaker is muscle weakness.
 - Eyelids feeling heavy or drooping is heavy eyes, not general malaise.
 - Explicit patient anxiety such as "불안해" or "걱정돼" is an active anxiety symptom. Caregiver concern about the patient remains context unless the patient symptom is stated.
 - Sleep loss caused by another symptom is clinical context, not a separate active symptom, unless the patient directly presents insomnia as its own complaint.
+- In follow-up or medication answers, a symptom that "있었어" after the last visit or while taking medication is an interval/current complaint unless the patient also says it resolved.
+- In "사레가 잘 들어" or "사래가 잘 들어", "잘 들어" means choking/aspiration happens easily or often; do not treat it as improved.
 - For Q4 patient_questions/unresolved_questions, a denial such as "없어요", "따로 없어요", "별로 없어요", or "궁금한 건 없어요" is NOT a patient question. Return questions: [].
 - For symptom questions (chief_complaint, progress, new_symptoms), spans MUST contain at least one grounded meaning unit unless the patient clearly denies symptoms.
 - clinical_clues are optional helper context. Include them only when category, label, and source_quote are all valid.
