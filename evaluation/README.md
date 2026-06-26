@@ -18,3 +18,4 @@ Do not restore the old `evaluation/ir` data or outputs as training material.
 Current rebuild entry point:
 
 - `train_100_blueprint/`: blueprint and LLM rendering instructions for the first 100 training cases.
+- `test_1000_blueprint/`: held-out test design, rendering rules, and first-evaluation lock for the 1000 case evaluation set.
