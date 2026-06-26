@@ -100,7 +100,10 @@ export default function PatientTabletQueueView() {
                   {session.visitType === 'followup' ? '재진' : '초진'}
                 </p>
               </div>
-              <Link to={sessionUrl(`/patient/${encodeURIComponent(session.sessionId)}`, session.patientToken)}>
+              <Link
+                to={sessionUrl(`/patient/${encodeURIComponent(session.sessionId)}`, session.patientToken)}
+                state={{ intakeSession: session }}
+              >
                 {actionLabel(session.status)}
               </Link>
             </article>

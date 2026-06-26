@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import PatientFlow from './PatientFlow.jsx'
 import { getIntakeSession, requestStaffHelp } from '../../services/api.js'
+import { normalizeSession } from '../../services/api/client.js'
 import './PatientKioskView.css'
 
 // 접수처에서 만든 sessionId를 받아 실제 환자 태블릿 문진을 시작하는 화면입니다.
@@ -10,14 +11,17 @@ export default function PatientKioskView() {
   const { sessionId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
-  const [session, setSession] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const initialSession = sessionFromNavigationState(location.state, sessionId)
+  const [session, setSession] = useState(initialSession)
+  const [loading, setLoading] = useState(!initialSession)
   const [loadError, setLoadError] = useState('')
 
-  // URL의 sessionId로 환자 정보와 초진/재진 설정을 불러옵니다.
+  // 대기열에서 넘어온 세션은 즉시 표시하고, API 조회로 최신 상태와 접근 권한을 확인합니다.
   useEffect(() => {
     let active = true
-    setLoading(true)
+    const navigationSession = sessionFromNavigationState(location.state, sessionId)
+    setSession(navigationSession)
+    setLoading(!navigationSession)
     setLoadError('')
     const params = new URLSearchParams(location.search)
     const patientToken = params.get('pt') || params.get('patient_token') || ''
@@ -77,6 +81,12 @@ export default function PatientKioskView() {
       onExitToQueue={() => navigate('/patient')}
     />
   )
+}
+
+function sessionFromNavigationState(state, sessionId) {
+  const session = normalizeSession(state?.intakeSession)
+  if (!session || session.sessionId !== sessionId) return null
+  return session
 }
 
 async function loadPatientSession(sessionId, patientToken) {
