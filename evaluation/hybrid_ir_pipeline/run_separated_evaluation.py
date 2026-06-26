@@ -18,10 +18,11 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
+EVAL_ROOT = ROOT / "evaluation" / "hybrid_ir_pipeline"
 BACKEND_SRC = ROOT / "backend" / "serverless" / "src"
-TRAIN_PATH = ROOT / "evaluation" / "train_100_v2" / "train_100_v2.jsonl"
-DEFAULT_OUT_DIR = ROOT / "evaluation" / "train_100_v2" / "evaluation_runs" / "latest"
+TRAIN_PATH = EVAL_ROOT / "train_100_v2" / "train_100_v2.jsonl"
+DEFAULT_OUT_DIR = EVAL_ROOT / "reports" / "run_latest"
 
 os.environ.setdefault("AWS_EC2_METADATA_DISABLED", "true")
 
@@ -30,7 +31,7 @@ if str(BACKEND_SRC) not in sys.path:
 
 
 def load_build_artifacts_module():
-    path = ROOT / "evaluation" / "train_100_v2" / "build_artifacts.py"
+    path = EVAL_ROOT / "train_100_v2" / "build_artifacts.py"
     spec = importlib.util.spec_from_file_location("train_100_v2_build_artifacts", path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"Cannot import {path}")

@@ -1,6 +1,6 @@
 # Pipeline Error Analysis
 
-Dataset: `evaluation/train_100_v2/train_100_v2.jsonl`
+Dataset: `evaluation/hybrid_ir_pipeline/train_100_v2/train_100_v2.jsonl`
 
 This is not a held-out score. It is a train-set pipeline inspection run used to
 separate candidate-search quality from actual Bedrock extraction and linking.

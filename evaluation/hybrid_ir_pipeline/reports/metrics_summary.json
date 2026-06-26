@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-06-26T06:10:14.124246+00:00",
+  "dataset": "evaluation/hybrid_ir_pipeline/train_100_v2/train_100_v2.jsonl",
+  "dataset_rows": 100,
+  "held_out_test": false,
+  "track_a_ir": {
+    "combined": {
+      "recall_at_1": 0.8198,
+      "recall_at_3": 1.0,
+      "recall_at_5": 1.0,
+      "recall_at_10": 1.0,
+      "all_gold_hit_at_5": 1.0,
+      "negative_in_top5_rate": 0.7727
+    }
+  },
+  "track_b_dialect": {
+    "gangwon_rows": 50,
+    "rag_pack_anchored_recall": 1.0,
+    "rag_pack_anchored_hit_count": 10,
+    "rag_pack_anchored_total": 10,
+    "non_anchor_hint_rate": 0.0
+  },
+  "track_c_pipeline": {
+    "completed_rows": 100,
+    "total_rows": 100,
+    "precision": 1.0,
+    "recall": 0.9279,
+    "f1": 0.9626,
+    "schema_runtime_failures": 0,
+    "source_quote_grounding_rate": 1.0,
+    "rag_context_node_seen_rate": 1.0,
+    "negative_false_positive_rate": 0.0
+  }
+}

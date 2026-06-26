@@ -6,7 +6,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 BACKEND_SRC = ROOT / "backend" / "serverless" / "src"
 sys.path.insert(0, str(BACKEND_SRC))
 

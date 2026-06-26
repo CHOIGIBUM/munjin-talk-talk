@@ -15,14 +15,15 @@ import boto3
 from botocore.config import Config
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
+EVAL_ROOT = ROOT / "evaluation" / "hybrid_ir_pipeline"
 BACKEND_SRC = ROOT / "backend" / "serverless" / "src"
 sys.path.insert(0, str(BACKEND_SRC))
 
 from dialect_rag import retrieve_dialect_context  # noqa: E402
 
 
-BLUEPRINT_PATH = ROOT / "evaluation" / "train_100_v2_blueprint" / "case_blueprint.jsonl"
+BLUEPRINT_PATH = EVAL_ROOT / "blueprint" / "case_blueprint.jsonl"
 OUT_DIR = Path(__file__).resolve().parent
 TRAIN_PATH = OUT_DIR / "train_100_v2.jsonl"
 REPORT_PATH = OUT_DIR / "quality_gate_report.json"

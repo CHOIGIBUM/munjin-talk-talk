@@ -101,11 +101,11 @@ Keep these metrics separate.
 
 IR recall is not final F1. Final extraction performance must come from the pipeline integration track.
 
-## Next Design Step
+## Current Output
 
-Create `train_100_v2_blueprint/` only after this design is accepted.
+The accepted blueprint now lives in `evaluation/hybrid_ir_pipeline/blueprint/`.
 
-The next blueprint should define:
+The blueprint defines:
 
 - exact symptom-group distribution.
 - exact dialect source-layer counts.

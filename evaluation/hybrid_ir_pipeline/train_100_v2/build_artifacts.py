@@ -14,8 +14,9 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[2]
-OUT_DIR = ROOT / "evaluation" / "train_100_v2"
+ROOT = Path(__file__).resolve().parents[3]
+EVAL_ROOT = ROOT / "evaluation" / "hybrid_ir_pipeline"
+OUT_DIR = EVAL_ROOT / "train_100_v2"
 TRAIN_PATH = OUT_DIR / "train_100_v2.jsonl"
 DATA_DIR = ROOT / "backend" / "serverless" / "src" / "data"
 SYMPTOM_INDEX_PATH = DATA_DIR / "symptom_index.json"
@@ -461,7 +462,7 @@ def build_fewshots(rows: list[dict[str, Any]]) -> tuple[dict[str, dict[str, Any]
         extraction_examples.append(example)
     fewshots["extraction"] = {
         "stage": "extraction",
-        "source_dataset": "evaluation/train_100_v2/train_100_v2.jsonl",
+        "source_dataset": "evaluation/hybrid_ir_pipeline/train_100_v2/train_100_v2.jsonl",
         "selection_policy": "Sparse representative examples only; do not memorize the train set.",
         "examples": extraction_examples,
     }
@@ -481,7 +482,7 @@ def build_fewshots(rows: list[dict[str, Any]]) -> tuple[dict[str, dict[str, Any]
         standardization_examples.append(example)
     fewshots["standardization"] = {
         "stage": "standardization",
-        "source_dataset": "evaluation/train_100_v2/train_100_v2.jsonl",
+        "source_dataset": "evaluation/hybrid_ir_pipeline/train_100_v2/train_100_v2.jsonl",
         "examples": standardization_examples,
     }
 
@@ -505,7 +506,7 @@ def build_fewshots(rows: list[dict[str, Any]]) -> tuple[dict[str, dict[str, Any]
         semantic_examples.append(example)
     fewshots["semantic_unit"] = {
         "stage": "semantic_unit",
-        "source_dataset": "evaluation/train_100_v2/train_100_v2.jsonl",
+        "source_dataset": "evaluation/hybrid_ir_pipeline/train_100_v2/train_100_v2.jsonl",
         "examples": semantic_examples,
     }
 
@@ -522,7 +523,7 @@ def build_fewshots(rows: list[dict[str, Any]]) -> tuple[dict[str, dict[str, Any]
         tagging_examples.append(example)
     fewshots["span_tagging"] = {
         "stage": "span_tagging",
-        "source_dataset": "evaluation/train_100_v2/train_100_v2.jsonl",
+        "source_dataset": "evaluation/hybrid_ir_pipeline/train_100_v2/train_100_v2.jsonl",
         "examples": tagging_examples,
     }
 
@@ -547,7 +548,7 @@ def build_fewshots(rows: list[dict[str, Any]]) -> tuple[dict[str, dict[str, Any]
         hint_examples.append(example)
     fewshots["symptom_hint"] = {
         "stage": "symptom_hint",
-        "source_dataset": "evaluation/train_100_v2/train_100_v2.jsonl",
+        "source_dataset": "evaluation/hybrid_ir_pipeline/train_100_v2/train_100_v2.jsonl",
         "examples": hint_examples,
     }
 
@@ -569,7 +570,7 @@ def build_fewshots(rows: list[dict[str, Any]]) -> tuple[dict[str, dict[str, Any]
         onepager_examples.append(example)
     fewshots["onepager_review"] = {
         "stage": "onepager_review",
-        "source_dataset": "evaluation/train_100_v2/train_100_v2.jsonl",
+        "source_dataset": "evaluation/hybrid_ir_pipeline/train_100_v2/train_100_v2.jsonl",
         "examples": onepager_examples,
     }
 
@@ -597,7 +598,7 @@ def build_domain_pack(
         "description": "Product ontology from symptom_index with train_100_v2-derived alias and few-shot support.",
         "source_dataset": {
             "ontology": "backend/serverless/src/data/symptom_index.json",
-            "train_support": "evaluation/train_100_v2/train_100_v2.jsonl",
+            "train_support": "evaluation/hybrid_ir_pipeline/train_100_v2/train_100_v2.jsonl",
         },
         "fewshot_id": "respiratory",
         "fewshot_sets": {

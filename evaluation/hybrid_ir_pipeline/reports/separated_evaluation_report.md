@@ -1,7 +1,7 @@
 # Separated Evaluation Report
 
 - generated_at: `2026-06-26T06:10:14.124246+00:00`
-- dataset: `evaluation/train_100_v2/train_100_v2.jsonl`
+- dataset: `evaluation/hybrid_ir_pipeline/train_100_v2/train_100_v2.jsonl`
 - dataset_rows: `100`
 - held_out_test: `False`
 
