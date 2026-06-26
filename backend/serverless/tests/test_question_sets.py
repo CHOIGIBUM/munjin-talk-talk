@@ -108,6 +108,26 @@ def test_question_set_api_route_returns_public_payload_and_404():
     assert missing_body["error"] == "question_set_not_found"
 
 
+def test_get_session_route_returns_public_session_without_name_error():
+    handler = install_handler_stubs()
+    handler.get_session = lambda session_id: {
+        "session_id": session_id,
+        "status": "waiting_tablet",
+        "patient": {"name": "테*트"},
+    }
+    token = handler.issue_role_token("staff")["access_token"]
+
+    result = handler.route(
+        "GET",
+        "/sessions/s-unit",
+        {"headers": {"authorization": f"Bearer {token}"}},
+    )
+    body = json.loads(result["body"])
+
+    assert result["statusCode"] == 200
+    assert body["session_id"] == "s-unit"
+
+
 def test_handler_logs_traceback_without_leaking_exception_to_response(capsys):
     handler = install_handler_stubs()
 

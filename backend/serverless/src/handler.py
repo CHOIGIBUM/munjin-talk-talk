@@ -89,7 +89,8 @@ def route(method, path, event):
 
     match = re.fullmatch(r"/sessions/([^/]+)", path)
     if method == "GET" and match:
-        session = get_session(unquote_plus(match.group(1)))
+        session_id = unquote_plus(match.group(1))
+        session = get_session(session_id)
         if not session:
             return response(404, {"error": "session_not_found"})
         auth_error = require_patient_session(event, session, body, allow_roles=("staff", "doctor"))
