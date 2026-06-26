@@ -1,18 +1,27 @@
 # 런타임 데이터 배치 안내
 
-이 폴더는 문진톡톡 백엔드가 질문셋, 도메인 설정, 방언 RAG, 표준 증상 IR을 수행할 때 참조하는 데이터 위치입니다.
+이 폴더는 문진톡톡 백엔드가 질문셋, 방언 RAG, 표준 증상 IR을 수행할 때 참조하는 데이터 위치입니다.
 
-현재 공개 브랜치의 도메인/few-shot 상태는 clean seed입니다. 과거 평가 과정에서 추가된 few-shot JSON, legacy few-shot text, 튜닝 alias는 제거했습니다. 새 alias/few-shot은 `evaluation/ir/data/generated/train_100/`에서 생성한 training data와 `evaluation/ir/derived/`의 제안 기록을 거쳐 다시 추가해야 합니다.
+## 현재 reset 상태
 
-## 공개 저장소에 포함되는 파일
+오염 가능성이 있는 런타임 학습/보강 데이터는 제거했습니다.
 
-| 경로 | 용도 |
+제거한 항목:
+
+- `domain_packs/respiratory.json`
+- `domain_packs/respiratory_fewshot.txt`
+- `fewshots/respiratory/*.json`
+- 도메인팩 내부 alias, symptom rule 보강, few-shot 연결
+
+이 상태에서는 기본 `DOMAIN_PACK=respiratory` 런타임이 바로 동작하지 않을 수 있습니다. 의도된 상태입니다. 새 도메인팩과 few-shot은 `evaluation` 아래에서 생성한 `train_100` 데이터만 근거로 다시 구축합니다.
+
+## 유지하는 항목
+
+| 경로 | 이유 |
 | --- | --- |
-| `domain_packs/respiratory.json` | 최소 호흡기 도메인 seed. 튜닝 alias/few-shot 없음 |
-| `dialect_packs/dialect_kangwon.json` | 강원 방언 표현을 표준어 후보로 연결하는 RAG 참조 데이터 |
+| `question_sets/default.json` | 문진 화면의 질문 구조 |
+| `dialect_packs/dialect_kangwon.json` | 강원도 사투리 렌더링/검증 참고 자료 |
 | `dialect_packs/dialect_kangwon.csv` | 방언팩 원본 관리용 표 데이터 |
-| `question_sets/default.json` | 초진/재진 문진 질문 세트 |
-| `README.md` | 현재 문서 |
 
 ## 공개 저장소에 포함하지 않는 파일
 
@@ -22,57 +31,10 @@
 | `symptom_index.json` | 표준 증상명과 질환 문서 연결 인덱스 | 원천 데이터 기반 파생 인덱스 |
 | `symptom_embeddings_amazon.titan-embed-text-v2_0_512.json` | Titan embedding cache | 원천 증상 문서 기반 파생 벡터 |
 
-이 세 파일이 없으면 백엔드 실행 자체는 가능하더라도 Hybrid IR 표준 증상 매칭은 정상 성능으로 동작하지 않습니다.
+## 재구축 원칙
 
-## 배포 전 배치해야 하는 구조
-
-팀 내부 비공개 저장소나 로컬 보관 위치에서 아래 파일을 복사해 넣습니다.
-
-```text
-backend/serverless/src/data/
-  diseases_cleaned.json
-  symptom_index.json
-  symptom_embeddings_amazon.titan-embed-text-v2_0_512.json
-  domain_packs/
-  dialect_packs/
-  question_sets/
-```
-
-PowerShell 확인:
-
-```powershell
-cd backend/serverless/src/data
-Get-Item diseases_cleaned.json
-Get-Item symptom_index.json
-Get-Item symptom_embeddings_amazon.titan-embed-text-v2_0_512.json
-```
-
-## Git 관리 기준
-
-`.gitignore`에는 위 3개 비공개 런타임 데이터가 다시 올라가지 않도록 패턴이 등록되어 있어야 합니다.
-
-```text
-backend/serverless/src/data/diseases_cleaned.json
-backend/serverless/src/data/symptom_index.json
-backend/serverless/src/data/symptom_embeddings_*.json
-backend/serverless/src/data/ir_sources/**
-```
-
-커밋 전 확인:
-
-```powershell
-git status --short --ignored -- backend/serverless/src/data
-```
-
-비공개 파일이 `!!`로 보이면 Git에서 무시되고 있는 상태입니다. `??`로 보이면 `.gitignore`가 빠진 것이므로 커밋하면 안 됩니다.
-
-## 서비스 내 참조 방식
-
-- 질문 세트는 `question_sets.py`가 `question_sets/default.json`을 읽습니다.
-- 도메인 설정은 `domain_config.py`가 `domain_packs/`에서 읽습니다.
-- few-shot은 `fewshots.py`가 도메인팩 또는 `fewshots/{fewshot_id}/`에서 읽지만, 현재 공개 브랜치에는 few-shot 파일이 없습니다.
-- 구어체/사투리 확장은 dialect RAG 자료만 남아 있습니다.
-- 도메인팩의 `ir_text_aliases`는 clean seed에서 빈 배열입니다.
-- 표준 증상 IR은 `settings.py`/`data_sources.py`가 선택한 비공개 3개 파일을 읽습니다.
-
-따라서 공개 저장소 clone만으로는 코드 구조 검토와 기본 빌드는 가능하지만, 실제 운영 수준의 증상 매칭은 비공개 런타임 데이터 배치 후 확인해야 합니다.
+1. `evaluation` 아래에서 생성 설계 문서를 먼저 확정합니다.
+2. GPT/LLM으로 `train_100`을 생성합니다.
+3. `train_100`만 보고 alias, domain pack, few-shot 후보를 만듭니다.
+4. 후보에는 근거 case id와 이유를 남깁니다.
+5. 그 뒤 별도 `test_1000`을 생성해 locked test로 평가합니다.
