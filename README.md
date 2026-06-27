@@ -1,6 +1,6 @@
 # 문진톡톡 Hybrid IR 및 파이프라인 컴포넌트 분리 평가 명세
 
-본 브랜치(`eval/hybrid-ir-pipeline`)는 문진톡톡 메인 서비스 코드와 분리되어, **증상 후보 검색 엔진(IR)** 과 **LLM 기반 구조화 파이프라인(Bedrock)** 의 성능 병목을 독립적으로 검증하기 위한 탐색적 평가(Exploratory Evaluation) 환경입니다.
+본 브랜치(`eval/hybrid-ir-pipeline`)는 문진톡톡 메인 서비스 코드와 분리되어, **증상 후보 검색 엔진(IR)** 과 **LLM 기반 구조화 파이프라인(Bedrock)** 의 성능과 품질을 독립적으로 검증하기 위한 탐색적 평가(Exploratory Evaluation) 환경입니다.
 
 공식 서비스 아키텍처 및 Held-out 벤치마크는 [main 브랜치](https://github.com/X-AI-KNU/munjin-talk-talk/tree/main)를 기준으로 합니다. 본 브랜치는 해커톤 심사 및 기술 검토 과정에서 **"Hybrid IR 엔진의 후보 풀링 성능, 사투리 RAG의 힌트 타당성, LangGraph 제어 흐름의 정합성"** 을 컴포넌트 단위로 분해하여 입증하기 위해 별도 구축되었습니다.
 
@@ -8,13 +8,13 @@
 
 ## 1. 컴포넌트 분리 평가 목적 (Evaluation Tracks)
 
-문진톡톡은 환자의 모호한 발화를 LLM의 자의적 텍스트 생성(Free-form generation)에 맹목적으로 맡기지 않습니다. 본 평가는 파이프라인을 3개의 독립 트랙으로 해체하여, 각 구간이 설계 의도대로 작동하는지 정밀 타격하여 검증합니다.
+문진톡톡은 환자의 모호한 발화를 LLM의 자의적 텍스트 생성(Free-form generation)에 단독으로 맡기지 않습니다. 본 평가는 파이프라인을 3개의 독립 트랙으로 나누어 각 구간이 설계 의도대로 작동하는지 검증합니다.
 
 | 트랙 구분 | 타깃 컴포넌트 | LLM 개입 | 검증 핵심 지표 |
 | :---: | --- | :---: | --- |
-| **Track A** | `Offline IR` | ❌ | BM25 + Vector 통합 검색 시 정답 표준 증상이 상위 후보군(Top-K) 내에 안정적으로 회수(Recall)되는가? |
-| **Track B** | `Dialect RAG` | ❌ | 강원 사투리가 포함된 발화에서만 정확히 RAG 힌트가 트리거되며, 불필요한 일반 발화에서는 개입을 차단하는가? |
-| **Track C** | `Pipeline Integration` | ⭕ | LLM 추출 → 스키마 검증 → IR 링킹으로 이어지는 전체 파이프라인이 임상 정책에 맞게 `matched_slots`를 최종 확정하는가? |
+| **Track A** | `Offline IR` | 없음 | BM25 + Vector 통합 검색 시 정답 표준 증상이 상위 후보군(Top-K) 내에 안정적으로 회수(Recall)되는가? |
+| **Track B** | `Dialect RAG` | 없음 | 강원 사투리가 포함된 발화에서만 정확히 RAG 힌트가 트리거되며, 불필요한 일반 발화에서는 개입을 차단하는가? |
+| **Track C** | `Pipeline Integration` | 있음 | LLM 추출 → 스키마 검증 → IR 링킹으로 이어지는 전체 파이프라인이 임상 정책에 맞게 `matched_slots`를 최종 확정하는가? |
 
 *(참고: Track A는 순수 검색 엔진의 품질(Pooling)을 재는 지표이며, 파이프라인의 최종 성능을 대변하지 않습니다. 실제 운영 성능과 가장 유사한 것은 LLM이 개입된 Track C입니다.)*
 

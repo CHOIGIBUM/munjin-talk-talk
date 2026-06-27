@@ -1,6 +1,6 @@
 # 문진톡톡 문서 허브 (Documentation Hub)
 
-문진톡톡 프로젝트의 기술 아키텍처, 데이터 흐름, 클라우드 배포 절차, 보안 설계를 총망라한 중앙 문서 색인입니다. 
+문진톡톡 프로젝트의 기술 아키텍처, 데이터 흐름, 클라우드 배포 절차, 보안 설계를 총망라한 중앙 문서 색인입니다.
 
 해커톤 심사위원(평가자)은 본 서비스가 실질적인 임상 소통 병목을 어떤 인프라와 로직으로 해결했는지 검증할 수 있으며, 엔지니어(개발자)는 로컬 빌드부터 AWS 프로덕션 배포 및 유지보수에 필요한 표준 명세서를 확인할 수 있습니다.
 
@@ -55,9 +55,9 @@
 | 브랜치 링크 | 역할 | 세부 내용 |
 | --- | --- | --- |
 | [hybrid_ir_pipeline 평가](../evaluation/hybrid_ir_pipeline/README.md) | **현재 브랜치 평가** | Hybrid IR 후보 검색, 사투리 RAG 힌트, Bedrock 통합 파이프라인 분리 평가 |
-| [`eval/dialect-rag`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/dialect-rag) | 실험 데이터 | 강원 사투리 및 비표준 발화를 의학 용어로 해독할 때의 의미 보존율 튜닝 기록 |
-| [`eval/hybrid-ir-pipeline`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/hybrid-ir-pipeline) | 실험 데이터 | BM25 + Vector 스코어링 퓨전 가중치 실험 및 Bedrock 추론 구간별 Latency 분석 |
-| [`test/add-coverage`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/test/add-coverage) | 테스트 인프라 | Pytest 모의 객체(Stub) 기반의 단위 테스트 및 AWS 클라우드 통합 테스트 셋 |
+| [`eval/dialect-rag`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/dialect-rag) | 탐색 평가 | 강원 사투리 및 비표준 발화를 표준어 보조 문장으로 변환할 때의 의미 보존율 검증 |
+| [`eval/hybrid-ir-pipeline`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/hybrid-ir-pipeline) | 탐색 평가 | BM25 + Vector 후보 검색, 사투리 RAG 힌트, Bedrock 구조화 파이프라인의 구간별 성능 검증 |
+| [`test/service-validation`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/test/service-validation) | 서비스 검증 | Pytest 단위 테스트와 AWS 수동 통합 검증을 통해 실제 서비스 동작 안정성 확인 |
 
 > 💡 **심사 안내:** 이 브랜치에서는 최종 서비스 설명보다 Hybrid IR 평가가 무엇인지와 각 컴포넌트가 어떤 의미의 지표를 갖는지에 집중합니다. 공식 서비스 구조는 `main` 브랜치를 기준으로 확인합니다.
 
