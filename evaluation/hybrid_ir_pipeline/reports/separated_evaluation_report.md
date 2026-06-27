@@ -56,7 +56,7 @@ Bedrock을 호출하지 않습니다. alias hint와 local BM25 symptom reference
 - Bedrock extraction과 LangGraph 파이프라인은 100건 모두 schema/runtime failure 없이 완료되었습니다.
 - 생성된 근거 quote는 환자 원문에 모두 존재했습니다.
 - 부정 증상을 active symptom으로 잘못 올린 사례는 관찰되지 않았습니다.
-- recall 손실은 `pipeline_error_analysis.md` 기준으로 개선/해소 계열 정책 mismatch에 집중되어 있습니다.
+- recall 손실은 개선/해소 계열 정책 mismatch에 집중되어 있습니다.
 
 ## Interpretation
 
@@ -64,6 +64,7 @@ Bedrock을 호출하지 않습니다. alias hint와 local BM25 symptom reference
 - Track B는 사투리 RAG hint의 anchor 기반 개입 타당성을 확인합니다.
 - Track C는 이 브랜치에서 실제 Bedrock 파이프라인 성능에 가장 가까운 결과입니다.
 - 단, 이 run은 locked held-out test가 아니라 `train_100_v2` 기준입니다.
+- 남은 8건의 false negative는 모두 `progress_improved` 또는 `symptom_absent` 계열입니다. 제품 정책상 이 항목들은 active symptom `matched_slots`로 올리지 않고 follow-up context 또는 clinical clue로 보존하는 쪽에 가깝기 때문에, 후보 검색 실패보다 scoring-policy mismatch로 해석합니다.
 
 ## Reporting Guidance
 

@@ -24,15 +24,9 @@
 
 | 문서/파일 링크 | 포함 내용 및 역할 |
 | --- | --- |
-| [평가팩 상세 설명](evaluation/hybrid_ir_pipeline/README.md) | 트랙별 아키텍처, 데이터 스키마, CLI 실행 방법, 지표 해석 가이드 |
-| [요약 지표 스냅샷](evaluation/hybrid_ir_pipeline/reports/metrics_summary.json) | Track A/B/C 파이프라인 관통 후 산출된 핵심 정량 수치 |
-| [분리 평가 리포트](evaluation/hybrid_ir_pipeline/reports/separated_evaluation_report.md) | 각 트랙별 세부 실행 로그 및 성공/실패 케이스 덤프 |
-| [오류 분석 및 정책 해석](evaluation/hybrid_ir_pipeline/reports/pipeline_error_analysis.md) | 파이프라인 Mismatch 요인 분석 및 임상 정책 타당성 해설 |
-| [데이터셋 설계 문서](evaluation/hybrid_ir_pipeline/design/README.md) | Train/Test 스플릿 원칙 및 합성 데이터 생성 방법론 |
-| [평가 트랙 상세 설계](evaluation/hybrid_ir_pipeline/design/evaluation_tracks.md) | Offline IR, Dialect RAG, Pipeline Integration 트랙별 분리 평가 기준 |
-| [train_100_v2 Blueprint 초안](evaluation/hybrid_ir_pipeline/design/train_100_v2_blueprint_draft.md) | 100건 개발용 벤치마크 데이터 생성 전 설계 명세 |
-| [Blueprint 산출물 설명](evaluation/hybrid_ir_pipeline/blueprint/README.md) | 케이스 블루프린트, 분포 계획, 품질 게이트 리포트 설명 |
-| [train_100_v2 명세](evaluation/hybrid_ir_pipeline/train_100_v2/README.md) | 본 평가에 사용된 100건의 개발용 벤치마크 데이터 스키마 |
+| [평가팩 상세 설명](evaluation/hybrid_ir_pipeline/README.md) | 이 평가가 무엇인지, 왜 Track A/B/C로 분리했는지, 데이터와 지표를 어떻게 해석해야 하는지 |
+| [분리 평가 리포트](evaluation/hybrid_ir_pipeline/reports/separated_evaluation_report.md) | Track A/B/C 실행 결과와 최종 수치 요약 |
+| [요약 지표 스냅샷](evaluation/hybrid_ir_pipeline/reports/metrics_summary.json) | 발표와 문서에서 인용할 고정 정량 지표 |
 | [평가 실행 스크립트](evaluation/hybrid_ir_pipeline/run_separated_evaluation.py) | Track A/B/C 분리 평가 실행 러너 |
 
 ---

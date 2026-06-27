@@ -13,7 +13,7 @@
 | 순서 | 문서명 | 핵심 검증 포인트 |
 | :---: | --- | --- |
 | **1** | [루트 README](../README.md) | 우리가 푸는 문제의 배경, E2E 서비스 UX 흐름, 핵심 기술 스택, 보안 수준 |
-| **2** | [평가 패키지 명세](../evaluation/README.md) | 공식 End-to-End 벤치마크 요약 지표 및 데이터 거버넌스(공개/비공개) 기준 |
+| **2** | [Hybrid IR 평가 패키지](../evaluation/hybrid_ir_pipeline/README.md) | 후보 검색, 사투리 RAG, Bedrock 통합 파이프라인을 분리 검증한 평가 요약 |
 | **3** | [LangGraph 문진 파이프라인](LANGGRAPH_PIPELINE.md) | 음성 답변이 구조화되어 의료진 원페이퍼와 환자 안내문으로 변환되는 추론 워크플로우 |
 | **4** | [내부 데이터 스키마](DATA_SCHEMA.md) | DynamoDB 상태값, S3 아티팩트, 원페이퍼, 안내문, Trace의 엄격한 JSON 규격 |
 | **5** | [보안 데이터 인벤토리](SECURITY_DATA_INVENTORY.md) | 개인식별정보(PII)와 건강정보가 어디에 격리되고 어떻게 파기되는지에 대한 생명주기 |
@@ -54,12 +54,12 @@
 
 | 브랜치 링크 | 역할 | 세부 내용 |
 | --- | --- | --- |
-| [main/evaluation](../evaluation/README.md) | **공식 기준(Master)** | 공식 End-to-End 성능 평가 스크립트, Held-out 벤치마크 결과, 요약 리포트 |
+| [hybrid_ir_pipeline 평가](../evaluation/hybrid_ir_pipeline/README.md) | **현재 브랜치 평가** | Hybrid IR 후보 검색, 사투리 RAG 힌트, Bedrock 통합 파이프라인 분리 평가 |
 | [`eval/dialect-rag`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/dialect-rag) | 실험 데이터 | 강원 사투리 및 비표준 발화를 의학 용어로 해독할 때의 의미 보존율 튜닝 기록 |
 | [`eval/hybrid-ir-pipeline`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/hybrid-ir-pipeline) | 실험 데이터 | BM25 + Vector 스코어링 퓨전 가중치 실험 및 Bedrock 추론 구간별 Latency 분석 |
 | [`test/add-coverage`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/test/add-coverage) | 테스트 인프라 | Pytest 모의 객체(Stub) 기반의 단위 테스트 및 AWS 클라우드 통합 테스트 셋 |
 
-> 💡 **심사 안내:** 최종 피칭 자료에 기재된 임상 정합성 수치는 `main/evaluation`을 기준으로 도출되었습니다. 세부 파라미터 튜닝 과정은 각 독립 브랜치에서 확인하실 수 있습니다.
+> 💡 **심사 안내:** 이 브랜치에서는 최종 서비스 설명보다 Hybrid IR 평가가 무엇인지와 각 컴포넌트가 어떤 의미의 지표를 갖는지에 집중합니다. 공식 서비스 구조는 `main` 브랜치를 기준으로 확인합니다.
 
 ---
 
