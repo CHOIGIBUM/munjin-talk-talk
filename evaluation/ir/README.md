@@ -68,9 +68,9 @@
 
 ### 1단계: 파이프라인 span 생성
 
-```powershell
-cd C:\Users\CGB\munjin-talk-talk-mvp
+프로젝트 루트에서 실행합니다.
 
+```powershell
 python evaluation\ir\run_pipeline_eval.py `
   --input evaluation\ir\data\eval_cases.jsonl `
   --output-dir evaluation\ir\outputs\pipeline
