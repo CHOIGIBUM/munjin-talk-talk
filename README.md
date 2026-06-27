@@ -8,13 +8,13 @@
 
 ## 1. 컴포넌트 분리 평가 목적 (Evaluation Tracks)
 
-문진톡톡은 환자의 모호한 발화를 LLM의 자의적 생성(Free-form generation)에 맡기지 않습니다. 본 평가는 파이프라인을 3개의 독립 트랙으로 해체하여, 각 구간이 설계 의도대로 작동하는지 정밀 타격하여 검증합니다.
+문진톡톡은 환자의 모호한 발화를 LLM의 자의적 텍스트 생성(Free-form generation)에 맹목적으로 맡기지 않습니다. 본 평가는 파이프라인을 3개의 독립 트랙으로 해체하여, 각 구간이 설계 의도대로 작동하는지 정밀 타격하여 검증합니다.
 
 | 트랙 구분 | 타깃 컴포넌트 | LLM 개입 | 검증 핵심 지표 |
 | :---: | --- | :---: | --- |
 | **Track A** | `Offline IR` | ❌ | BM25 + Vector 통합 검색 시 정답 표준 증상이 상위 후보군(Top-K) 내에 안정적으로 회수(Recall)되는가? |
 | **Track B** | `Dialect RAG` | ❌ | 강원 사투리가 포함된 발화에서만 정확히 RAG 힌트가 트리거되며, 불필요한 일반 발화에서는 개입을 차단하는가? |
-| **Track C** | `Pipeline Integration` | ⭕ | LLM 추출 $\rightarrow$ 스키마 검증 $\rightarrow$ IR 링킹으로 이어지는 전체 파이프라인이 임상 정책에 맞게 `matched_slots`를 최종 확정하는가? |
+| **Track C** | `Pipeline Integration` | ⭕ | LLM 추출 → 스키마 검증 → IR 링킹으로 이어지는 전체 파이프라인이 임상 정책에 맞게 `matched_slots`를 최종 확정하는가? |
 
 *(참고: Track A는 순수 검색 엔진의 품질(Pooling)을 재는 지표이며, 파이프라인의 최종 성능을 대변하지 않습니다. 실제 운영 성능과 가장 유사한 것은 LLM이 개입된 Track C입니다.)*
 
@@ -22,18 +22,18 @@
 
 ## 2. 참조 아티팩트 색인
 
-| 문서/파일 링크 | 포함 내용 및 역할 |
+| 문서 / 파일 링크 | 포함 내용 및 엔지니어링 역할 |
 | --- | --- |
-| [평가팩 상세 설명](evaluation/hybrid_ir_pipeline/README.md) | 이 평가가 무엇인지, 왜 Track A/B/C로 분리했는지, 데이터와 지표를 어떻게 해석해야 하는지 |
-| [분리 평가 리포트](evaluation/hybrid_ir_pipeline/reports/separated_evaluation_report.md) | Track A/B/C 실행 결과와 최종 수치 요약 |
-| [요약 지표 스냅샷](evaluation/hybrid_ir_pipeline/reports/metrics_summary.json) | 발표와 문서에서 인용할 고정 정량 지표 |
-| [평가 실행 스크립트](evaluation/hybrid_ir_pipeline/run_separated_evaluation.py) | Track A/B/C 분리 평가 실행 러너 |
+| [평가팩 상세 설명](evaluation/hybrid_ir_pipeline/README.md) | 이 평가가 무엇인지, 왜 Track A/B/C로 분리했는지, 데이터와 지표를 어떻게 해석해야 하는지에 대한 아키텍처 가이드 |
+| [분리 평가 리포트](evaluation/hybrid_ir_pipeline/reports/separated_evaluation_report.md) | Track A/B/C 컴포넌트별 실행 결과와 최종 수치 요약 리포트 |
+| [요약 지표 스냅샷](evaluation/hybrid_ir_pipeline/reports/metrics_summary.json) | 발표와 공식 문서에서 인용할 고정 정량 지표 데이터 |
+| [평가 실행 스크립트](evaluation/hybrid_ir_pipeline/run_separated_evaluation.py) | Track A/B/C 분리 평가 실행을 위한 자동화 러너 |
 
 ---
 
 ## 3. 평가 지표 요약 (`metrics_summary.json` 기준)
 
-본 지표는 파이프라인 최적화를 위해 구축된 `train_100_v2.jsonl` (100건) 데이터를 기준으로 산출되었습니다. 
+본 지표는 파이프라인 최적화를 위해 구축된 `train_100_v2.jsonl` (100건) 데이터를 기준으로 산출되었습니다.
 
 | 평가 지표명 | 산출값 | 엔지니어링 및 임상적 의의 |
 | --- | ---: | --- |
@@ -50,8 +50,8 @@
 
 ## 4. 의도된 False Negative의 해석 (Clinical Policy Mismatch)
 
-Track C의 최종 파이프라인 실행 결과, 8건의 False Negative(Recall 손실)가 발생했습니다. 이 8건의 데이터는 모두 `"호흡곤란이 나아졌지만 여전히 힘들 때가 있다"`, `"기운 없음이 조금 나아졌다"`와 같은 **호전(progress_improved)** 맥락이 섞인 케이스입니다.
+Track C의 최종 파이프라인 관통 결과, 8건의 False Negative(Recall 손실)가 발생했습니다. 이 8건의 데이터는 모두 *"호흡곤란이 나아졌지만 여전히 힘들 때가 있다"*, *"기운 없음이 조금 나아졌다"* 와 같은 **호전(`progress_improved`)** 맥락이 섞인 케이스입니다.
 
-이는 검색 엔진의 성능 부족이나 LLM의 실패가 아닙니다. **현행 문진톡톡의 임상 안전 정책(Clinical Safety Policy)이 의도한 설계의 결과입니다.** 본 시스템은 부분적으로라도 호전된 증상(`progress_improved`)이나 현재 없어진 증상(`symptom_absent`)을 진료실 모니터 최상단의 **[오늘의 활성 증상 카드(Active Symptom)]** 로 띄우지 않습니다. 대신 이를 `clinical_clues` (임상 단서) 객체로 안전하게 격리하여 의료진이 후속 문맥으로만 참고하도록 라우팅합니다.
+이는 검색 엔진의 성능 부족이나 LLM의 실패가 아닙니다. **현행 문진톡톡의 임상 안전 정책(Clinical Safety Policy)이 의도한 설계의 결과입니다.** 본 시스템은 부분적으로라도 호전된 증상(`progress_improved`)이나 현재 없어진 증상(`symptom_absent`)을 진료실 모니터 최상단의 **[활성 증상 카드(Active Symptom)]** 로 띄우지 않습니다. 대신 이를 `clinical_clues`(임상 단서) 객체로 안전하게 격리하여 의료진이 후속 문맥으로만 참고하도록 라우팅합니다.
 
-따라서 현재의 Recall 손실은 시스템의 오류가 아닌, **평가셋의 정답 레이블 기준과 프로덕션의 엄격한 라우팅 정책 간의 불일치(Policy Mismatch)** 로 해석하는 것이 타당합니다.
+따라서 현재의 Recall 손실은 시스템의 오류가 아닌, **평가셋의 정답 레이블 기준과 프로덕션의 엄격한 라우팅 정책 간의 의도된 불일치(Policy Mismatch)** 로 해석하는 것이 타당합니다.
