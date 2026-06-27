@@ -248,9 +248,20 @@ flowchart TB
 
 ---
 
-## 📊 성능 평가 요약
+## 📊 성능 평가와 검증 브랜치
 
-문진톡톡은 해커톤 MVP의 목표 범위를 "고령 환자의 일반 호흡기 문진 발화를 의료진이 빠르게 확인할 수 있게 정리하는 것"으로 두고 평가했습니다. 평가는 실제 환자 데이터가 아니라 제품 시나리오를 반영한 합성 문진 발화로 진행했습니다.
+문진톡톡의 평가는 단순히 "LLM이 증상을 맞췄는가"를 보는 방식이 아닙니다. 실제 서비스 흐름에 맞춰 환자 발화가 원문 근거를 유지한 채 구조화되고, 표준 증상 후보와 연결되며, 최종적으로 의료진이 확인할 수 있는 원페이퍼로 정리되는지를 단계별로 확인했습니다.
+
+`main` 브랜치에는 공식 서비스 설명과 핵심 End-to-End 성능 요약을 둡니다. 사투리 RAG, Hybrid IR 분리 평가, AWS 통합 테스트처럼 세부 검증 성격이 강한 자료는 별도 브랜치에 분리해 두었습니다.
+
+| 검증 항목 | 서비스에서 연결되는 부분 | 확인한 것 | 상세 자료 |
+| --- | --- | --- | --- |
+| End-to-End 문진 성능 | 환자 발화 → LLM 구조화 → Hybrid IR → 원페이퍼 | 최종 표준 증상 연결 성능 | [main/evaluation](evaluation/README.md) |
+| 사투리 RAG 의미 보존 | 방언 RAG 참고 → 표준어 보조 변환 | 사투리·구어체 표현을 바꿔도 환자 의미가 유지되는지 | [eval/dialect-rag](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/dialect-rag) |
+| Hybrid IR 파이프라인 | 후보 검색 → Bedrock 추출 → 표준 증상 연결 | 후보 검색과 실제 파이프라인 병목을 분리해 확인 | [eval/hybrid-ir-pipeline](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/hybrid-ir-pipeline) |
+| 테스트/배포 검증 | 로컬 테스트, AWS 수동 통합 테스트 | 배포 리소스 연결과 주요 회귀 테스트 기준 | [test/add-coverage](https://github.com/X-AI-KNU/munjin-talk-talk/tree/test/add-coverage) |
+
+아래 수치는 `main` 브랜치에서 공개하는 공식 요약 지표입니다. 평가는 실제 환자 데이터가 아니라 제품 시나리오를 반영한 합성 문진 발화로 진행했습니다.
 
 핵심 지표는 End-to-End F1입니다. 환자 발화에서 증상 표현을 추출하고, 원문 quote 검증과 Hybrid IR을 거쳐 표준 증상으로 연결된 최종 결과를 기준으로 계산했습니다.
 
