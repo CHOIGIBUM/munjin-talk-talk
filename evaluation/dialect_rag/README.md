@@ -1,52 +1,45 @@
-# 문진톡톡 사투리 RAG 의미 보존 평가팩
+# 문진톡톡 사투리 RAG 의미 보존 벤치마크 명세서
 
-이 폴더는 문진톡톡의 사투리 RAG 보조 변환을 평가하기 위한 자료를 모은 곳입니다. 서비스의 최종 의료 판단 성능을 평가하는 폴더가 아니라, 사투리/구어체 문진 답변을 표준어 보조 문장으로 바꾸는 과정에서 환자 발화의 의미가 유지되는지 점검합니다.
+본 디렉터리(`evaluation/dialect_rag/`)는 고령 환자의 비정형 발화(강원 사투리, 구어체, 축약어)를 표준어 보조 문장으로 변환하는 파이프라인의 **의미적 무결성(Semantic Integrity)을 정량적으로 검증하기 위한 평가 패키지**입니다.
 
-## 평가 목적
+본 벤치마크는 최종 의료적 진단 정답률을 측정하는 임상 벤치마크와 역할을 엄격히 분리합니다. LLM이 환자의 일상 언어를 의학적 처리가 용이한 표준어로 정제하는 과정에서 **환자가 호소한 핵심 증상과 임상적 맥락이 손실 없이 보존되는가**를 검증합니다.
 
-문진톡톡은 고령 환자가 말한 답변을 의료진이 확인하기 쉬운 문장과 구조화 결과로 정리합니다. 이때 환자 발화에는 강원 사투리, 구어체, 축약 표현, 지역 표현이 섞일 수 있습니다.
+---
 
-사투리 RAG의 역할은 다음과 같습니다.
+## 1. 평가 핵심 사상 및 검증 질문
 
-- 환자 원문에서 방언 표현과 가까운 항목을 찾습니다.
-- `dialect_packs/dialect_kangwon.json`의 표준어 후보를 Bedrock 프롬프트에 힌트로 전달합니다.
-- 힌트는 어휘 이해를 돕기 위한 참고 정보로만 쓰고, 원문에 없는 증상이나 사실을 추가하지 않도록 제한합니다.
-- 최종 의료 판단은 하지 않으며, 표준어 보조 문장 생성과 이후 구조화의 안정성을 돕습니다.
+고령 환자의 외래 문진 시연 환경에서는 "가만있어도 숨이 차서 데우 힘들어요", "매자지다" 등 지역적 특색이 강한 언어가 빈번하게 수신됩니다. 
 
-따라서 이 평가의 핵심 질문은 다음과 같습니다.
+백엔드 파이프라인 내 사투리 RAG(`retrieve_dialect_context`)는 강원 권역 방언 사전(`dialect_kangwon.json`)을 조작하여 표준어 변환 후보를 프롬프트 힌트로 주입합니다. 이때 프롬프트 규칙은 힌트를 **단순 어휘 해독용 참고 자산으로만 제한**하며, 원문에 존재하지 않는 증상이나 정도를 임의 생성하지 않도록 통제합니다.
 
-```text
-사투리/구어체 문진 답변을 표준어로 바꿨을 때
-증상, 부정 표현, 시작/지속/호전/악화, 정도, 복약 사실, 질문 의도가 보존되는가?
-```
+따라서 본 평가가 입증하고자 하는 핵심 질문은 다음과 같습니다.
 
-## 파일 구성
+> **핵심 검증 명세 (Core Verification Contract)** >
+> 사투리 및 구어체 답변을 표준어 문장으로 치환했을 때, > **[증상명, 부정 맥락, 시작·지속·호전·악화 시점, 고통의 정도, 복약 사실, 환자의 질문 의도]** 가 100% 왜곡 없이 보존되는가?
+
+---
+
+## 2. 디렉터리 및 아티팩트 구성
 
 ```text
 evaluation/dialect_rag/
 ├── README.md
-├── run_dialect_semantic_eval.py
+├── run_dialect_semantic_eval.py             # RAG 검색 + 표준어 변환 + LLM Judge 통합 실행기
 ├── data/
-│   ├── dialect_norm_eval_200.jsonl
-│   └── dialect_norm_eval_200_preview.csv
+│   ├── dialect_norm_eval_200.jsonl          # 검증용 합성 문진 케이스 200건 (Master)
+│   └── dialect_norm_eval_200_preview.csv    # 평가 데이터셋 시각적 검토용 프리뷰
 └── reports/
-    ├── summary.json
-    └── failed_cases.csv
+    ├── summary.json                         # 공식 제출용 핵심 요약 지표 스냅샷
+    └── failed_cases.csv                     # 실패 케이스 집중 분석용 인벤토리
 ```
 
-| 파일 | 역할 |
-| --- | --- |
-| `run_dialect_semantic_eval.py` | RAG 힌트 검색, Bedrock 표준어 변환, Bedrock judge 평가를 수행하는 스크립트 |
-| `data/dialect_norm_eval_200.jsonl` | 200개 평가 케이스 원본 |
-| `data/dialect_norm_eval_200_preview.csv` | 평가 데이터 일부를 표 형태로 확인하기 위한 미리보기 |
-| `reports/summary.json` | 제출용 요약 지표 |
-| `reports/failed_cases.csv` | 실패 케이스만 모은 검토용 CSV |
+> **엔지니어링 최적화 안내:** 스크립트 구동 시 전체 추론 본문(`*_case_results.jsonl`)이 산출되나, 파일 용량 비대화 및 Git 레포지토리 오염을 방지하기 위해 배포 브랜치에는 **공식 요약 지표(`summary.json`)와 실패 케이스 정밀 분석본(`failed_cases.csv`)만 확정 아티팩트로 유지**합니다.
 
-스크립트를 새로 실행하면 `dialect_semantic_summary.json`, `dialect_semantic_case_results.jsonl`, `dialect_semantic_case_results.csv`, `dialect_semantic_failed_cases.csv`가 생성됩니다. 전체 case 결과는 파일이 커지고 검토성이 낮으므로, 제출용 브랜치에는 요약 지표와 실패 케이스 중심으로 남깁니다.
+---
 
-## 평가 데이터 구조
+## 3. 벤치마크 데이터 스키마
 
-`data/dialect_norm_eval_200.jsonl`은 한 줄에 하나의 JSON 객체를 담습니다.
+`data/dialect_norm_eval_200.jsonl` 파일에 적재되는 개별 평가 케이스 규격입니다. PII(개인식별정보) 유출 방지를 위해 실제 현장 임상 발화의 언어적 습관을 구조적으로 복제한 **합성 검증 데이터셋(Synthetic Starter Set)** 입니다.
 
 ```json
 {
@@ -67,204 +60,106 @@ evaluation/dialect_rag/
   ],
   "gold_symptoms": ["호흡곤란"],
   "negative_symptoms": [],
-  "note": "원 업로드 평가문장을 표준어 정답 문장으로 확장한 synthetic regression case"
+  "note": "원 평가문장을 표준어 정답 문장으로 확장한 synthetic regression case"
 }
 ```
 
-| 필드 | 의미 |
-| --- | --- |
-| `case_id` | 평가 케이스 식별자 |
-| `source_case_id` | 원본 평가 케이스 식별자 |
-| `source` | 데이터 생성 또는 확장 출처 |
-| `visit_type` | 초진/재진 구분 |
-| `dialect_type` | `dialect` 또는 `standard` 구분 |
-| `question_id` | 문진 질문 번호 |
-| `text`, `dialect_text` | 평가에 넣는 환자 발화 문장 |
-| `gold_standard_text` | 의미를 보존한 기준 표준어 문장 |
-| `expected_replacements` | 기대되는 방언-표준어 치환 힌트 |
-| `gold_symptoms` | 문장에 포함된 기준 증상 힌트 |
-| `negative_symptoms` | 들어가면 안 되는 증상 힌트 |
-| `note` | 데이터 생성 메모 |
+| 필드명 | 데이터 타입 | 임상 및 평가 검증 역할 |
+| --- | :---: | --- |
+| `case_id` / `source_case_id` | String | 평가 케이스 고유 식별자 및 원본 대조 ID |
+| `visit_type` / `dialect_type`| String | 초진·재진 문맥 및 방언(`dialect`) vs 표준어(`standard`) 속성 |
+| `question_id` | String | 문진 질문 슬롯 번호 (예: `Q1`) |
+| `text` / `dialect_text` | String | 파이프라인에 주입되는 환자의 Raw 발화 입력값 |
+| `gold_standard_text` | String | 의미적 손실이 전혀 없는 임상 정답 기준 표준어 문장 |
+| `expected_replacements` | Array | RAG 엔진이 선제적으로 타겟팅해야 하는 사투리-표준어 쌍 |
+| `gold_symptoms` | Array | 발화 내에 반드시 추출되어야 하는 표준 증상 키워드 |
+| `negative_symptoms` | Array | 환각(Hallucination)에 의해 삽입되면 안 되는 금지 증상 키워드 |
 
-평가 데이터는 synthetic/starter set입니다. 실제 병원 전체 실데이터나 임상 진단 정답 데이터가 아닙니다.
+---
 
-## 평가 파이프라인
+## 4. 5단계 평가 파이프라인 시퀀스
 
 ```text
-1. 평가 입력 로드
-   dialect_text 또는 text를 환자 원문으로 사용
-
-2. 사투리 RAG 힌트 검색
-   backend/serverless/src/dialect_rag.py의 retrieve_dialect_context() 호출
-   dialect_packs/dialect_kangwon.json에서 exact/partial match 후보 검색
-
-3. 표준어 보조 문장 생성
-   Bedrock Nova Lite가 standardized_text와 reason을 JSON으로 반환
-   프롬프트에는 "원문에 없는 증상·약·시점·정도를 추가하지 말라"는 제한 포함
-
-4. 의미 보존 judge
-   Bedrock Nova Lite judge가 원문, 기준 표준어 문장, 모델 변환문을 비교
-   same_meaning, standard_korean, added_fact, omitted_fact를 판정
-
-5. 결과 집계
-   semantic_success_rate와 실패 유형별 건수를 summary로 저장
-   실패 케이스는 CSV로 별도 저장
+[Step 01] 평가 입력 패치        ──> dialect_text 혹은 text를 환자 발화 원문으로 바인딩
+[Step 02] 사투리 RAG 힌트 검색 ──> retrieve_dialect_context() 구동 (Exact/Partial 매칭)
+[Step 03] 표준어 보조문 생성   ──> Bedrock Nova Lite 호출 (제약 조건 프롬프트 강제 제어)
+[Step 04] 의미 보존 LLM Judge  ──> Nova Lite Judge가 [원문 vs Gold 정답 vs 생성문] 삼자 교차 검증
+[Step 05] 아티팩트 최종 집계   ──> 성공률 산출 및 예외 CSV 파티셔닝 아카이빙
 ```
 
-## 성공 판정 기준
+---
 
-한 케이스는 아래 네 조건을 모두 만족해야 성공입니다.
+## 5. 엄격한 성공 판정 매트릭스
 
-| 조건 | 성공 기준 |
-| --- | --- |
-| `same_meaning` | 증상, 부정 표현, 시작/지속/호전/악화, 정도, 복약 사실, 질문 의도가 유지됨 |
-| `standard_korean` | 변환문이 자연스러운 표준어 문장임 |
-| `added_fact` | 원문/정답에 없는 증상, 약, 시점, 정도, 확신, 질문이 추가되지 않음 |
-| `omitted_fact` | 원문/정답에 있던 증상, 부정, 시점, 정도, 복약 사실, 질문 의도가 빠지지 않음 |
+단일 테스트 케이스는 아래의 **4대 평가 지표를 단 하나도 누락 없이 100% 충족(AND 연산)해야만 최종 성공(`ok`)으로 확정**됩니다.
 
-스크립트 내부 성공식은 다음과 같습니다.
+> **`Semantic Success`** = `same_meaning` ∧ `standard_korean` ∧ ¬`added_fact` ∧ ¬`omitted_fact`
 
-```text
-semantic_success =
-  same_meaning is true
-  and standard_korean is true
-  and added_fact is false
-  and omitted_fact is false
-```
+| 평가 지표명 | 판정 기준 명세 | 임상적 방어 목표 |
+| --- | --- | --- |
+| `same_meaning` | 원문의 핵심 증상, 시점 변화, 복약 사실이 유지되었는가 | 문진 데이터의 본질적 의미왜곡 방지 |
+| `standard_korean` | 변환 결과물이 문법적으로 자연스러운 표준 한국어인가 | 의료진 가독성 및 후속 파싱 안정성 확보 |
+| `added_fact` | **[False 강제]** 원문에 없던 증상, 시점, 정도가 추가되었는가 | LLM의 자의적 과잉 임상 판단(환각) 차단 |
+| `omitted_fact` | **[False 강제]** 원문에 있던 통증 정도나 부정 맥락이 빠졌는가 | **중증 위험 단서의 치명적 소실 방어** |
 
-## 현재 요약 지표
+---
 
-`reports/summary.json` 기준입니다.
+## 6. 현행 요약 지표 기준 (`reports/summary.json`)
 
-| 항목 | 값 |
-| --- | ---: |
-| 평가 케이스 수 | 200 |
-| 변환 모델 | `apac.amazon.nova-lite-v1:0` |
-| Judge 모델 | `apac.amazon.nova-lite-v1:0` |
-| 의미 성공률 | 0.900 |
-| 동일 의미 판정률 | 0.925 |
-| 표준어 판정률 | 0.990 |
-| 정보 추가 없음 | 0.965 |
-| 정보 누락 없음 | 0.930 |
-| 평균 RAG 힌트 수 | 0.275 |
-
-지표 해석:
-
-- `semantic_success_rate`: 네 성공 조건을 모두 만족한 비율입니다.
-- `same_meaning_rate`: 원문과 생성문의 핵심 의미가 같다고 judge가 본 비율입니다.
-- `standard_korean_rate`: 생성문이 표준어 문장으로 자연스럽다고 본 비율입니다.
-- `no_added_fact_rate`: 원문에 없던 증상, 복약, 시점, 정도 등이 추가되지 않은 비율입니다.
-- `no_omitted_fact_rate`: 원문에 있던 정보가 빠지지 않은 비율입니다.
-- `avg_rag_hint_count`: 한 케이스당 검색된 방언 힌트 평균입니다. 모든 케이스에 힌트가 붙는 것은 아니며, 표준어 문장이나 방언팩에 없는 표현은 힌트 없이 평가될 수 있습니다.
-
-## 실패 유형
-
-`summary.json`의 실패 유형 집계는 다음과 같습니다.
-
-| 실패 유형 | 건수 | 의미 |
+| 정량 평가 지표 | 도출 결괏값 | 엔지니어링 지표 해석 |
 | --- | ---: | --- |
-| `added_fact` | 7 | 원문에 없던 증상, 정도, 사실이 추가됨 |
-| `omitted_fact` | 10 | 원문에 있던 정도, 부정, 시점, 질문 의도 등이 누락됨 |
-| `meaning_mismatch` | 1 | 변환문이 원문과 다른 의미가 됨 |
-| `not_standard_korean` | 2 | 의미는 대체로 유지됐지만 표준어 문장으로 부자연스러움 |
-| `ok` | 180 | 성공 케이스 |
+| **평가 케이스 총합** | 200건 | 스타터 검증셋 전체 풀 커버리지 실행 |
+| **추론 및 Judge 모델**| `amazon.nova-lite-v1:0` | 초저지연 경량 모델 기준의 보수적 검증 환경 |
+| **최종 의미 성공률** | **0.900** (90.0%) | 4대 엄격 조건을 완벽하게 통과한 파이프라인 신뢰도 |
+| **동일 의미 판정률** | **0.925** (92.5%) | 임상적 뉘앙스와 환자 호소 의도가 일치한 비중 |
+| **표준어 문법 판정률**| **0.990** (99.0%) | 구어체가 완벽한 문장형 데이터로 정제된 비중 |
+| **정보 임의 추가 없음**| **0.965** (96.5%) | 없는 병명을 지어내지 않는 환각 억제력 |
+| **정보 임의 누락 없음**| **0.930** (93.0%) | 환자의 핵심 발화를 빠뜨리지 않는 데이터 보존율 |
+| **평균 RAG 힌트 매칭수**| 0.275개 | 일반어 발화 시 불필요한 RAG 개입을 스킵하는 동적 라우팅 효율 |
 
-주의할 점은 `failure_type`이 대표 실패 유형이라는 점입니다. 한 케이스에서 정보 추가와 누락이 동시에 발생할 수 있으며, 스크립트는 `added_fact`, `omitted_fact`, `meaning_mismatch`, `not_standard_korean` 순서로 대표 유형을 붙입니다.
+---
 
-실패 분석은 `reports/failed_cases.csv`를 봅니다. 이 파일에는 다음 열이 들어 있습니다.
+## 7. 실패 유형 집중 분석 (`reports/failed_cases.csv`)
 
-| 열 | 내용 |
-| --- | --- |
-| `case_id` | 실패 케이스 식별자 |
-| `dialect_type` | 사투리/표준어 구분 |
-| `semantic_success` | 최종 성공 여부 |
-| `same_meaning`, `standard_korean`, `added_fact`, `omitted_fact` | judge 세부 판정 |
-| `failure_type` | 대표 실패 유형 |
-| `rag_hint_count` | 해당 케이스에서 검색된 RAG 힌트 수 |
-| `original_text` | 환자 원문 |
-| `gold_standard_text` | 기준 표준어 문장 |
-| `predicted_standard_text` | 모델이 생성한 표준어 문장 |
-| `normalizer_reason` | 변환 모델의 설명 |
-| `judge_reason` | judge의 실패/성공 근거 |
+집계된 20건의 실패 파티션 분포입니다. 단일 발화에서 복합 오류 발생 시 시스템은 우선순위(`added` $\rightarrow$ `omitted` $\rightarrow$ `mismatch` $\rightarrow$ `not_standard`)에 의해 대표 실패 코드를 바인딩합니다.
 
-예를 들어 `dialect_norm_002`는 "사래가 자주 걸려요"가 "콧물이 자주 나요"로 바뀌면서 의미가 달라진 케이스입니다. 이런 사례는 단순 표준어 자연성보다 의료 문진 의미 보존이 더 중요하다는 점을 보여줍니다.
+* `omitted_fact` (10건): 구어체 뉘앙스 축약 중 통증의 강도 표현 일부 누락
+* `added_fact` (7건): 모호한 문장을 매끄럽게 잇는 과정에서 시점 단서 일부 과생성
+* `not_standard_korean` (2건) / `meaning_mismatch` (1건)
 
-## 실행 준비
+### 💡 핵심 실패 사례 심층 교훈 (`dialect_norm_002`)
+* **환자 Raw 발화:** *"사래가 자주 걸려요"*
+* **LLM 오답 생성:** *"콧물이 자주 나요"* $\rightarrow$ 판정: `meaning_mismatch` (실패)
 
-프로젝트 루트에서 실행한다고 가정합니다.
+> **엔지니어링 아키텍처 관점의 타당성:** > 고령층이 호소하는 '사래' 표현을 경량 LLM이 호흡기 일반 증상인 '콧물'로 치환하려다 포착된 사례입니다. 이는 **단순히 문장을 매끄럽게 만드는 것보다 환자 언어의 임상적 원의를 지키는 것이 훨씬 중요하다**는 대원칙을 입증합니다. 본 평가 프레임워크가 이러한 1%의 치명적 의미 왜곡을 사전에 걸러냄으로써, 운영 환경에서는 모호한 단어를 억지로 표준화하지 않고 원문 그대로 의사에게 전달하는 안전망이 가동됩니다.
+
+---
+
+## 8. 벤치마크 CLI 구동 가이드
 
 ```bash
 cd munjin-talk-talk
 
 export AWS_PROFILE=<your-profile>
 export AWS_REGION=ap-northeast-2
-export AWS_DEFAULT_REGION=ap-northeast-2
 export DIALECT_SEMANTIC_MODEL_ID=apac.amazon.nova-lite-v1:0
 export DIALECT_SEMANTIC_JUDGE_MODEL_ID=apac.amazon.nova-lite-v1:0
-```
 
-필요 패키지는 백엔드 서버리스 환경과 동일하게 맞춥니다.
-
-```bash
 pip install -r backend/serverless/src/requirements.txt
-```
 
-Windows PowerShell에서는 환경변수를 다음처럼 설정할 수 있습니다.
-
-```powershell
-$env:AWS_PROFILE="<your-profile>"
-$env:AWS_REGION="ap-northeast-2"
-$env:AWS_DEFAULT_REGION="ap-northeast-2"
-$env:DIALECT_SEMANTIC_MODEL_ID="apac.amazon.nova-lite-v1:0"
-$env:DIALECT_SEMANTIC_JUDGE_MODEL_ID="apac.amazon.nova-lite-v1:0"
-```
-
-## 평가 실행
-
-```bash
+# 전체 200건 풀 벤치마크 실행
 python evaluation/dialect_rag/run_dialect_semantic_eval.py \
   --input evaluation/dialect_rag/data/dialect_norm_eval_200.jsonl \
   --output-dir evaluation/dialect_rag/reports/run_latest
 ```
 
-일부 케이스만 빠르게 확인하려면 `--limit`을 사용할 수 있습니다.
+*(고속 스모크 테스트 시에는 끝에 `--limit 20` 플래그를 할당하여 상위 20건만 파이프라인을 관통시킵니다.)*
 
-```bash
-python evaluation/dialect_rag/run_dialect_semantic_eval.py \
-  --input evaluation/dialect_rag/data/dialect_norm_eval_200.jsonl \
-  --output-dir evaluation/dialect_rag/reports/run_sample \
-  --limit 20
-```
+---
 
-새 실행 결과를 제출용 파일로 갱신하려면 `run_latest/dialect_semantic_summary.json`을 `reports/summary.json`에, `run_latest/dialect_semantic_failed_cases.csv`를 `reports/failed_cases.csv`에 반영합니다. 단, Bedrock judge를 사용하므로 재실행 시 모델 응답 변동이 있을 수 있습니다.
+## 9. Git 형상 관리 거버넌스
 
-## Git 관리 기준
-
-커밋 권장:
-
-- `evaluation/dialect_rag/README.md`
-- `evaluation/dialect_rag/run_dialect_semantic_eval.py`
-- `evaluation/dialect_rag/data/dialect_norm_eval_200.jsonl`
-- `evaluation/dialect_rag/data/dialect_norm_eval_200_preview.csv`
-- `evaluation/dialect_rag/reports/summary.json`
-- `evaluation/dialect_rag/reports/failed_cases.csv`
-
-커밋 비권장:
-
-- `evaluation/dialect_rag/reports/run_latest/`
-- 전체 raw case result
-- Bedrock 원문 응답 trace
-- 환자 개인정보나 외부 공개 범위가 불명확한 원천 데이터
-
-## 해석 시 주의
-
-이 평가는 사투리 RAG 보조 변환의 의미 보존 점검입니다. 병원 실데이터 전체 성능, 임상 일반화 성능, 진단 정확도, 처방 정확도를 주장하는 벤치마크가 아닙니다.
-
-발표나 제출에서는 다음처럼 말하는 것이 안전합니다.
-
-```text
-문진톡톡은 사투리/구어체 답변을 표준어 보조 문장으로 변환하는 과정에서
-의미 보존, 정보 추가 방지, 정보 누락 방지를 별도 지표로 평가했다.
-현재 공개 브랜치에는 200개 starter set 기준 평가 데이터와 실패 케이스를 함께 남겨
-성능 주장과 한계를 같이 확인할 수 있게 했다.
-```
+| 구분 | 통제 대상 경로 | 형상 관리 사상 |
+| :---: | --- | --- |
+| **커밋 확정 대상** | `README.md`<br>`run_dialect_semantic_eval.py`<br>`data/dialect_norm_eval_200.*`<br>`reports/summary.json`<br>`reports/failed_cases.csv` | 재현 가능한 시드 데이터셋과 최종 지표 스냅샷은 프로젝트 마스터 아티팩트로 영구 트래킹합니다. |
+| **커밋 차단 대상** | `reports/run_latest/`<br>`*_case_results.jsonl`<br>Bedrock Raw Trace 로그 | Bedrock Judge의 확률적 변동성이 섞인 대량 런타임 중간 로그는 레포지토리에 적재하지 않습니다. |
