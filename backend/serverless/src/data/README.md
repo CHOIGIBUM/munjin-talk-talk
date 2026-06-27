@@ -4,6 +4,8 @@
 
 공개 GitHub에는 코드와 공개 가능한 설정 파일만 포함합니다. 저작권 또는 이용 범위 검토가 필요한 원천 의료 백과 데이터, 그 파생 증상 인덱스, embedding cache는 공개 저장소에 포함하지 않습니다.
 
+`test/add-coverage` 브랜치에서 이 문서는 테스트 실행 전 데이터 의존성을 확인하는 기준입니다. 로컬 단위 테스트 중 일부는 비공개 IR 원천 데이터가 없어도 fallback 또는 skip으로 동작하지만, 실제 운영 수준의 Hybrid IR 평가와 AWS 통합 테스트는 런타임 데이터 배치 상태의 영향을 받습니다.
+
 ---
 
 ## 1. 공개 저장소에 포함되는 파일
@@ -18,6 +20,20 @@
 | `README.md` | 현재 문서 |
 
 이 파일들은 서비스 구조와 프롬프트/질문셋을 이해하는 데 필요하므로 공개합니다.
+
+## 1-1. 테스트와의 관계
+
+테스트 계층별로 이 폴더를 참조하는 방식이 다릅니다.
+
+| 테스트/평가 | 데이터 의존성 |
+| --- | --- |
+| `backend/serverless/tests/test_question_sets.py` | `question_sets/default.json` 구조 확인 |
+| `backend/serverless/tests/test_dialect_rag.py` | `dialect_packs/dialect_kangwon.json` 로드와 RAG context shape 확인 |
+| `backend/serverless/tests/test_ir_noise_and_safety.py` | 비공개 IR 데이터가 없으면 일부 항목은 skip 또는 domain pack fallback 확인 |
+| `evaluation/ir/` | 실제 표준 증상 후보 검색 성능을 보려면 `symptom_index.json`과 embedding cache 필요 |
+| `tests/aws/test_aws_full.py` | 배포된 Lambda 환경에 런타임 데이터가 포함되어 있는지 간접 확인 |
+
+따라서 "로컬 테스트가 일부 통과한다"와 "운영 수준의 IR 매칭이 완전하게 동작한다"는 같은 의미가 아닙니다. 해커톤 제출에서는 이 구분을 분명히 하는 것이 좋습니다.
 
 ---
 
