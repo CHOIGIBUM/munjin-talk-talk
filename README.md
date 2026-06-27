@@ -41,7 +41,7 @@
 
 - **심화되는 고령화:** [국가데이터처 2025년 고령자 통계](https://mods.go.kr/board.es?act=view&bid=10820&list_no=438832&mid=a10301010000&ref_bid=&tag=)에 따르면 우리나라 65세 이상 인구 비중은 20.3%이며, 강원 지역은 25.7%로 전국 평균보다 높습니다.
 - **짧은 진료 시간의 한계:** [국회입법조사처 의료서비스 이용 현황](https://www.nars.go.kr/fileDownload2.do?doc_id=1N19WkRJPsG&fileName=%28%EC%A7%80%ED%91%9C%EB%A1%9C+%EB%B3%B4%EB%8A%94+%EC%9D%B4%EC%8A%88+150%ED%98%B8-20200221%29%EC%9A%B0%EB%A6%AC%EB%82%98%EB%9D%BC+%EA%B5%AD%EB%AF%BC%EC%9D%98+%EC%9D%98%EB%A3%8C%EC%84%9C%EB%B9%84%EC%8A%A4+%EC%9D%B4%EC%9A%A9+%ED%98%84%ED%99%A9%EA%B3%BC+%EC%8B%9C%EC%82%AC%EC%A0%90.pdf)은 우리나라 국민의 외래 진료 횟수가 1인당 연간 16.6회로 OECD 국가 중 가장 많으며, 짧은 시간에 많은 환자를 진찰해야 하는 구조를 지적합니다.
-- **건강정보 이해 격차(Health Literacy):** [건강정보이해력 연구](https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART003247633)에 따르면 건강정보이해능력이 낮은 고령자·취약계층은 질병 치료 방법을 찾고, 추가 진료 필요 여부를 판단하고, 복약 지시를 이해·이행하는 과정에서 어려움을 겪을 수 있습니다.
+- **건강정보 이해 격차(Health Literacy):** [건강정보이해력 연구](https://www.kci.go.kr/kciportal/ci/sereArticleSearch/ciSereArtiView.kci?sereArticleSearchBean.artiId=ART003247633)에 따르면 건강정보이해능력이 낮은 고령자·취약계층은 질병 치료 방법을 찾고, 추가 진료 필요 여부를 판단하고, 복약 지시를 이해·이행하는 과정에서 어려움을 겪을 수 있다 합니다.
 - **디지털 정보화 수준 격차:** [KOSIS 디지털정보화 수준](https://kosis.kr/statHtml/statHtml.do?orgId=127&tblId=DT_12017N008)에 따르면 2024년 취약계층의 디지털 정보화 수준은 일반 국민 대비 77.5%, 고령층은 71.4%로 나타납니다. 단말기 접근성은 높아졌지만, 앱·웹 기반 서비스를 스스로 찾아 설치하고 활용하는 역량은 여전히 낮습니다.
 - **앱 서비스의 높은 장벽:** [고령층 앱 활용 실태 보도](https://www.kukinews.com/article/view/kuk202401170004)에 따르면 분당서울대병원 연구팀이 65세 이상 505명을 조사한 결과, 87.1%가 앱을 사용한다고 답했지만 63.2%는 앱 설치·삭제를 스스로 하지 못한다고 응답했습니다. 즉 의료 서비스가 "앱을 설치하고, 로그인해서, 스스로 문항을 입력하는 방식"에 머물면 실제로 의료가 더 필요한 고령 환자가 첫 단계에서부터 소외될 위험이 큽니다.
 
@@ -188,7 +188,7 @@ IR은 내부 배포 환경의 비공개 런타임 데이터(`diseases_cleaned.js
 4. Titan embedding이 환자 표현과 표준 증상 문서 사이의 의미 유사도를 계산합니다.
 5. 표준 증상명과 직접 가까운 표현은 label bridge로 보조 반영합니다.
 6. BM25 상위 후보, Titan vector 상위 후보, label 후보를 합친 뒤 근거가 겹치는 후보를 우선 정리합니다.
-7. Titan 의미 신호, BM25 키워드 신호, label 근거가 함께 잡히는 후보를 우선 확정하고, 근거가 부족한 후보는 증상으로 확정하지 않고 문진 맥락으로 보존합니다.
+7. Titan vector 의미 신호, BM25 키워드 신호, label 근거가 함께 잡히는 후보를 우선 확정하고, 근거가 부족한 후보는 증상으로 확정하지 않고 문진 맥락으로 보존합니다.
 8. 운영 산출물에는 임의 점수, 전체 후보 목록, prompt 전문을 저장하지 않고, 원페이퍼에는 `매칭됨`, `우선 확인`처럼 의료진이 해석 가능한 상태만 표시합니다.
 
 ### Hybrid IR 처리 흐름
@@ -250,7 +250,7 @@ flowchart TB
 
 문진톡톡의 평가는 단순히 "LLM이 증상을 맞췄는가"를 보는 방식이 아닙니다. 실제 서비스 흐름에 맞춰 환자 발화가 원문 근거를 유지한 채 구조화되고, 표준 증상 후보와 연결되며, 최종적으로 의료진이 확인할 수 있는 원페이퍼로 정리되는지를 단계별로 확인했습니다.
 
-`main` 브랜치에는 공식 서비스 설명과 핵심 End-to-End 핵심 지표를 요약해 두었습니다. 사투리 RAG, Hybrid IR 평가, AWS 통합 테스트처럼 세부 실험 데이터는 별도의 검증용 브랜치에 분리해 두었습니다.
+`main` 브랜치에는 공식 서비스 설명과 End-to-End 실험 지표를 요약해 두었습니다. 사투리 RAG, Hybrid IR 평가, AWS 통합 테스트처럼 세부 실험 데이터는 별도의 검증용 브랜치에 분리해 두었습니다.
 
 | 검증 항목 | 서비스에서 연결되는 부분 | 확인한 것 | 상세 자료 |
 | --- | --- | --- | --- |
@@ -261,7 +261,7 @@ flowchart TB
 
 아래 수치는 `main` 브랜치에서 공개하는 공식 요약 지표입니다. 평가는 실제 환자 데이터가 아니라 제품 시나리오를 반영한 합성 문진 발화로 진행했습니다.
 
-핵심 지표는 End-to-End F1입니다. 환자 발화에서 증상 표현을 추출하고, 원문 quote 검증과 Hybrid IR을 거쳐 표준 증상으로 연결된 최종 결과를 기준으로 계산했습니다.
+핵심 지표는 End-to-End F1 Score입니다. 환자 발화에서 증상 표현을 추출하고, 원문 quote 검증과 Hybrid IR을 거쳐 표준 증상으로 연결된 최종 결과를 기준으로 계산했습니다.
 
 | 평가 대상 | 케이스 수 | 목적 | Precision | Recall | F1 |
 | --- | ---: | --- | ---: | ---: | ---: |
@@ -337,7 +337,7 @@ sam deploy --guided
 
 ### 4. 배포 시 필요한 비공개 데이터
 
-프론트엔드, Lambda 코드, SAM 템플릿, 스키마, 평가 스크립트는 공개 저장소에 포함되어 있습니다. 데모/운영 배포에서는 저작권과 보안 처리가 필요한 서울아산병원 질병백과 기반 IR 런타임 데이터(`diseases_cleaned.json`, `symptom_index.json`, `embedding cache`)만 팀 내부 비공개 경로에서 Lambda 패키지에 배치합니다. 공개 저장소만 클론(clone)한 환경에서는 해당 파일이 배치되지 않을 경우 Hybrid IR 기반 증상 매칭이 제한됩니다.
+프론트엔드, Lambda 코드, SAM 템플릿, 스키마, 평가 스크립트는 공개 저장소에 포함되어 있습니다. 데모/운영 배포에서는 저작권과 보안 처리가 필요한 서울아산병원 질병백과 기반 IR 런타임 데이터(`diseases_cleaned.json`, `symptom_index.json`, `embedding cache`)만 내부 비공개 경로에서 Lambda 패키지에 배치합니다. 공개 저장소만 클론(clone)한 환경에서는 해당 파일이 배치되지 않을 경우 Hybrid IR 기반 증상 매칭이 제한됩니다.
 
 ## 🗂️ 저장소 구조
 
@@ -369,7 +369,7 @@ munjin-talk-talk/
 | [docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md) | DynamoDB·S3·extraction·onepaper·guide JSON |
 | [docs/SECURITY_DATA_INVENTORY.md](docs/SECURITY_DATA_INVENTORY.md) | 필드별 보안 처리 기준 |
 | [evaluation/README.md](evaluation/README.md) | 평가 실행 구조·지표·공개/비공개 산출물 기준 |
-| [evaluation/reports/performance_summary.md](evaluation/reports/performance_summary.md) | 해커톤 발표용 성능 요약 |
+| [evaluation/reports/performance_summary.md](evaluation/reports/performance_summary.md) | 성능 요약 |
 
 ---
 
@@ -403,3 +403,12 @@ munjin-talk-talk/
 문진톡톡은 의료적 진단·처방·질병 예측을 수행하지 않습니다. 환자 발화를 구조화해 의료진 확인을 돕는 MVP이며, 모든 진료 판단은 의료진이 수행해야 합니다.
 
 코드는 해커톤 제출 및 심사용 공개를 목적으로 정리되어 있습니다. 원천 의료 백과 데이터와 그 파생 인덱스·embedding cache는 공개 저장소에 포함하지 않습니다.
+
+### 데이터 출처
+
+본 프로젝트의 증상 후보군 구성과 평가용 참조 데이터 설계에는 다음 공개 자료를 참고했습니다.
+
+- **질병 및 증상 정보 참고**: [서울아산병원 질환백과](https://www.amc.seoul.kr/asan/healthinfo/disease/diseaseList.do?diseaseKindId=C000019)
+- **강원 지역 사투리 어휘 참고**: [공공데이터포털 - 강원도 강릉시 사투리 어휘](https://www.data.go.kr/data/15153917/fileData.do)
+
+위 자료는 문진톡톡의 의료진 보조 목적 MVP를 설계하기 위한 참고 출처이며, 공개 저장소에는 원천 데이터 원문, 파생 증상 인덱스, 임베딩 캐시를 포함하지 않습니다. 각 데이터의 이용은 원 출처의 이용 조건과 라이선스 정책을 따릅니다.
