@@ -23,12 +23,13 @@
 
 | 문서 / 파일 링크 | 포함 내용 및 임상적 역할 |
 | --- | --- |
-| **[평가 프레임워크 명세](README.md)** | 평가 목적, 데이터 스키마, CLI 실행 방법, 지표 해석 가이드 |
-| **[공식 요약 지표](reports/summary.json)** | 200개 검증 케이스 기준 핵심 정량 지표 스냅샷 |
-| **[실패 케이스 덤프](reports/failed_cases.csv)** | 의미 불일치, 정보 임의 추가/누락 등 취약 패턴 집중 분석 인벤토리 |
-| **[평가 데이터셋](data/dialect_norm_eval_200.jsonl)**| 사투리/구어체 입력 Raw 발화와 임상 기준 표준어(Gold Standard) 매핑 |
-| **[평가 실행 스크립트](run_dialect_semantic_eval.py)** | RAG 힌트 검색 $\rightarrow$ Bedrock 생성 $\rightarrow$ Judge 교차 검증 자동화 러너 |
+| **[평가 프레임워크 명세](evaluation/dialect_rag/README.md)** | 평가 목적, 데이터 스키마, CLI 실행 방법, 지표 해석 가이드 |
+| **[공식 요약 지표](evaluation/dialect_rag/reports/summary.json)** | 200개 검증 케이스 기준 핵심 정량 지표 스냅샷 |
+| **[실패 케이스 덤프](evaluation/dialect_rag/reports/failed_cases.csv)** | 의미 불일치, 정보 임의 추가/누락 등 취약 패턴 집중 분석 인벤토리 |
+| **[평가 데이터셋](evaluation/dialect_rag/data/dialect_norm_eval_200.jsonl)** | 사투리/구어체 입력 Raw 발화와 임상 기준 표준어(Gold Standard) 매핑 |
+| **[평가 실행 스크립트](evaluation/dialect_rag/run_dialect_semantic_eval.py)** | RAG 힌트 검색 → Bedrock 생성 → Judge 교차 검증 자동화 러너 |
 | **[방언팩 런타임 가이드](backend/serverless/src/data/README.md)** | `dialect_kangwon.json`의 파이프라인 내 역할 및 주입 방법론 |
+| **[강원 방언팩 JSON](backend/serverless/src/data/dialect_packs/dialect_kangwon.json)** | 실제 RAG 검색에 사용되는 강원 방언 어휘/힌트 데이터 |
 
 ---
 
