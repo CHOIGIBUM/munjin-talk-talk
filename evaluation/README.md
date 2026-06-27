@@ -15,7 +15,7 @@
 
 ## 1. 브랜치 전략 및 거버넌스
 
-공식 보고용 요약 데이터는 `main` 브랜치에 유지하며, 탐색적 성격이 강한 세부 파라미터 실험은 독립 브랜치로 격리하여 관리합니다.
+요약 데이터는 `main` 브랜치, 세부 파라미터 실험은 독립 브랜치로 관리합니다.
 
 | 자료 경로 | main과의 관계 | 주요 내용 및 역할 |
 | --- | --- | --- |
@@ -24,7 +24,7 @@
 | [`eval/hybrid-ir-pipeline`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/hybrid-ir-pipeline) | 보조 실험 산출물 | IR 후보군 검색 스코어링 튜닝 및 Bedrock 파이프라인 구간별 지연시간(Latency) 병목 분석 |
 | [`test/service-validation`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/test/service-validation) | 서비스 검증 근거 | 로컬 모의 객체(Stub) 테스트 및 AWS 런타임 수동 통합 검증 |
 
-> **심사위원 안내:** 공식 피칭 및 제출 서류에 기재된 최종 성능 지표는 `main/evaluation`의 산출물을 기준으로 합니다. 세부 실험 브랜치는 아키텍처 설계의 의사결정 배경과 한계점 극복 과정을 입증하는 참고 자료입니다.
+> 공식 피칭 및 제출 서류에 기재된 최종 성능 지표는 `main/evaluation`의 산출물을 기준으로 합니다. 세부 실험 브랜치는 아키텍처 설계의 의사결정 배경과 한계점 극복 과정을 입증하는 참고 자료입니다.
 
 ---
 
@@ -51,7 +51,7 @@ evaluation/
 
 ## 3. 평가 데이터 규격
 
-평가 입력셋에는 **환자의 발화 원문(`text`)**과 **전문 임상가가 레이블링한 표준 증상명(`gold_symptoms`)**만 기입합니다. 
+평가 입력셋에는 **환자의 발화 원문(`text`)** 과 **레이블링한 표준 증상명(`gold_symptoms`)** 만 기입합니다. 
 
 `normalized_text`, `symptom_hint`, IR Query 등 중간 가공 텍스트는 평가셋에 미리 입력해 두지 않고 런타임 파이프라인이 직접 생성하도록 강제합니다. 이를 통해 실제 운영 환경에서 발생할 수 있는 LLM의 추출 오차와 IR 검색 오차를 벤치마크 지표에 온전히 반영합니다.
 
@@ -129,15 +129,3 @@ python evaluation\scripts\run_ir_eval.py `
 
 지표가 하락하는 가혹 조건(Held-out) 실험 수치를 투명하게 공개하는 이유는 명확합니다. 문진톡톡의 아키텍처는 **불확실한 상황에서 임의로 병명을 찍어내는 위험한 범용 진단기**가 되지 않도록 보수적으로 설계되었습니다. 매칭 확신이 부족할 때는 LLM이 억지로 표준 병명을 할당하지 않고 원문 발화(`unmatched_spans`) 상태로 남겨 의료진의 검토 대기열로 넘기는 안전장치가 작동하기 때문입니다.
 
----
-
-## 7. `.gitignore` 통제 기준
-
-평가 환경에서 생성되는 로컬 대량 데이터 및 파생 캐시는 형상 관리에서 엄격히 제외합니다.
-
-```text
-evaluation/datasets/eval_cases.jsonl
-evaluation/outputs/
-evaluation/cache/
-evaluation/reports/generated/
-```
