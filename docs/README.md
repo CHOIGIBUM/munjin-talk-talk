@@ -1,6 +1,6 @@
 # 문진톡톡 문서 허브 (Documentation Hub)
 
-문진톡톡 프로젝트의 기술 아키텍처, 데이터 흐름, 클라우드 배포 절차, 보안 설계를 총망라한 중앙 문서 색인입니다. 
+문진톡톡 프로젝트의 기술 아키텍처, 데이터 흐름, 클라우드 배포 절차, 보안 설계를 총망라한 중앙 문서 색인입니다.
 
 해커톤 심사위원(평가자)은 본 서비스가 실질적인 임상 소통 병목을 어떤 인프라와 로직으로 해결했는지 검증할 수 있으며, 엔지니어(개발자)는 로컬 빌드부터 AWS 프로덕션 배포 및 유지보수에 필요한 표준 명세서를 확인할 수 있습니다.
 
@@ -50,13 +50,13 @@
 
 ## 📊 평가 및 실험 브랜치 체계
 
-본 프로젝트는 공식 발표 지표의 무결성을 지키기 위해 **공식 요약 브랜치**와 **탐색적 실험 브랜치**를 엄격히 분리했습니다.
+본 프로젝트는 공식 서비스 브랜치와 탐색적 평가·검증 브랜치를 분리해, 제출용 설명과 실험 근거가 서로 섞이지 않도록 관리합니다.
 
 | 브랜치 링크 | 역할 | 세부 내용 |
 | --- | --- | --- |
 | [main/evaluation](https://github.com/X-AI-KNU/munjin-talk-talk/tree/main/evaluation) | **공식 기준(Master)** | 공식 End-to-End 성능 평가 스크립트, Held-out 벤치마크 결과, 요약 리포트 |
-| [`eval/dialect-rag`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/dialect-rag) | 실험 데이터 | 강원 사투리 및 비표준 발화를 의학 용어로 해독할 때의 의미 보존율 튜닝 기록 |
-| [`eval/hybrid-ir-pipeline`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/hybrid-ir-pipeline) | 실험 데이터 | BM25 + Vector 스코어링 퓨전 가중치 실험 및 Bedrock 추론 구간별 Latency 분석 |
+| [`eval/dialect-rag`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/dialect-rag) | 탐색 평가 | 강원 사투리 및 비표준 발화를 표준어 보조 문장으로 변환할 때의 의미 보존율 검증 |
+| [`eval/hybrid-ir-pipeline`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/hybrid-ir-pipeline) | 탐색 평가 | BM25 + Vector 후보 검색, 사투리 RAG 힌트, Bedrock 구조화 파이프라인의 구간별 성능 검증 |
 | [`test/service-validation`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/test/service-validation) | 서비스 검증 | Pytest 모의 객체(Stub) 기반의 단위 테스트 및 AWS 클라우드 수동 통합 검증 |
 
 > 💡 **심사 안내:** 최종 피칭 자료에 기재된 임상 정합성 수치는 `main/evaluation`을 기준으로 도출되었습니다. 세부 파라미터 튜닝 과정은 각 독립 브랜치에서 확인하실 수 있습니다.
