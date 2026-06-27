@@ -1,121 +1,127 @@
-# 문진톡톡 Serverless Backend
+# 문진톡톡 서버리스 백엔드 (AWS SAM)
 
-AWS SAM으로 배포하는 문진톡톡 백엔드입니다. API Gateway HTTP API와 Lambda Python 3.12를 중심으로 DynamoDB, S3, Transcribe Streaming, Bedrock, Titan Embeddings를 사용합니다.
+AWS Serverless Application Model(SAM) 기반으로 배포되는 문진톡톡의 핵심 백엔드 서비스입니다. 
+
+Amazon API Gateway(HTTP API)와 AWS Lambda(Python 3.12)를 중심으로 DynamoDB, S3, Amazon Transcribe Streaming, Amazon Bedrock, Amazon Titan Embeddings를 유기적으로 결합하여 서버리스 AI 문진 분석 파이프라인을 구동합니다.
 
 ---
 
-## 1. 배포 구성
+## 1. 인프라 아키텍처 구성
 
-| AWS 서비스 | 역할 |
+| AWS 서비스 | 주요 역할 및 적용 스택 |
 | --- | --- |
-| API Gateway HTTP API | 프론트엔드 요청 수신 |
-| Lambda | 세션 관리, 문진 답변 저장, LangGraph 분석, 원페이퍼/안내문 처리 |
-| DynamoDB | 최소 세션 상태와 S3 artifact pointer 저장 |
-| S3 | 가명처리된 운영 artifact 저장 |
-| Amazon Transcribe Streaming | 음성 파일 저장 없는 STT |
-| Amazon Bedrock | Nova Pro/Lite LLM 호출 |
-| Amazon Titan Embeddings | 증상 문서 vector embedding |
+| **API Gateway (HTTP API)** | 프론트엔드 라우팅 및 초저지연 REST API 요청 수신 |
+| **AWS Lambda (Python 3.12)** | 세션 제어, 답변 수합, LangGraph 분석 엔진 구동, 원페이퍼/안내문 산출 |
+| **Amazon DynamoDB** | 문진 세션의 경량 상태값(State) 및 S3 산출물 포인터 초고속 조회 |
+| **Amazon S3** | PII 가명처리된 비식별 문진 데이터 및 중간 추론 Trace 아카이빙 |
+| **Amazon Transcribe Streaming** | 서버 스토리지에 파일 저장이 없는 실시간 스트리밍 STT |
+| **Amazon Bedrock** | 문맥 표준화, 의미 추출, 원페이퍼/안내문 생성용 LLM 추론 (Nova Pro/Lite) |
+| **Amazon Titan Embeddings** | 표준 증상 문서 매칭을 위한 고차원 텍스트 벡터 임베딩 생성 |
 
 ---
 
-## 2. 주요 처리 원칙
+## 2. 핵심 아키텍처 설계 원칙
 
-1. 환자 문진은 Q1~Q4를 모두 받은 뒤 `/process-answers`로 일괄 저장합니다.
-2. 환자는 LLM 분석을 기다리지 않고 완료 화면으로 이동합니다.
-3. Lambda는 async invocation으로 백그라운드 분석을 수행합니다.
-4. LLM 출력은 Pydantic schema와 source quote validator를 통과해야 합니다.
-5. 증상 매칭은 BM25 + Titan Vector + label signal + linker validator를 거칩니다.
-6. DynamoDB에는 전체 문진 원문을 저장하지 않고 S3 artifact key만 저장합니다.
-7. 음성 원본 파일은 저장하지 않습니다.
-
----
-
-## 3. API 목록
-
-| Method | Path | 설명 | 인증 |
-| --- | --- | --- | --- |
-| `POST` | `/auth/login` | 직원/의사 접근 코드 로그인 | 없음 |
-| `POST` | `/sessions` | 접수 세션 생성 | 직원 |
-| `GET` | `/sessions/{session_id}` | 세션 조회 | 세션/직원/의사 |
-| `GET` | `/sessions` | 오늘 접수 목록 조회 | 직원 |
-| `POST` | `/process-answers` | Q1~Q4 답변 일괄 저장, 분석 큐 등록 | 환자 세션 |
-| `POST` | `/process-answer` | 과거 단일 문항 처리 방식과 일부 회귀 검증을 위한 보조 API. 실제 환자 문진 화면은 Q1~Q4를 모아 `/process-answers`만 호출 | 환자 세션 |
-| `POST` | `/transcribe/stream-url` | Transcribe Streaming presigned URL 발급 | 환자 세션 |
-| `GET` | `/doctor/queue` | 의사 대기열 | 의사 |
-| `GET` | `/onepaper/{session_id}` | 원페이퍼 조회 | 의사 |
-| `POST` | `/doctor-response` | 의사 답변 저장 | 의사 |
-| `POST` | `/doctor/reanalyze` | 저장된 답변으로 AI 재분석 | 의사 |
-| `GET` | `/guide/{session_id}` | 환자 안내문 조회 | 세션/직원/의사 |
-
-실제 route 이름은 `handler.py`를 기준으로 확인합니다.
+1. **일괄 제출 기반 처리:** 환자의 문진 답변(Q1~Q4)은 개별 전송되지 않고, 최종 입력 완료 시점에 `/process-answers` 엔드포인트로 일괄 수합됩니다.
+2. **Non-Blocking UX:** 무거운 LLM 분석 연산과 환자 화면 전환을 완전히 분리하여, 환자는 답변 제출 즉시 대기 시간 없이 완료 화면으로 이동합니다.
+3. **이벤트 기반 비동기 실행:** API 핸들러는 답변을 저장한 직후, Lambda 자기 자신을 `Event Invocation(비동기)` 방식으로 호출하여 백그라운드 분석을 트리거합니다.
+4. **엄격한 스키마 통제:** LLM이 생성한 모든 결과물은 사전에 정의된 Pydantic 엄격 스키마와 원문 기반 근거 대조(Source Quote Validator)를 통과해야만 유효 데이터로 확정됩니다.
+5. **다층 파이프라인 검색:** 증상 매칭은 `BM25(키워드)` + `Titan Vector(의미)` + `Label Signal` 스코어링 융합과 Linker Validator 검증을 거칩니다.
+6. **PII 최소화 및 간접 참조:** DynamoDB 상태 테이블에는 환자의 문진 원문을 텍스트로 저장하지 않으며, S3에 가명 처리되어 저장된 파일의 Object Key만 포인터로 유지합니다.
+7. **Zero-Storage 음성 보안:** 전송된 음성 스트림은 STT 변환 즉시 메모리에서 소멸하며, 스토리지에 음성 원본(`.wav` 등)을 일절 남기지 않습니다.
 
 ---
 
-## 4. 폴더 구조
+## 3. REST API 규격
+
+| Method | Path | 설명 | 인증 권한 |
+| :---: | --- | --- | :---: |
+| `POST` | `/auth/login` | 직원 및 의사 접근 코드 기반 로그인 토큰 발급 | 없음 |
+| `POST` | `/sessions` | 신규 문진 접수 세션 생성 | 직원 |
+| `GET` | `/sessions/{session_id}` | 특정 세션의 진행 상태 및 세부 정보 조회 | 세션/직원/의사 |
+| `GET` | `/sessions` | 당일 생성된 전체 접수 세션 목록 조회 | 직원 |
+| `POST` | `/process-answers` | Q1~Q4 답변 일괄 저장 및 비동기 분석 큐 등록 | 환자 세션 |
+| `POST` | `/process-answer` | *(단일 문항 레거시 및 회귀 테스트용 보조 API)* | 환자 세션 |
+| `POST` | `/transcribe/stream-url` | Transcribe Streaming용 WebSocket Presigned URL 발급 | 환자 세션 |
+| `GET` | `/doctor/queue` | 의료진 진료 대기열 목록 조회 | 의사 |
+| `GET` | `/onepaper/{session_id}` | 의료진용 최종 정제 원페이퍼 데이터 조회 | 의사 |
+| `POST` | `/doctor-response` | 진료 후 의사의 소견 및 지시사항 답변 저장 | 의사 |
+| `POST` | `/doctor/reanalyze` | 저장된 의사 답변을 바탕으로 AI 파이프라인 재분석 트리거 | 의사 |
+| `GET` | `/guide/{session_id}` | 환자 눈높이 맞춤형 진료 안내문 조회 | 세션/직원/의사 |
+
+*(참고: 실제 라우터 핸들러 매핑은 `handler.py`를 기준으로 작동합니다.)*
+
+---
+
+## 4. 디렉터리 구성
 
 ```text
 serverless/
-├── template.yaml
+├── template.yaml              # AWS SAM 인프라 규격 정의서
 ├── README.md
 ├── src/
-│   ├── handler.py
-│   ├── security.py
-│   ├── settings.py
-│   ├── orchestration.py
-│   ├── sessions.py
-│   ├── artifact_store.py
-│   ├── artifact_policy.py
-│   ├── privacy.py
-│   ├── audio.py
-│   ├── pipeline_graph.py
-│   ├── pipeline_nodes.py
-│   ├── pipeline_state.py
-│   ├── pipeline_trace.py
-│   ├── langchain_prompting.py
-│   ├── llm.py
-│   ├── rag_context.py
-│   ├── dialect_rag.py
-│   ├── retrieval.py
-│   ├── retrieval_documents.py
-│   ├── retrieval_embeddings.py
-│   ├── retrieval_scoring.py
-│   ├── onepager.py
-│   ├── onepager_sections.py
-│   ├── onepager_review.py
-│   ├── guide.py
-│   ├── schemas/
-│   └── data/
-└── tests/
+│   ├── handler.py             # API Gateway 진입점 핸들러
+│   ├── security.py            # JWT 토큰 생성 및 권한 검증
+│   ├── settings.py            # 런타임 환경 변수 로더
+│   ├── orchestration.py       # 비동기 분석 오케스트레이션 및 리트라이 제어
+│   ├── sessions.py            # DynamoDB 세션 상태 CRUD
+│   ├── artifact_store.py      # S3 아티팩트 입출력 인터페이스
+│   ├── artifact_policy.py     # 산출물 비식별화 및 보존 정책
+│   ├── privacy.py             # PII 정규표현식 마스킹 유틸리티
+│   ├── audio.py               # Transcribe Presigned URL 발급기
+│   ├── pipeline_graph.py      # LangGraph 워크플로우 명세
+│   ├── pipeline_nodes.py      # LangGraph 그래프 노드 단위 로직
+│   ├── pipeline_state.py      # 파이프라인 상태 제어 타입 정의
+│   ├── pipeline_trace.py      # 단계별 추론 로그 수집기
+│   ├── langchain_prompting.py # LLM 프롬프트 템플릿 모음
+│   ├── llm.py                 # Amazon Bedrock Wrapper
+│   ├── rag_context.py         # RAG 문맥 통합 검색기
+│   ├── dialect_rag.py         # 강원 방언 -> 표준어 변환 RAG
+│   ├── retrieval.py           # Hybrid IR 검색 엔진 코어
+│   ├── retrieval_documents.py # 의학 백과 파싱 로직
+│   ├── retrieval_embeddings.py# 벡터 임베딩 생성기
+│   ├── retrieval_scoring.py   # RRF 및 융합 스코어링 계산기
+│   ├── onepager.py            # 원페이퍼 JSON 조립기
+│   ├── onepager_sections.py   # 원페이퍼 세부 파트 구성
+│   ├── onepager_review.py     # 원페이퍼 안전성 검토 로직
+│   ├── guide.py               # 환자 안내문 텍스트 생성기
+│   ├── schemas/               # Pydantic 데이터 검증 스키마
+│   └── data/                  # 정적 참조 인덱스 배치 경로
+└── tests/                     # Pytest 검증 스크립트
 ```
 
 ---
 
 ## 5. 환경 변수
 
-| 변수 | 설명 |
-| --- | --- |
-| `SESSIONS_TABLE` | DynamoDB table name |
-| `ARTIFACT_BUCKET` | S3 artifact bucket name |
-| `STAFF_ACCESS_TOKEN` | 직원 접근 코드 |
-| `DOCTOR_ACCESS_TOKEN` | 의료진 접근 코드 |
-| `AUTH_SIGNING_SECRET` | 로그인 세션 토큰 서명 secret |
-| `CORS_ALLOW_ORIGIN` | 허용할 Amplify origin |
-| `USE_BEDROCK_LLM` | Bedrock LLM 사용 여부 |
-| `ENABLE_BEDROCK_REVIEW` | 원페이퍼 review LLM 사용 여부 |
-| `ENABLE_BEDROCK_GUIDE` | 환자 안내문 LLM 사용 여부 |
-| `LIGHT_MODEL_ID` | Nova Lite model id |
-| `STRONG_MODEL_ID` | Nova Pro model id |
-| `REVIEWER_MODEL_ID` | review LLM model id |
-| `GUIDE_MODEL_ID` | guide LLM model id |
-| `CUSTOM_VOCABULARY` | Transcribe custom vocabulary name, 없으면 빈 값 |
-
-접근 코드는 사람이 외울 수 있는 값으로 운영 환경에서 설정하고, `AUTH_SIGNING_SECRET`은 긴 난수로 유지합니다.
+| 변수명 | 설명 | 기본값 / 예시 |
+| --- | --- | --- |
+| `SESSIONS_TABLE` | DynamoDB 세션 테이블명 | `MunjinSessions` |
+| `ARTIFACTS_BUCKET` | S3 산출물 저장 버킷명 | - |
+| `STAFF_ACCESS_CODE` | 현장 직원 전용 접근 코드 | *(하위 호환: `STAFF_ACCESS_TOKEN`)* |
+| `DOCTOR_ACCESS_CODE` | 의료진 전용 접근 코드 | *(하위 호환: `DOCTOR_ACCESS_TOKEN`)* |
+| `AUTH_SIGNING_SECRET` | 세션 JWT 서명용 대칭키 Secret | *(고엔트로피 긴 난수 권장)* |
+| `AUTH_TOKEN_TTL_MINUTES` | 로그인 세션 토큰 유지 시간(분) | `720` |
+| `ALLOWED_ORIGINS` | CORS 허용 프론트엔드 출처 | `https://*.amplifyapp.com` |
+| `DOMAIN_PACK` | 진료 특화 도메인팩 식별자 | `respiratory` |
+| `QUESTION_SET` | 문진 세트 식별자 | `default` |
+| `DIALECT_PACK` | 사투리 해독 방언팩 식별자 | `dialect_kangwon` |
+| `DIALECT_TOP_K` | 방언 RAG 검색 후보 수 | `3` |
+| `LIGHT_MODEL_ID` | 고속 포맷팅용 Bedrock 모델 ID | `amazon.nova-lite-v1:0` |
+| `STRONG_MODEL_ID` | 심층 추론용 Bedrock 모델 ID | `amazon.nova-pro-v1:0` |
+| `REVIEWER_MODEL_ID`| 교차 검증용 LLM 모델 ID | - |
+| `GUIDE_MODEL_ID`   | 안내문 작성용 LLM 모델 ID | - |
+| `EMBEDDING_MODEL_ID`| 임베딩 생성 모델 ID | `amazon.titan-embed-text-v2:0` |
+| `EMBEDDING_DIMENSIONS`| 임베딩 벡터 차원 수 | `512` |
+| `S3_SERVER_SIDE_ENCRYPTION` | S3 서버 측 암호화 프로토콜 | `AES256` 또는 `aws:kms` |
+| `S3_KMS_KEY_ID`    | KMS 고객 관리형 키 ARN | *(비어 있을 시 SSE-S3 적용)* |
+| `CUSTOM_VOCABULARY`| Transcribe 의료 전문 어휘 집합명 | *(비어 있을 시 기본 사전 사용)* |
 
 ---
 
-## 6. SAM 배포
+## 6. AWS SAM 빌드 및 배포 가이드
 
-### 1단계: 빌드
+### Step 1. 빌드 (Build)
 
 ```powershell
 cd backend/serverless
@@ -123,9 +129,9 @@ $env:SAM_CLI_TELEMETRY="0"
 sam build
 ```
 
-### 2단계: 배포
+### Step 2. 클라우드 배포 (Deploy)
 
-`CustomVocabularyName`을 비워 배포하는 경우 PowerShell에서 `CustomVocabularyName=""` 형식은 오류가 날 수 있습니다. 빈 값으로 배포할 때는 `CustomVocabularyName=` 항목을 생략하거나 `sam deploy --guided`에서 Enter로 비워 둡니다.
+> 💡 **PowerShell 배포 시 주의사항:** `CustomVocabularyName` 파라미터를 빈 값으로 배포할 때 `""` 형태로 입력하면 셸 파싱 오류가 발생할 수 있습니다. 공백으로 둘 경우 해당 파라미터 줄을 생략하거나, `sam deploy --guided` 실행 시 Enter로 통과시키십시오.
 
 ```powershell
 sam deploy `
@@ -135,67 +141,62 @@ sam deploy `
   --resolve-s3 `
   --parameter-overrides `
     SessionsTableName=MunjinSessions `
-    ArtifactsBucketName=munjin-mvp-artifacts-cgb-289984444869-ap-northeast-2-an `
-    LambdaRoleArn=arn:aws:iam::289984444869:role/munjin-lambda-role `
-    CorsAllowOrigin=https://main.dv5herezqtt1t.amplifyapp.com `
+    ArtifactsBucketName=<s3-artifact-bucket-name> `
+    LambdaRoleArn=<lambda-role-arn> `
+    CorsAllowOrigin=https://<amplify-branch-domain> `
     StaffAccessToken=<직원접근코드> `
     DoctorAccessToken=<의료진접근코드> `
     AuthSigningSecret=<긴난수>
 ```
 
-배포 후 출력되는 `ApiEndpoint`를 Amplify 환경 변수 `VITE_API_BASE_URL`에 넣습니다.
+배포 완료 후 터미널에 출력되는 `ApiEndpoint` 값을 프론트엔드 환경 변수(`VITE_API_BASE_URL`)에 입력합니다.
 
 ---
 
-## 7. 런타임 데이터 배치
+## 7. ⚠️ 필수 런타임 데이터 배치 가이드
 
-공개 저장소에는 저작권 또는 이용 범위 검토가 필요한 원천 의료 백과 데이터와 파생 인덱스를 포함하지 않습니다. 데모/운영 Lambda 패키지에는 아래 파일을 `src/data/`에 배치해야 Hybrid IR이 정상 동작합니다. 공개 저장소만 clone한 로컬 환경에서는 해당 파일이 없으면 증상 매칭이 제한됩니다.
+본 프로젝트는 의학 백과 원천 데이터의 저작권 및 이용 범위 보호를 위해 핵심 인덱스 파일을 Git 공개 저장소에서 제외했습니다. 
+
+로컬 파이프라인 테스트 및 클라우드 Lambda 정상 구동을 위해, **배포 전 반드시 아래 3개의 파일을 `src/data/` 경로에 수동으로 배치해야 합니다.**
 
 ```text
 src/data/diseases_cleaned.json
 src/data/symptom_index.json
 src/data/symptom_embeddings_amazon.titan-embed-text-v2_0_512.json
 ```
-
-자세한 기준은 [src/data/README.md](src/data/README.md)를 확인합니다.
+*(데이터셋 스펙 및 생성 기준은 [src/data/README.md](src/data/README.md)를 참고하십시오.)*
 
 ---
 
-## 8. AWS 콘솔 운영 설정
+## 8. 권장 인프라 보안 및 운영 설정
 
-| 영역 | 권장 설정 |
+| AWS 서비스 | 핵심 권장 설정 모음 |
 | --- | --- |
-| Amplify | WAF 활성화, SPA rewrite, `VITE_API_BASE_URL` 설정 |
-| API Gateway | CORS origin 제한, throttling |
-| Lambda | 환경 변수 확인, CloudWatch log retention 설정 |
-| DynamoDB | TTL 속성 `expires_at`, 삭제 방지, 암호화 기본 활성 |
-| S3 | public access block, lifecycle 3일 삭제, server-side encryption |
-| Macie | artifact bucket 민감정보 탐지 |
-| CloudTrail | 관리 이벤트 기록 |
-| GuardDuty | 위협 탐지 활성화 |
-| Security Hub | 보안 통합 대시보드 |
-| Organizations | AI Services opt-out policy |
+| **Amplify** | WAF 방화벽 연동, SPA 라우팅 Rewrite 설정, 환경 변수 주입 |
+| **API Gateway** | 엄격한 CORS Origin 제한, API Throttling(Rate Limit) 설정 |
+| **Lambda** | 환경 변수 암호화 확인, CloudWatch Log Retention 기간 지정(예: 14일) |
+| **DynamoDB** | TTL 속성(`expires_at`) 활성화, 삭제 방지(Deletion Protection) 켜기 |
+| **S3** | Public Access 차단, Lifecycle 규칙(3일 후 삭제) 적용, SSE 암호화 |
+| **Macie** | S3 아티팩트 버킷 내 미등록 PII 존재 여부 상시 감지 |
+| **CloudTrail** | API 호출 인프라 감사 로그 기록 |
+| **Organizations**| AWS AI Services Opt-out 정책 활성화 (데이터 학습 이용 원천 차단) |
 
 ---
 
-## 9. Lambda IAM 권한
+## 9. 최소 권한 원칙(PoLP) 기반 IAM 정책
 
-Lambda role에는 최소한 다음 권한이 필요합니다.
+Lambda 실행 역할(Execution Role)에 부여되어야 하는 권한 범위입니다. 보안을 위해 와일드카드(`*`) 대신 생성된 리소스의 ARN을 직접 기입하십시오.
 
-| 서비스 | 필요 권한 |
-| --- | --- |
-| DynamoDB | `GetItem`, `PutItem`, `UpdateItem`, `Query`, `Scan` |
-| S3 | `GetObject`, `PutObject` |
-| Bedrock | `bedrock:InvokeModel` |
-| Transcribe | streaming presigned URL 발급에 필요한 권한 |
-| Lambda | 자기 자신 async invoke 권한 |
-| CloudWatch Logs | 로그 작성 |
-
-가능하면 resource ARN을 실제 table, bucket, Lambda function으로 제한합니다.
+- **DynamoDB:** `GetItem`, `PutItem`, `UpdateItem`, `Query`, `Scan`
+- **S3:** `GetObject`, `PutObject`
+- **Bedrock:** `bedrock:InvokeModel`
+- **Transcribe:** Streaming Presigned URL 발급 권한
+- **Lambda:** 자기 자신에 대한 비동기 호출(`lambda:InvokeFunction`) 권한
+- **CloudWatch Logs:** 로그 그룹 생성 및 스트림 쓰기 권한
 
 ---
 
-## 10. 로컬 검증
+## 10. 로컬 테스트 및 검증
 
 ```powershell
 cd backend/serverless
@@ -203,32 +204,27 @@ python -m compileall src
 python -m pytest tests/ -q
 sam validate
 ```
-
-SAM CLI telemetry 권한 오류가 나면:
-
-```powershell
-$env:SAM_CLI_TELEMETRY="0"
-```
+*(SAM CLI Telemetry 권한 오류 발생 시 `$env:SAM_CLI_TELEMETRY="0"`을 선행 입력하십시오.)*
 
 ---
 
-## 11. 배포 후 동작 확인 기준
+## 11. 배포 검증 체크리스트 (Smoke Test)
 
-- `/auth/login`에서 직원/의사 접근 코드가 정상 검증됨
-- `/sessions`로 세션 생성 가능
-- 환자 Q1~Q4 완료 후 `/process-answers`가 즉시 성공 응답
-- DynamoDB status가 `analysis_pending`으로 바뀜
-- 백그라운드 분석 후 `waiting_doctor` 또는 `needs_priority`로 전환
-- S3에 redacted artifact가 생성됨
-- 원페이퍼가 준비되기 전에는 의사 화면에서 분석 중 상태 표시
-- 원페이퍼 준비 후 증상, 원문, 문진 요약, 확인 항목, EMR 초안 표시
-- 의사 답변 저장 후 환자 안내문 조회 가능
+- [ ] `/auth/login` 엔드포인트를 통한 직원/의사 접근 코드 검증 정상 통과
+- [ ] `/sessions` 호출 시 신규 접수 세션 생성 성공
+- [ ] 환자 Q1~Q4 제출 시 `/process-answers`가 즉각적인 200 OK 반환
+- [ ] DynamoDB의 세션 `status`가 `analysis_pending`으로 즉시 변경됨
+- [ ] 백그라운드 Lambda 실행 후 상태가 `waiting_doctor` 또는 `needs_priority`로 전환됨
+- [ ] S3 아티팩트 버킷에 비식별 처리된(`*.redacted.json`) 결과 파일 생성 완료
+- [ ] 분석 완료 전 진입 시 의료진 원페이퍼 화면에 '분석 중' 상태 알림 정상 표시
+- [ ] 분석 완료 후 증상, 환자 원문, 문진 요약, 확인 항목, EMR 초안 정상 렌더링
+- [ ] 의사 코멘트 저장 이후 환자용 안내문 데이터 조회 성공
 
 ---
 
-## 12. Git 제외 파일
+## 12. `.gitignore` 주요 대상
 
-다음 항목은 공개 저장소에 올리지 않습니다.
+본 저장소에 커밋되지 않도록 통제되는 파일 목록입니다.
 
 ```text
 .aws-sam/
@@ -242,22 +238,22 @@ __pycache__/
 
 ---
 
-## 13. 자주 보는 오류
+## 13. 트러블슈팅 가이드
 
-| 증상 | 원인 | 확인 |
+| 증상 | 주요 원인 | 체크 포인트 |
 | --- | --- | --- |
-| 원페이퍼가 계속 생성 중 | 백그라운드 Lambda 실패 또는 Bedrock 권한 문제 | CloudWatch log, DynamoDB status |
-| 증상 매칭이 비어 있음 | 비공개 IR 데이터 누락 | `src/data/README.md`의 필수 파일 |
-| CORS 오류 | Amplify URL과 `CORS_ALLOW_ORIGIN` 불일치 | Lambda 환경 변수, API Gateway CORS |
-| 접근 코드 로그인 실패 | 환경 변수 값 또는 배포 stack 불일치 | Lambda 환경 변수, CloudFormation stack |
-| SAM deploy parameter 오류 | 빈 문자열 parameter 형식 문제 | `sam deploy --guided` 사용 또는 해당 parameter 생략 |
+| **원페이퍼가 계속 생성 중 상태임** | 백그라운드 Lambda 실행 실패 또는 Bedrock 모델 호출 권한 부족 | CloudWatch Lambda 로그, DynamoDB `status` 필드 |
+| **증상 매칭 결과가 빈 값으로 나옴** | `src/data/` 내의 비공개 인덱스 파일 누락 | 필수 런타임 파일 3종 존재 여부 확인 |
+| **브라우저 CORS 차단 에러** | Amplify 출처와 API Gateway 허용 Origin 불일치 | Lambda 환경 변수 `ALLOWED_ORIGINS` 값 대조 |
+| **접근 코드 로그인 실패** | 배포 시 주입된 파라미터 값 오타 | Lambda 환경 변수 `STAFF/DOCTOR_ACCESS_CODE` 대조 |
+| **SAM Deploy 파라미터 에러** | PowerShell의 빈 문자열(`""`) 파싱 오류 | 파라미터 생략 후 `sam deploy --guided` 실행 |
 
 ---
 
-## 14. 참고 문서
+## 14. 관련 문서 모음
 
-- [../../README.md](../../README.md)
-- [../README.md](../README.md)
-- [../../docs/DATA_SCHEMA.md](../../docs/DATA_SCHEMA.md)
-- [../../docs/LANGGRAPH_PIPELINE.md](../../docs/LANGGRAPH_PIPELINE.md)
-- [src/data/README.md](src/data/README.md)
+- [루트 프로젝트 소개](../../README.md)
+- [백엔드 상위 아키텍처](../README.md)
+- [데이터 스키마 명세서](../../docs/DATA_SCHEMA.md)
+- [LangGraph 파이프라인 구조](../../docs/LANGGRAPH_PIPELINE.md)
+- [도메인 인덱스 데이터 가이드](src/data/README.md)

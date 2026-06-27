@@ -9,11 +9,11 @@
 | 그룹 | 확인 내용 |
 | --- | --- |
 | 1. Bedrock LLM | Nova Lite, Nova Pro converse 호출과 Titan embedding 생성 |
-| 2. DynamoDB | 세션 조회, 필수 필드, 실명/생년월일 미저장 |
+| 2. DynamoDB | 세션 조회, 필수 필드, 이름/생년월일 미저장 정책 |
 | 3. S3 Artifact | artifact 버킷 접근, onepaper/answers 구조, 금지 필드 미포함 |
 | 4. Lambda 라우팅 | 질문셋 조회, doctor queue 인증, 404, process-answer 입력 검증 |
 | 5. 전체 파이프라인 | 기존 세션을 이용한 process-answer 흐름 |
-| 6. 프롬프트 품질 | 증상 추출 source_quote grounding, 사투리 RAG 포함 변환 |
+| 6. 프롬프트/schema | 증상 추출 source_quote grounding, 사투리 RAG 포함 변환 |
 | 7. 보안 | 잘못된 접근 코드 거부, 세션 토큰 접근 제어 |
 
 ## 실행 전 체크리스트
@@ -22,7 +22,7 @@
 - Bedrock Nova Lite, Nova Pro, Titan Embedding 사용 권한이 있어야 합니다.
 - Lambda 함수가 최신 배포 상태여야 합니다.
 - DynamoDB 세션 테이블과 S3 artifact bucket에 접근 권한이 있어야 합니다.
-- 테스트에 사용할 세션이 없으면 일부 항목은 스킵성 메시지만 출력할 수 있습니다.
+- 테스트에 사용할 세션이 없으면 일부 항목은 skip 메시지만 출력할 수 있습니다.
 - Bedrock 호출 비용이 발생할 수 있습니다.
 
 ## 환경변수
@@ -79,9 +79,22 @@ pytest tests\aws\test_aws_full.py -s
 | process-answer | 세션 상태, patient token, Lambda 환경변수, Bedrock 응답 |
 | 인증 테스트 | staff/doctor access code 설정, 토큰 검증 정책 |
 
-## 주의
+통합 테스트 실패는 곧바로 코드 버그라고 단정하지 않습니다. AWS 권한, 배포 상태, 테스트 세션 존재 여부, 리소스 lifecycle 때문에 실패할 수 있습니다.
 
-- 이 테스트는 실제 배포 환경의 연결 상태를 보는 수동 점검입니다.
+## 보안 주의
+
+- 이 테스트는 실제 배포 환경의 연결 상태를 보는 수동 평가입니다.
 - 테스트 실행 중 Bedrock 호출 비용이 발생할 수 있습니다.
-- 운영 데이터가 섞인 계정에서는 출력 로그에 민감정보가 남지 않도록 주의합니다.
+- 운영 데이터가 얽힌 계정에서는 출력 로그에 민감정보가 남지 않도록 주의합니다.
 - 실패 결과를 커밋하지 말고, 필요한 경우 민감정보를 제거한 요약만 문서화합니다.
+- 테스트용 access code, session token, API URL은 `.env` 또는 로컬 환경변수에서만 관리합니다.
+
+## 해커톤 제출 관점
+
+이 문서는 "AWS 배포가 완벽하다"는 보증서가 아닙니다. 심사위원에게 전달할 메시지는 다음입니다.
+
+```text
+문진톡톡은 실제 AWS 리소스와 연결되는 검증을 일반 테스트와 분리했다.
+Bedrock, DynamoDB, S3, Lambda, API Gateway 연결을 수동으로 확인할 수 있으며,
+비용과 민감정보 노출을 막기 위해 명시적 실행 조건을 둔다.
+```

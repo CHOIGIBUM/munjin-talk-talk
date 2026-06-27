@@ -1,104 +1,88 @@
-# 런타임 데이터 배치 안내
+# 문진톡톡 백엔드 런타임 데이터 자산 안내
 
-이 폴더는 문진톡톡 백엔드가 질문셋, 도메인 설정, 방언 RAG, 표준 증상 IR을 수행할 때 참조하는 데이터 위치입니다.
+이 폴더(`src/data/`)는 문진톡톡 백엔드의 **AI 추론(LangGraph), 방언 해독(RAG), 표준 증상 매칭(Hybrid IR)** 파이프라인이 런타임에 참조하는 핵심 데이터들의 저장소입니다.
 
-공개 GitHub에는 코드와 공개 가능한 설정 파일만 포함합니다. 저작권 또는 이용 범위 검토가 필요한 원천 의료 백과 데이터, 그 파생 증상 인덱스, embedding cache는 공개 저장소에 포함하지 않습니다.
+본 프로젝트는 오픈소스 코드의 투명성과 원천 의료 데이터의 저작권 보호를 양립시키기 위해 철저한 **이원화 데이터 거버넌스 정책**을 적용하고 있습니다.
 
-`test/add-coverage` 브랜치에서 이 문서는 테스트 실행 전 데이터 의존성을 확인하는 기준입니다. 로컬 단위 테스트 중 일부는 비공개 IR 원천 데이터가 없어도 fallback 또는 skip으로 동작하지만, 실제 운영 수준의 Hybrid IR 평가와 AWS 통합 테스트는 런타임 데이터 배치 상태의 영향을 받습니다.
+---
+
+## 💡 데이터 거버넌스 원칙
+
+1. **공개 대상 (설정 및 규칙 자산):** 서비스의 구조, 프롬프트 로직, 질문 흐름을 검증할 수 있는 설정 파일은 100% 공개합니다.
+2. **비공개 대상 (핵심 의료 자산):** 서울아산병원 질병백과를 기반으로 정제된 원천 텍스트, 파생 증상 인덱스, 임베딩 캐시는 저작권 및 라이선스 준수를 위해 본 공개 저장소에서 제외합니다.
+
+> **심사 및 검토 안내:** > 공개 레포지토리 클론만으로도 백엔드 빌드, 파이프라인 정합성 테스트, 기본 문진 로직 검토가 완벽하게 가능합니다. 단, 운영 수준의 '정밀 표준 증상 매칭(Hybrid IR)'을 직접 실행 및 시연하시려면 하단의 안내에 따라 비공개 런타임 데이터를 별도로 배치해야 합니다.
 
 ---
 
 ## 1. 공개 저장소에 포함되는 파일
 
-| 경로 | 용도 |
-| --- | --- |
-| `domain_packs/respiratory.json` | 호흡기 문진 도메인 설정, status enum 설명, 안전 플래그 기준 |
-| `domain_packs/respiratory_fewshot.txt` | 일반화된 extraction few-shot 예시 |
-| `dialect_packs/dialect_kangwon.json` | 강원 방언 표현을 표준어 후보로 연결하는 RAG 참조 데이터 |
-| `dialect_packs/dialect_kangwon.csv` | 방언팩 원본 관리용 표 데이터 |
-| `question_sets/default.json` | 초진/재진 문진 질문 세트 |
-| `README.md` | 현재 문서 |
-
-이 파일들은 서비스 구조와 프롬프트/질문셋을 이해하는 데 필요하므로 공개합니다.
-
-## 1-1. 테스트와의 관계
-
-테스트 계층별로 이 폴더를 참조하는 방식이 다릅니다.
-
-| 테스트/평가 | 데이터 의존성 |
-| --- | --- |
-| `backend/serverless/tests/test_question_sets.py` | `question_sets/default.json` 구조 확인 |
-| `backend/serverless/tests/test_dialect_rag.py` | `dialect_packs/dialect_kangwon.json` 로드와 RAG context shape 확인 |
-| `backend/serverless/tests/test_ir_noise_and_safety.py` | 비공개 IR 데이터가 없으면 일부 항목은 skip 또는 domain pack fallback 확인 |
-| `evaluation/ir/` | 실제 표준 증상 후보 검색 성능을 보려면 `symptom_index.json`과 embedding cache 필요 |
-| `tests/aws/test_aws_full.py` | 배포된 Lambda 환경에 런타임 데이터가 포함되어 있는지 간접 확인 |
-
-따라서 "로컬 테스트가 일부 통과한다"와 "운영 수준의 IR 매칭이 완전하게 동작한다"는 같은 의미가 아닙니다. 해커톤 제출에서는 이 구분을 분명히 하는 것이 좋습니다.
-
----
-
-## 2. 공개 저장소에 포함하지 않는 파일
-
-| 파일 | 용도 | 제외 이유 |
+| 파일 경로 | 자산 구분 | 임상 및 파이프라인 역할 |
 | --- | --- | --- |
-| `diseases_cleaned.json` | 질환 백과 원천 정리본 | 원천 본문과 파생 데이터의 공개 범위 검토 필요 |
-| `symptom_index.json` | 표준 증상명과 질환 문서 연결 인덱스 | 원천 데이터 기반 파생 인덱스 |
-| `symptom_embeddings_amazon.titan-embed-text-v2_0_512.json` | Titan embedding cache | 원천 증상 문서 기반 파생 벡터 |
-
-이 세 파일이 없으면 백엔드 실행 자체는 가능하더라도 Hybrid IR 표준 증상 매칭은 정상 성능으로 동작하지 않습니다.
+| `domain_packs/respiratory.json` | 도메인 규칙 | 호흡기 외래 특화 문진 규격, 상태값(Enum), 안전 플래그 트리거 기준 정의 |
+| `fewshots/respiratory/*.json` | LLM Few-shot | 추론 단계별 답변 구조화 템플릿 및 프롬프트 회귀 테스트 기준값 |
+| `dialect_packs/dialect_kangwon.json` | 사투리 RAG | 강원 지역 방언("고달프다", "매자지다" 등)을 표준 의학 용어로 매핑하는 시드 |
+| `dialect_packs/dialect_kangwon.csv` | 원본 관리 | 사투리 팩의 사전 편집 및 기획자 검토용 CSV 마스터 파일 |
+| `question_sets/default.json` | 문진 세트 | 프론트엔드 태블릿 UI와 백엔드 세션을 동기화하는 Q1~Q4 질문 명세 |
+| `domain_packs/respiratory_fewshot.txt` | 레거시 | 구버전 텍스트 기반 Few-shot 예시 *(현재는 `fewshots/` JSON으로 대체됨)* |
 
 ---
 
-## 3. 배포 전 배치해야 하는 구조
+## 2. 공개 저장소에서 제외된 파일 (비공개 런타임)
 
-팀 내부 비공개 저장소나 로컬 보관 위치에서 아래 파일을 복사해 넣습니다.
+아래 3개 파일은 Git 트래킹에서 제외되어 있으며, 서버리스 Lambda가 정상적인 IR 검색을 수행하기 위한 필수 전제 조건입니다.
+
+| 파일명 | 원천 소스 | 부재 시 시스템 영향도 |
+| --- | --- | --- |
+| `diseases_cleaned.json` | 서울아산병원 질병백과 | 질환 본문 검색 불가 (IR 후보 생성 실패) |
+| `symptom_index.json` | 파생 인덱스 | 표준 증상명 $\leftrightarrow$ 질환 간의 역색인 매핑 불가 |
+| `symptom_embeddings_*.json` | Titan Embeddings v2 | 의미론적 유사도 기반의 Vector Search 비활성화 |
+
+---
+
+## 3. 배포 전 데이터 주입 가이드
+
+팀 내부 비공개 저장소에서 핵심 데이터 3종을 다운로드하여 아래의 디렉터리 트리 형태로 배치합니다.
 
 ```text
 backend/serverless/src/data/
-  diseases_cleaned.json
-  symptom_index.json
-  symptom_embeddings_amazon.titan-embed-text-v2_0_512.json
-  domain_packs/
-  dialect_packs/
-  question_sets/
+├── diseases_cleaned.json                     # [비공개 주입 필수]
+├── symptom_index.json                        # [비공개 주입 필수]
+├── symptom_embeddings_amazon.titan...json    # [비공개 주입 필수]
+├── dialect_packs/
+├── domain_packs/
+└── question_sets/
 ```
 
-PowerShell 확인:
+**주입 완료 확인 (PowerShell):**
 
 ```powershell
 cd backend/serverless/src/data
-Get-Item diseases_cleaned.json
-Get-Item symptom_index.json
-Get-Item symptom_embeddings_amazon.titan-embed-text-v2_0_512.json
+Get-Item diseases_cleaned.json, symptom_index.json, symptom_embeddings_*.json
 ```
+*(에러 없이 3개 파일의 정보가 모두 출력되어야 준비가 완료된 것입니다.)*
 
 ---
 
-## 4. Git 관리 기준
+## 4. 실수 방지를 위한 Git 안전 점검
 
-`.gitignore`에는 위 3개 비공개 런타임 데이터가 다시 올라가지 않도록 패턴이 등록되어 있어야 합니다.
-
-```text
-backend/serverless/src/data/diseases_cleaned.json
-backend/serverless/src/data/symptom_index.json
-backend/serverless/src/data/symptom_embeddings_*.json
-```
-
-커밋 전 확인:
+로컬에 주입한 비공개 데이터가 원격 저장소에 유출되지 않도록 커밋 전 상태를 반드시 확인합니다.
 
 ```powershell
 git status --short --ignored -- backend/serverless/src/data
 ```
 
-비공개 파일이 `!!`로 보이면 Git에서 무시되고 있는 상태입니다. `??`로 보이면 `.gitignore`가 빠진 것이므로 커밋하면 안 됩니다.
+* **`!!` 로 표시될 때:** `.gitignore`에 의해 정상적으로 차단되고 있음 (**안전**)
+* **`??` 로 표시될 때:** Git 추적 리스트에 노출됨 (**즉시 커밋 중단 및 `.gitignore` 재확인 필요**)
 
 ---
 
-## 5. 서비스 내 참조 방식
+## 5. 백엔드 내부 모듈의 데이터 소비 구조
 
-- 질문 세트는 `question_sets.py`가 `question_sets/default.json`을 읽습니다.
-- 도메인 설정과 few-shot은 `domain_config.py`가 `domain_packs/`에서 읽습니다.
-- 방언 RAG는 `dialect_rag.py`가 `dialect_packs/dialect_kangwon.json`을 읽습니다.
-- 표준 증상 IR은 `retrieval_documents.py`, `retrieval_embeddings.py`, `retrieval.py`가 비공개 3개 파일을 읽습니다.
+백엔드 구동 시 각 내부 모듈은 본 폴더의 자산을 다음과 같은 연결 고리로 참조합니다.
 
-따라서 공개 저장소 clone만으로는 코드 구조 검토와 기본 빌드는 가능하지만, 실제 운영 수준의 증상 매칭은 비공개 런타임 데이터 배치 후 확인해야 합니다.
+* `question_sets.py` $\rightarrow$ `question_sets/default.json` 로드
+* `domain_config.py` $\rightarrow$ `domain_packs/{DOMAIN_PACK}.json` 로드
+* `fewshots.py` $\rightarrow$ `fewshots/{DOMAIN_PACK}/*.json` 로드
+* `dialect_rag.py` $\rightarrow$ `dialect_packs/{DIALECT_PACK}.json` 로드
+* `retrieval.py` $\rightarrow$ 주입된 **비공개 IR 데이터 3종** (`diseases_cleaned`, `symptom_index`, `embeddings`) 로드
