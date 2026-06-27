@@ -22,7 +22,7 @@
 | `main/evaluation` | **공식 기준(Master)** | 공식 End-to-End 벤치마크 요약, 재현 가능한 샘플셋, 표준 평가 스크립트 |
 | [`eval/dialect-rag`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/dialect-rag) | 보조 실험 산출물 | 강원 사투리 및 구어체를 표준어 보조 문장으로 치환할 때의 의미 보존율 분석 |
 | [`eval/hybrid-ir-pipeline`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/hybrid-ir-pipeline) | 보조 실험 산출물 | IR 후보군 검색 스코어링 튜닝 및 Bedrock 파이프라인 구간별 지연시간(Latency) 병목 분석 |
-| [`test/add-coverage`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/test/add-coverage) | 검증 인프라 근거 | 로컬 모의 객체(Stub) 테스트 및 AWS 런타임 통합 테스트 커버리지 확장 |
+| [`test/service-validation`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/test/service-validation) | 서비스 검증 근거 | 로컬 모의 객체(Stub) 테스트 및 AWS 런타임 수동 통합 검증 |
 
 > **심사위원 안내:** 공식 피칭 및 제출 서류에 기재된 최종 성능 지표는 `main/evaluation`의 산출물을 기준으로 합니다. 세부 실험 브랜치는 아키텍처 설계의 의사결정 배경과 한계점 극복 과정을 입증하는 참고 자료입니다.
 

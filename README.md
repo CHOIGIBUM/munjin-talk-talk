@@ -257,7 +257,7 @@ flowchart TB
 | End-to-End 문진 성능 | 환자 발화 → LLM 구조화 → Hybrid IR → 원페이퍼 | 최종 표준 증상 연결 성능 | [main/evaluation](evaluation/README.md) |
 | 사투리 RAG 의미 보존 | 방언 RAG 참고 → 표준어 보조 변환 | 사투리·구어체 표현을 바꿔도 환자 의미가 유지되는지 | [eval/dialect-rag](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/dialect-rag) |
 | Hybrid IR 파이프라인 | 후보 검색 → Bedrock 추출 → 표준 증상 연결 | 후보 검색과 실제 파이프라인 병목을 분리해 확인 | [eval/hybrid-ir-pipeline](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/hybrid-ir-pipeline) |
-| 테스트/배포 검증 | 로컬 테스트, AWS 수동 통합 테스트 | 배포 리소스 연결과 주요 회귀 테스트 기준 | [test/add-coverage](https://github.com/X-AI-KNU/munjin-talk-talk/tree/test/add-coverage) |
+| 서비스 검증 | 로컬 회귀 테스트, AWS 수동 통합 테스트 | 배포 리소스 연결과 주요 회귀 테스트 기준 | [test/service-validation](https://github.com/X-AI-KNU/munjin-talk-talk/tree/test/service-validation) |
 
 아래 수치는 `main` 브랜치에서 공개하는 공식 요약 지표입니다. 평가는 실제 환자 데이터가 아니라 제품 시나리오를 반영한 합성 문진 발화로 진행했습니다.
 

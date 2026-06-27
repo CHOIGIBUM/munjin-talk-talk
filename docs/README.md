@@ -57,7 +57,7 @@
 | [main/evaluation](../evaluation/README.md) | **공식 기준(Master)** | 공식 End-to-End 성능 평가 스크립트, Held-out 벤치마크 결과, 요약 리포트 |
 | [`eval/dialect-rag`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/dialect-rag) | 실험 데이터 | 강원 사투리 및 비표준 발화를 의학 용어로 해독할 때의 의미 보존율 튜닝 기록 |
 | [`eval/hybrid-ir-pipeline`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/eval/hybrid-ir-pipeline) | 실험 데이터 | BM25 + Vector 스코어링 퓨전 가중치 실험 및 Bedrock 추론 구간별 Latency 분석 |
-| [`test/add-coverage`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/test/add-coverage) | 테스트 인프라 | Pytest 모의 객체(Stub) 기반의 단위 테스트 및 AWS 클라우드 통합 테스트 셋 |
+| [`test/service-validation`](https://github.com/X-AI-KNU/munjin-talk-talk/tree/test/service-validation) | 서비스 검증 | Pytest 모의 객체(Stub) 기반의 단위 테스트 및 AWS 클라우드 수동 통합 검증 |
 
 > 💡 **심사 안내:** 최종 피칭 자료에 기재된 임상 정합성 수치는 `main/evaluation`을 기준으로 도출되었습니다. 세부 파라미터 튜닝 과정은 각 독립 브랜치에서 확인하실 수 있습니다.
 
