@@ -1,6 +1,6 @@
-# AWS 통합 테스트
+# AWS 수동 통합 검증
 
-`test_aws_full.py`는 실제 AWS 리소스를 호출해 배포된 문진톡톡 환경이 끝까지 연결되어 있는지 확인하는 수동 통합 테스트입니다.
+`test_aws_full.py`는 `test/service-validation` 브랜치에서 실제 AWS 리소스를 호출해 배포된 문진톡톡 환경이 끝까지 연결되어 있는지 확인하는 수동 통합 테스트입니다.
 
 이 테스트는 단위 테스트가 아닙니다. Bedrock, DynamoDB, S3, Lambda를 실제로 호출하므로 AWS 권한, 배포 상태, 비용 영향을 확인한 뒤 실행합니다.
 
