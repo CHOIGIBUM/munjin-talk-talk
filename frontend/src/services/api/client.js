@@ -114,11 +114,6 @@ function writeRoleSession(role, session) {
   window.sessionStorage.setItem(key, JSON.stringify(session))
 }
 
-export function clearRoleSession(role) {
-  const key = roleSessionStorageKey(role)
-  if (key) window.sessionStorage.removeItem(key)
-}
-
 function isRoleSessionValid(session) {
   if (!session?.access_token || !session?.expires_at) return false
   const expiresAt = new Date(session.expires_at).getTime()

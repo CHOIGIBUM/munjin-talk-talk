@@ -1,44 +1,5 @@
 import { API_BASE_URL, apiHeaders, ensureApiConfigured } from './client.js'
 
-// 단일 문항을 즉시 분석하는 이전 API입니다.
-// 현재 환자 태블릿의 기본 흐름은 Q1~Q4를 모두 받은 뒤 processTranscriptsBatch를 호출합니다.
-export async function processTranscript({
-  sessionId,
-  questionId,
-  questionType,
-  questionText = '',
-  questionSetId = 'default',
-  visitType,
-  transcript,
-  role = '',
-}) {
-  ensureApiConfigured()
-
-  const res = await fetch(`${API_BASE_URL}/process-answer`, {
-    method: 'POST',
-    headers: await apiHeaders({ role, sessionId, json: true }),
-    body: JSON.stringify({
-      session_id: sessionId,
-      question_id: questionId,
-      question_type: questionType,
-      question_text: questionText,
-      question_set_id: questionSetId,
-      visit_type: visitType,
-      transcript,
-    }),
-  })
-
-  const payload = await res.json().catch(() => ({}))
-  if (!res.ok) {
-    const message = payload?.message || payload?.error || '문진 처리에 실패했습니다.'
-    throw new Error(message)
-  }
-  if (payload.validator_passed === false) {
-    throw new Error('문진 결과 검증에 실패했습니다. 다시 말씀해 주세요.')
-  }
-  return payload
-}
-
 // 환자가 Q1~Q4를 모두 확인한 뒤 호출합니다.
 // 이 API는 답변 저장과 백그라운드 분석 큐 등록만 담당하므로 LLM 분석 완료를 기다리지 않습니다.
 export async function processTranscriptsBatch({

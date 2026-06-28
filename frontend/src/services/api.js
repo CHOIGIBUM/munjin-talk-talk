@@ -15,7 +15,6 @@ export {
 } from './api/sessions.js'
 
 export {
-  processTranscript,
   processTranscriptsBatch,
 } from './api/transcripts.js'
 
