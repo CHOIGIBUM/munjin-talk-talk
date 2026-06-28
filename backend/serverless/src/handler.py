@@ -84,7 +84,18 @@ def route(method, path, event):
         auth_error = require_role(event, "staff")
         if auth_error:
             return auth_error
-        session = create_session(body)
+        try:
+            session = create_session(body)
+        except ValueError as exc:
+            messages = {
+                "patient_name_required": "환자 이름을 입력해 주세요.",
+                "patient_birth_date_required": "환자 생년월일을 올바르게 입력해 주세요.",
+            }
+            code = str(exc) or "invalid_session_payload"
+            return response(400, {
+                "error": code,
+                "message": messages.get(code, "접수 정보를 다시 확인해 주세요."),
+            })
         return response(200, public_session(session, include_patient_token=True))
 
     match = re.fullmatch(r"/sessions/([^/]+)", path)

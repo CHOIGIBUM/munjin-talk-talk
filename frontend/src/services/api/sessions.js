@@ -28,7 +28,10 @@ export async function createIntakeSession(form) {
       },
     }),
   })
-  if (!res.ok) throw new Error('문진 세션 생성 실패')
+  if (!res.ok) {
+    const payload = await res.json().catch(() => ({}))
+    throw new Error(payload?.message || '문진 세션 생성 실패')
+  }
   const session = normalizeSession(await res.json())
   rememberPatientToken(session.sessionId, session.patientToken)
   return session

@@ -176,6 +176,7 @@ def create_dummy_session(sessions, *, visit_type="initial", receipt_id="QA-0001"
         "visit_type": visit_type,
         "question_set_id": "default",
         "patient": {
+            "name": "홍길동",
             "age": 72,
             "gender": "여성",
             "receipt_id": receipt_id,

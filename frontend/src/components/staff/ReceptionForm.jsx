@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
-import { formatBirthDate, formatPhone, getBirthDateError } from './receptionUtils.js'
+import { formatBirthDate, formatPhone, getBirthDateError, getNameError } from './receptionUtils.js'
 
 // 신분 확인과 문진 세션 생성을 담당하는 좌측 폼입니다.
 export default function ReceptionForm({ form, created, updateField, onSubmit, onOpenTablet, submitError = '', isSubmitting = false }) {
+  const nameError = form.fullName ? getNameError(form.fullName) : ''
   const birthDateError = form.birthDate ? getBirthDateError(form.birthDate) : ''
-  const canSubmit = !birthDateError && !isSubmitting
+  const canSubmit = !isSubmitting
 
   return (
     <section className="rp-panel">
@@ -16,11 +17,19 @@ export default function ReceptionForm({ form, created, updateField, onSubmit, on
       <form className="rp-form" onSubmit={onSubmit}>
         <label>
           <span>이름</span>
-          <input value={form.fullName} onChange={(e) => updateField('fullName', e.target.value)} />
+          <input
+            required
+            autoComplete="name"
+            aria-invalid={Boolean(nameError)}
+            value={form.fullName}
+            onChange={(e) => updateField('fullName', e.target.value)}
+          />
+          {nameError && <small className="rp-field-error">{nameError}</small>}
         </label>
         <label>
           <span>생년월일</span>
           <input
+            required
             type="text"
             inputMode="numeric"
             autoComplete="bday"

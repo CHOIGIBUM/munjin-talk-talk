@@ -17,7 +17,7 @@ from artifact_store import artifact_meta, delete_session_artifacts, load_answers
 from privacy import consent_summary, sanitize_reception_patient
 from question_sets import selected_question_set_id
 from settings import table
-from utils import ddb_value, mask_name, normalize_visit_type, now_iso
+from utils import current_service_date, ddb_value, mask_name, normalize_visit_type, now_iso, service_date
 
 QUEUE_COUNTER_SESSION_ID = "__meta_queue_counter__"
 DOCTOR_QUEUE_PRIORITY = {
@@ -63,23 +63,54 @@ def put_session(item: dict[str, Any]) -> dict[str, Any]:
     return converted
 
 
-def _scan_max_queue_number() -> int:
-    """기존 세션의 최대 대기번호를 읽어 counter 초기값으로 사용합니다."""
+def queue_counter_session_id(day: str | None = None) -> str:
+    """DynamoDB counter item id for one clinic service date."""
+    return f"{QUEUE_COUNTER_SESSION_ID}#{day or current_service_date()}"
+
+
+def _session_service_date(session: dict[str, Any]) -> str:
+    return str(session.get("service_date") or service_date(session.get("created_at")))
+
+
+def _scan_all_items(**kwargs) -> list[dict[str, Any]]:
+    items: list[dict[str, Any]] = []
+    scan_kwargs = dict(kwargs)
+    while True:
+        res = table.scan(**scan_kwargs)
+        items.extend(res.get("Items", []))
+        last_key = res.get("LastEvaluatedKey")
+        if not last_key:
+            break
+        scan_kwargs["ExclusiveStartKey"] = last_key
+    return items
+
+
+def _scan_max_queue_number(day: str | None = None) -> int:
+    """기존 세션의 해당 날짜 최대 대기번호를 읽어 counter 초기값으로 사용합니다."""
+    target_day = day or current_service_date()
     try:
-        res = table.scan(ProjectionExpression="queue_number", Limit=1000)
-        numbers = [int(item.get("queue_number") or 0) for item in res.get("Items", [])]
+        items = _scan_all_items(ProjectionExpression="session_id, queue_number, created_at, service_date")
+        numbers = [
+            int(item.get("queue_number") or 0)
+            for item in items
+            if not str(item.get("session_id") or "").startswith("__meta")
+            and _session_service_date(item) == target_day
+        ]
         return max(numbers or [0])
     except Exception:
         return 0
 
 
-def _visible_session_items() -> list[dict[str, Any]]:
+def _visible_session_items(today_only: bool = True) -> list[dict[str, Any]]:
     """Return non-meta session rows for queue calculations and list APIs."""
-    res = table.scan(Limit=100)
-    return [
-        item for item in res.get("Items", [])
+    target_day = current_service_date()
+    items = [
+        item for item in _scan_all_items(Limit=100)
         if not str(item.get("session_id") or "").startswith("__meta")
     ]
+    if today_only:
+        items = [item for item in items if _session_service_date(item) == target_day]
+    return items
 
 
 def _numeric_queue_number(session: dict[str, Any]) -> int:
@@ -125,15 +156,18 @@ def next_queue_number() -> int:
     """오늘 대기열 표시용 순번을 DynamoDB 원자 counter로 발급합니다.
 
     scan 후 max+1 방식은 동시 접수에서 같은 번호가 나올 수 있습니다.
-    별도 meta item에 `ADD queue_counter :one`을 적용하면 DynamoDB가 증가를
-    원자적으로 처리합니다. 실패 시에만 보수적인 보조 계산을 사용합니다.
+    날짜별 meta item에 `ADD queue_counter :one`을 적용하면 DynamoDB가 증가를
+    원자적으로 처리하고, 다음 날짜에는 다시 1번부터 시작할 수 있습니다.
     """
+    today = current_service_date()
+    counter_id = queue_counter_session_id(today)
     try:
         try:
             table.put_item(
                 Item={
-                    "session_id": QUEUE_COUNTER_SESSION_ID,
-                    "queue_counter": _scan_max_queue_number(),
+                    "session_id": counter_id,
+                    "service_date": today,
+                    "queue_counter": _scan_max_queue_number(today),
                 },
                 ConditionExpression="attribute_not_exists(session_id)",
             )
@@ -141,14 +175,14 @@ def next_queue_number() -> int:
             # 이미 다른 요청이 counter를 만들었다면 정상 경합입니다.
             pass
         res = table.update_item(
-            Key={"session_id": QUEUE_COUNTER_SESSION_ID},
+            Key={"session_id": counter_id},
             UpdateExpression="ADD queue_counter :one",
             ExpressionAttributeValues={":one": 1},
             ReturnValues="UPDATED_NEW",
         )
         return int(res["Attributes"]["queue_counter"])
     except Exception:
-        backup_number = _scan_max_queue_number()
+        backup_number = _scan_max_queue_number(today)
         return backup_number + 1 if backup_number else int(time.time()) % 10000
 
 
@@ -215,11 +249,22 @@ def create_session(body: dict[str, Any]) -> dict[str, Any]:
     사용되고, 실명은 마스킹 표시명으로만 변환됩니다.
     """
     patient_input = body.get("patient") or body
+    full_name = str(
+        patient_input.get("full_name")
+        or patient_input.get("fullName")
+        or patient_input.get("name")
+        or ""
+    ).strip()
+    if not full_name or full_name in {"환자", "환자님"}:
+        raise ValueError("patient_name_required")
     visit_type = normalize_visit_type(body.get("visit_type") or body.get("visitType"))
     question_set_id = str(body.get("question_set_id") or body.get("questionSetId") or selected_question_set_id())
     session_id = body.get("session_id") or body.get("sessionId") or make_session_id()
     created_at = now_iso()
+    created_service_date = service_date(created_at)
     patient = sanitize_reception_patient(patient_input)
+    if not str(patient.get("age") or "").strip():
+        raise ValueError("patient_birth_date_required")
     if not patient.get("receipt_id"):
         patient["receipt_id"] = f"R-{int(time.time()) % 10000:04d}"
 
@@ -227,6 +272,7 @@ def create_session(body: dict[str, Any]) -> dict[str, Any]:
         "session_id": session_id,
         "queue_number": body.get("queue_number") or body.get("queueNumber") or next_queue_number(),
         "created_at": created_at,
+        "service_date": created_service_date,
         "updated_at": created_at,
         "expires_at": int(time.time()) + 3 * 24 * 60 * 60,
         "status": "waiting_tablet",
@@ -338,8 +384,8 @@ def public_session(
     return payload
 
 
-def list_sessions(include_patient_token: bool = False) -> list[dict[str, Any]]:
+def list_sessions(include_patient_token: bool = False, today_only: bool = True) -> list[dict[str, Any]]:
     """접수처와 의사 대기열에서 사용할 최신 세션 목록을 반환합니다."""
-    items = _visible_session_items()
+    items = _visible_session_items(today_only=today_only)
     items.sort(key=lambda x: x.get("created_at", ""), reverse=True)
     return [public_session(item, include_patient_token=include_patient_token) for item in items]

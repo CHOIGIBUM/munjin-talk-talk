@@ -8,13 +8,32 @@ import json
 import os
 import re
 import contextvars
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 _REQUEST_ORIGIN = contextvars.ContextVar("request_origin", default="")
+SERVICE_TIMEZONE = timezone(timedelta(hours=9))
 
 def now_iso():
     return datetime.now(timezone.utc).isoformat()
+
+
+def current_service_date():
+    """Return the clinic-facing service date in Korea time."""
+    return datetime.now(SERVICE_TIMEZONE).date().isoformat()
+
+
+def service_date(value=None):
+    """Normalize an ISO timestamp to the clinic-facing date bucket."""
+    if not value:
+        return current_service_date()
+    try:
+        dt = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(SERVICE_TIMEZONE).date().isoformat()
+    except Exception:
+        return current_service_date()
 
 
 def response(status, body):

@@ -14,7 +14,7 @@ import logoUrl from '../../assets/munjin-logo.svg'
 import ReceptionForm from './ReceptionForm.jsx'
 import ReceptionManualInput from './ReceptionManualInput.jsx'
 import ReceptionSessionList from './ReceptionSessionList.jsx'
-import { formatBirthDate, getBirthDateError, INITIAL_RECEPTION_FORM } from './receptionUtils.js'
+import { formatBirthDate, getBirthDateError, getNameError, INITIAL_RECEPTION_FORM } from './receptionUtils.js'
 import { sessionUrl } from '../../services/api/client.js'
 import './ReceptionView.css'
 
@@ -78,6 +78,11 @@ export default function ReceptionView() {
   const handleSubmit = async (event) => {
     event.preventDefault()
     if (isCreatingSession) return
+    const nameError = getNameError(form.fullName)
+    if (nameError) {
+      setFormError(nameError)
+      return
+    }
     const birthError = getBirthDateError(form.birthDate)
     if (birthError) {
       setFormError(birthError)
@@ -92,7 +97,7 @@ export default function ReceptionView() {
       setForm({ ...INITIAL_RECEPTION_FORM })
     } catch (error) {
       console.error('create session failed:', error)
-      setFormError('문진 세션을 생성하지 못했습니다. 네트워크와 백엔드 상태를 확인해 주세요.')
+      setFormError(error?.message || '문진 세션을 생성하지 못했습니다. 네트워크와 백엔드 상태를 확인해 주세요.')
     } finally {
       setIsCreatingSession(false)
     }

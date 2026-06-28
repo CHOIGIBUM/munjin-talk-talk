@@ -5,6 +5,7 @@ import {
   MANUAL_INPUT_STATUSES,
   formatBirthDate,
   getBirthDateError,
+  getNameError,
   formatPhone,
 } from './receptionUtils.js'
 
@@ -47,6 +48,20 @@ describe('formatBirthDate', () => {
     const futureYear = new Date().getFullYear() + 5
     const result = formatBirthDate(`${futureYear}`, '195')
     expect(result).toBe('195')
+  })
+})
+
+describe('getNameError', () => {
+  it('정상 이름은 에러 없음', () => {
+    expect(getNameError('김철수')).toBe('')
+  })
+
+  it('빈 이름은 거부', () => {
+    expect(getNameError('')).toContain('이름')
+  })
+
+  it('placeholder 이름은 거부', () => {
+    expect(getNameError('환자')).toContain('실제 이름')
   })
 })
 

@@ -33,6 +33,13 @@ export const MANUAL_INPUT_STATUSES = new Set([
   'waiting_tablet',
 ])
 
+export function getNameError(value) {
+  const name = String(value || '').trim()
+  if (!name) return '이름을 입력해 주세요.'
+  if (['환자', '환자님'].includes(name)) return '환자 표시명이 아닌 실제 이름을 입력해 주세요.'
+  return ''
+}
+
 // 생년월일은 브라우저 date input에 맡기면 일부 환경에서 5자리 이상 연도가 입력될 수 있습니다.
 // 접수처에서는 숫자 8자리만 받아 YYYY-MM-DD로 고정하고, 명백히 불가능한 월/일은 입력 중에도 막습니다.
 export function formatBirthDate(value, previousValue = '') {
