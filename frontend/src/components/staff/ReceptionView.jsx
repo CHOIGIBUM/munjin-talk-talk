@@ -161,11 +161,6 @@ export default function ReceptionView() {
 
     const selectedVisitType = manualVisitType || manualSession.visitType || 'initial'
     const visitTypeChanged = selectedVisitType !== manualOriginalVisitType
-    const cleared = getClearedManualAnswers(manualTexts, manualOriginalTexts)
-    if (cleared.length) {
-      setManualStatus('기존 답변을 빈칸으로 지우는 저장은 지원하지 않습니다. 삭제 대신 정정 문장을 입력해 주세요.')
-      return
-    }
     const filled = getChangedManualAnswers(manualSession, manualTexts, manualOriginalTexts, selectedVisitType)
     if (!filled.length && !visitTypeChanged) {
       setManualStatus('새로 입력하거나 수정한 문진 내용이 없습니다.')
@@ -292,14 +287,6 @@ function getChangedManualAnswers(session, manualTexts, originalTexts, visitType 
   return questions
     .map((question) => ({ question, transcript: (manualTexts[question.id] || '').trim() }))
     .filter((item) => item.transcript && item.transcript !== (originalTexts[item.question.id] || '').trim())
-}
-
-function getClearedManualAnswers(manualTexts, originalTexts) {
-  return Object.keys(originalTexts || {}).filter((questionId) => {
-    const original = String(originalTexts[questionId] || '').trim()
-    const current = String(manualTexts[questionId] || '').trim()
-    return original && !current
-  })
 }
 
 function isReceptionQueueVisible(session) {
