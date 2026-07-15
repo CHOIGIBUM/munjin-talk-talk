@@ -41,6 +41,7 @@
 
 | 파일 링크 | 분류 | 상세 정의 내용 |
 | --- | :---: | --- |
+| [문진톡톡_발표자료.pdf](문진톡톡_발표자료.pdf) | 발표자료 | 경진대회 10분 발표 PT (34p) — 문제 정의, 서비스 흐름, 기술 아키텍처, 성능 요약 |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | 명세서 | 화면·API·백엔드·AWS AI 서비스·저장소 전체 아키텍처 다이어그램과 기술 스택, Lambda 내부 구현 |
 | [HYBRID_IR.md](HYBRID_IR.md) | 명세서 | BM25 + Titan Vector + label bridge 기반 표준 증상 매칭 흐름과 단계별 예시 |
 | [DATA_SCHEMA.md](DATA_SCHEMA.md) | 규격서 | 문진 세션, 답변 수합본, 원페이퍼, 환자 안내문, 비식별 Trace 로그의 JSON 스키마 |

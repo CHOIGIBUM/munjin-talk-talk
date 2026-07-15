@@ -24,7 +24,7 @@
   <img src="https://img.shields.io/badge/%F0%9F%8F%86%20%EC%B5%9C%EC%9A%B0%EC%88%98%EC%83%81-2026%20X%2BAI%C2%B7SW%20%EC%9C%B5%ED%95%A9%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B2%BD%EC%A7%84%EB%8C%80%ED%9A%8C-f5b301?style=for-the-badge" alt="최우수상 수상" />
 </a>
 
-<sub>🏆 강원대학교 SW중심대학사업단 「2026년 X+AI·SW 융합 프로젝트」 경진대회 <b>최우수상</b> · <a href="https://sw.kangwon.ac.kr/Home/H10000/H10300/boardView?board_key=4285">학교 소식</a></sub>
+<sub>🏆 강원대학교 SW중심대학사업단 「2026년 X+AI·SW 융합 프로젝트」 경진대회 <b>최우수상</b> · <a href="https://sw.kangwon.ac.kr/Home/H10000/H10300/boardView?board_key=4285">학교 소식</a> · <a href="docs/문진톡톡_발표자료.pdf">📊 발표자료(PDF)</a></sub>
 
 <sub>직원/의사 접근 코드는 최종 제출 자료에 별도로 기재합니다.</sub>
 
@@ -249,6 +249,7 @@ munjin-talk-talk/
 
 | 문서 | 내용 |
 | --- | --- |
+| [docs/문진톡톡_발표자료.pdf](docs/문진톡톡_발표자료.pdf) | 10분 발표 PT (34p) — 문제·서비스·기술·성능 요약 |
 | [frontend/README.md](frontend/README.md) | 화면·라우팅·STT·API 연동 |
 | [backend/README.md](backend/README.md) | 백엔드 책임·LangGraph·LLM·IR·저장 |
 | [backend/serverless/README.md](backend/serverless/README.md) | SAM 배포·endpoint·환경변수 |
