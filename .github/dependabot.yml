@@ -1,0 +1,36 @@
+# Dependabot: 의존성 취약점 패치 및 버전 업데이트 PR을 자동 생성합니다.
+# 참고: 취약점 "알림(Dependabot alerts)"과 "Secret scanning"은
+# GitHub 저장소 Settings → Code security 에서 별도로 켜야 합니다.
+version: 2
+updates:
+  # Frontend (React + Vite)
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      frontend-minor-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Backend serverless (AWS Lambda Python)
+  - package-ecosystem: "pip"
+    directory: "/backend/serverless/src"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Evaluation scripts (Python)
+  - package-ecosystem: "pip"
+    directory: "/evaluation"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # GitHub Actions workflows (있을 경우 액션 버전도 최신 유지)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
