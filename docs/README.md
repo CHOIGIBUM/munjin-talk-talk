@@ -14,10 +14,12 @@
 | :---: | --- | --- |
 | **1** | [루트 README](../README.md) | 우리가 푸는 문제의 배경, E2E 서비스 UX 흐름, 핵심 기술 스택, 보안 수준 |
 | **2** | [평가 패키지 명세](../evaluation/README.md) | 공식 End-to-End 벤치마크 요약 지표 및 데이터 거버넌스(공개/비공개) 기준 |
-| **3** | [LangGraph 문진 파이프라인](LANGGRAPH_PIPELINE.md) | 음성 답변이 구조화되어 의료진 원페이퍼와 환자 안내문으로 변환되는 추론 워크플로우 |
-| **4** | [내부 데이터 스키마](DATA_SCHEMA.md) | DynamoDB 상태값, S3 아티팩트, 원페이퍼, 안내문, Trace의 엄격한 JSON 규격 |
-| **5** | [보안 데이터 인벤토리](SECURITY_DATA_INVENTORY.md) | 개인식별정보(PII)와 건강정보가 어디에 격리되고 어떻게 파기되는지에 대한 생명주기 |
-| **6** | [프로젝트 아키텍처 구조](PROJECT_STRUCTURE.md) | React SPA 프론트엔드와 AWS 서버리스 백엔드의 코드 및 책임 분리 구조 |
+| **3** | [기술 아키텍처](ARCHITECTURE.md) | 화면·API·백엔드·AWS AI 서비스·저장소 전체 흐름과 기술 선택 이유, Lambda 내부 구현 |
+| **4** | [Hybrid IR 표준 증상 매칭](HYBRID_IR.md) | LLM 자유 생성 결과를 표준 증상 데이터에 다시 연결하는 매칭 안전장치 흐름과 예시 |
+| **5** | [LangGraph 문진 파이프라인](LANGGRAPH_PIPELINE.md) | 음성 답변이 구조화되어 의료진 원페이퍼와 환자 안내문으로 변환되는 추론 워크플로우 |
+| **6** | [내부 데이터 스키마](DATA_SCHEMA.md) | DynamoDB 상태값, S3 아티팩트, 원페이퍼, 안내문, Trace의 엄격한 JSON 규격 |
+| **7** | [보안 데이터 인벤토리](SECURITY_DATA_INVENTORY.md) | 개인식별정보(PII)와 건강정보가 어디에 격리되고 어떻게 파기되는지에 대한 생명주기 |
+| **8** | [프로젝트 아키텍처 구조](PROJECT_STRUCTURE.md) | React SPA 프론트엔드와 AWS 서버리스 백엔드의 코드 및 책임 분리 구조 |
 
 ---
 
@@ -39,6 +41,8 @@
 
 | 파일 링크 | 분류 | 상세 정의 내용 |
 | --- | :---: | --- |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | 명세서 | 화면·API·백엔드·AWS AI 서비스·저장소 전체 아키텍처 다이어그램과 기술 스택, Lambda 내부 구현 |
+| [HYBRID_IR.md](HYBRID_IR.md) | 명세서 | BM25 + Titan Vector + label bridge 기반 표준 증상 매칭 흐름과 단계별 예시 |
 | [DATA_SCHEMA.md](DATA_SCHEMA.md) | 규격서 | 문진 세션, 답변 수합본, 원페이퍼, 환자 안내문, 비식별 Trace 로그의 JSON 스키마 |
 | [DEPLOYMENT.md](DEPLOYMENT.md) | 가이드 | AWS 프로덕션 환경의 인프라 구축 절차 및 권장 보안 방화벽 설정 |
 | [LANGGRAPH_PIPELINE.md](LANGGRAPH_PIPELINE.md) | 명세서 | LangChain 및 LangGraph 기반의 상태 주도형 추론 노드/엣지 명세 |

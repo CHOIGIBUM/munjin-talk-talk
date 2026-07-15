@@ -20,6 +20,11 @@
 <a href="https://main.dv5herezqtt1t.amplifyapp.com">
   <img src="https://img.shields.io/badge/Demo-%EC%84%9C%EB%B9%84%EC%8A%A4%20%EB%B0%94%EB%A1%9C%EA%B0%80%EA%B8%B0-0ea5e9?style=for-the-badge" alt="데모 서비스 바로가기" />
 </a>
+<a href="https://sw.kangwon.ac.kr/Home/H10000/H10300/boardView?board_key=4285">
+  <img src="https://img.shields.io/badge/%F0%9F%8F%86%20%EC%B5%9C%EC%9A%B0%EC%88%98%EC%83%81-2026%20X%2BAI%C2%B7SW%20%EC%9C%B5%ED%95%A9%20%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EA%B2%BD%EC%A7%84%EB%8C%80%ED%9A%8C-f5b301?style=for-the-badge" alt="최우수상 수상" />
+</a>
+
+<sub>🏆 강원대학교 SW중심대학사업단 「2026년 X+AI·SW 융합 프로젝트」 경진대회 <b>최우수상</b> · <a href="https://sw.kangwon.ac.kr/Home/H10000/H10300/boardView?board_key=4285">학교 소식</a></sub>
 
 <sub>직원/의사 접근 코드는 최종 제출 자료에 별도로 기재합니다.</sub>
 
@@ -102,147 +107,29 @@
 
 ## 🏗️ 기술 아키텍처
 
-아래 그래프는 문진톡톡의 전체 흐름을 화면, API, 백엔드 처리, AWS AI 서비스, 저장소 단위로 나누어 보여줍니다.
+문진톡톡은 React SPA(4개 화면) → API Gateway → Lambda로 이어지는 서버리스 구조이며, Lambda 내부의 문진 분석은 **LangGraph + LangChain 파이프라인**(방언 RAG 참고 → LLM 구조화 → 스키마 검증 → Hybrid IR → 원페이퍼 생성)으로 처리합니다. 단순히 LLM을 한 번 호출해 결과를 그대로 쓰는 구조가 아니라, 각 단계의 입력·출력·검증 결과를 상태로 넘기며 처리합니다.
 
-문진 분석 파이프라인은 LangChain과 LangGraph로 구성했습니다. LangChain은 Bedrock 호출과 프롬프트 구성, JSON 파싱을 일관된 체인으로 묶는 데 사용했습니다. LangGraph는 이 체인들을 “방언 RAG 참고 → LLM 구조화 → 스키마 검증 → 증상 검색 → 원페이퍼 생성” 순서로 연결하고, 검증 실패나 재분석 같은 분기 흐름을 관리합니다.
-
-문진톡톡의 백엔드는 단순히 LLM을 한 번 호출해 결과를 그대로 쓰는 구조가 아니라, 각 단계의 입력·출력·검증 결과를 상태로 넘기며 처리하는 그래프형 문진 분석 파이프라인입니다.
-
-```mermaid
-flowchart LR
-  Staff["직원 접수<br/>/staff"]
-  Tablet["환자 태블릿<br/>/patient/:id"]
-  Doctor["의료진 원페이퍼<br/>/doctor/:id"]
-  Guide["환자 안내문<br/>/guide/:id"]
-
-  Amplify["AWS Amplify Hosting<br/>React + Vite"]
-  Api["API Gateway HTTP API"]
-  Lambda["AWS Lambda Python 3.12"]
-  Pipeline["LangGraph Pipeline<br/>RAG → LLM → IR"]
-  Dynamo["DynamoDB<br/>세션 상태"]
-  S3["S3 Artifact Bucket<br/>가명처리 JSON"]
-  Transcribe["Amazon Transcribe Streaming"]
-  Bedrock["Amazon Bedrock<br/>Nova Pro / Nova Lite"]
-  Titan["Amazon Titan Text Embeddings"]
-  SourceData["서울아산병원 질병백과<br/>diseases_cleaned + symptom_index"]
-
-  Staff --> Amplify
-  Tablet --> Amplify
-  Doctor --> Amplify
-  Guide --> Amplify
-  Amplify --> Api
-  Api --> Lambda
-  Tablet --> Transcribe
-  Lambda --> Pipeline
-  Pipeline --> Dynamo
-  Pipeline --> S3
-  Pipeline --> Bedrock
-  Pipeline --> Titan
-  Pipeline --> SourceData
-``` 
-
-### 기술 스택
-
-| 영역 | 기술 | 도입 목적 |
-| --- | --- | --- |
-| Frontend | React 18, Vite, React Router | 접수·태블릿·원페이퍼·안내문을 하나의 경량 SPA로 구성 |
-| Hosting | AWS Amplify | 배포 URL 제공, HTTPS, 프론트 빌드 자동화. WAF는 제출 AWS 환경에서 별도 연계 |
-| API / Compute | API Gateway HTTP API, AWS Lambda (Python 3.12) | 문진 세션과 LLM 파이프라인을 서버리스로 실행 |
-| 음성 인식 | Amazon Transcribe Streaming | 음성 원본을 저장하지 않고 확정 텍스트만 처리 |
-| LLM | Amazon Bedrock — Nova Pro(강), Nova Lite(경) | 복잡한 구조화·검토와 가벼운 표준화 작업을 분리 |
-| 임베딩 | Amazon Titan Text Embeddings v2 | 환자 표현과 표준 증상 문서의 의미 유사도 계산 |
-| 파이프라인 | LangGraph `StateGraph` + LangChain Core Runnable/Parser | Lambda 내부 처리 순서, retry, 검증 실패 분기, trace 가능한 흐름 구성 |
-| 검증 | Pydantic v2 스키마 검증 | LLM JSON의 필수 필드, enum, 원문 quote, extra field를 엄격히 확인 |
-| 검색 | BM25 + Titan Vector Hybrid IR | 키워드 일치와 의미 유사도를 함께 사용해 표준 증상 후보 검색 |
-| 저장 | DynamoDB(상태·포인터) + S3(가명처리 산출물) | 운영 상태와 상세 산출물을 분리해 저장 최소화 |
-| 인프라 정의 | AWS SAM (`template.yaml`) | API Gateway, Lambda, 환경변수, 권한을 코드로 관리 |
-
-### Lambda 내부 파이프라인 구현
-
-위 그래프의 `Lambda 함수`의 내부 문진 처리는 아래 코드로 구현됩니다. LangGraph는 처리 노드의 순서와 재시도 분기를 정의하고, LangChain은 Bedrock 프롬프트 호출과 JSON 파싱을 일관된 체인으로 묶는 역할을 합니다.
-
-| 코드 | 하는 일 |
+| 영역 | 기술 |
 | --- | --- |
-| `src/pipeline_graph.py` | 문진 분석 노드 순서와 retry/safety/stop 조건부 분기 정의 |
-| `src/pipeline_nodes.py` | RAG 참고 컨텍스트, LLM 구조화, Pydantic/원문 검증, Hybrid IR, S3 저장을 노드 함수로 분리 |
-| `src/langchain_prompting.py` | `ChatPromptTemplate → Bedrock converse → JsonOutputParser` 체인 구성 |
-| [docs/LANGGRAPH_PIPELINE.md](docs/LANGGRAPH_PIPELINE.md) | 답변이 실제로 거치는 파이프라인 흐름 상세 |
+| Frontend / Hosting | React 18 · Vite · React Router / AWS Amplify |
+| API / Compute | API Gateway HTTP API · AWS Lambda (Python 3.12) |
+| 음성 인식 | Amazon Transcribe Streaming (음성 원본 미저장) |
+| LLM / 임베딩 | Amazon Bedrock Nova Pro·Lite / Titan Text Embeddings v2 |
+| 파이프라인 / 검증 | LangGraph `StateGraph` + LangChain / Pydantic v2 |
+| 검색 / 저장 | BM25 + Titan Vector Hybrid IR / DynamoDB + S3 |
+| 인프라 정의 | AWS SAM (`template.yaml`) |
+
+> 전체 아키텍처 다이어그램, 기술 선택 이유, Lambda 내부 파이프라인 구현은 **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** 에서 확인할 수 있습니다.
 
 ---
 
 ## 🔍 Hybrid IR — 표준 증상 매칭
 
-문진톡톡의 증상 매칭은 LLM의 자유 생성 결과에 의존하지 않고, 서울아산병원 질병백과 기반 표준 증상 데이터와 다시 대조하는 Hybrid IR 구조로 설계했습니다.
+문진톡톡의 증상 매칭은 LLM의 자유 생성 결과에 의존하지 않고, 서울아산병원 질병백과 기반 표준 증상 데이터와 다시 대조하는 Hybrid IR 구조로 설계했습니다. 사투리·축약어·생활 표현(“목이 칼칼하다”, “숨이 답답하다”)을 그대로 두지 않고, BM25 키워드 검색 · Titan Vector 의미 검색 · label bridge를 함께 사용해 원천 데이터에 존재하는 표준 증상명으로만 정리합니다.
 
-어르신 환자가 말하는 표현은 사투리, 축약어, 생활 표현이 섞여 있습니다. 예를 들어 “목이 칼칼하다”, “코가 줄줄 흐른다”, “숨이 답답하다”처럼 말해도 의료진 화면에는 원천 데이터에 존재하는 표준 증상명으로 정리되어야 합니다.
+즉, Hybrid IR은 “LLM이 증상명을 만들어내는 단계”가 아니라 환자의 자연어 표현을 검증 가능한 표준 증상 데이터에 연결하는 안전장치입니다. 근거가 충분한 후보만 `매칭됨`으로 원페이퍼에 반영하고, 부족한 후보는 확정하지 않고 문진 맥락으로 보존합니다.
 
-이를 위해 문진톡톡은 LLM이 추출한 `source_quote`, `normalized_text`, `name`을 검색 질의로 만들고, BM25 키워드 검색과 Titan Vector 의미 검색을 함께 사용해 표준 증상 후보를 찾습니다. 여기에 표준 증상명과 직접 가까운 표현을 보존하는 label bridge를 더해, 단순 키워드 검색이 놓치는 표현과 단순 벡터 검색이 흔들리는 표현을 함께 보완합니다.
-
-즉, Hybrid IR은 “LLM이 증상명을 만들어내는 단계”가 아니라, 환자의 자연어 표현을 검증 가능한 표준 증상 데이터에 연결하는 안전장치입니다. 이 구조 덕분에 원페이퍼에는 임의로 생성된 증상명이 아니라 원천 데이터에 존재하는 표준 증상 후보만 표시됩니다.
-
-IR은 내부 배포 환경의 비공개 런타임 데이터(`diseases_cleaned.json`, `symptom_index.json`, `Titan embedding cache`)를 사용합니다. 이 데이터는 서울아산병원 질병백과 기반 데이터와 그 파생 데이터이므로 공개 Git 저장소에는 포함하지 않았습니다. 공개 저장소에는 데이터 구조와 배치 기준만 남기고, 데모/운영 배포에서는 팀 내부 비공개 경로의 런타임 데이터를 Lambda 패키지에 포함해 Hybrid IR이 동일하게 작동하도록 구성했습니다.
-
-1. LLM extraction이 환자 발화에서 `source_quote`, `normalized_text`, `name`을 가진 증상 span을 생성합니다.
-2. IR query는 `normalized_text + name`을 중심으로 구성하고, 원문 `source_quote`는 화면 근거와 검증용으로 보존합니다.
-3. BM25가 표준 증상 문서와의 키워드 일치를 계산합니다.
-4. Titan embedding이 환자 표현과 표준 증상 문서 사이의 의미 유사도를 계산합니다.
-5. 표준 증상명과 직접 가까운 표현은 label bridge로 보조 반영합니다.
-6. BM25 상위 후보, Titan vector 상위 후보, label 후보를 합친 뒤 근거가 겹치는 후보를 우선 정리합니다.
-7. Titan vector 의미 신호, BM25 키워드 신호, label 근거가 함께 잡히는 후보를 우선 확정하고, 근거가 부족한 후보는 증상으로 확정하지 않고 문진 맥락으로 보존합니다.
-8. 운영 산출물에는 임의 점수, 전체 후보 목록, prompt 전문을 저장하지 않고, 원페이퍼에는 `매칭됨`, `우선 확인`처럼 의료진이 해석 가능한 상태만 표시합니다.
-
-### Hybrid IR 처리 흐름
-
-```mermaid
-flowchart TB
-  Span["LLM span<br/>quote · text · hint"]
-  Query["IR query<br/>text + hint"]
-  BM25["BM25<br/>키워드 일치"]
-  Titan["Titan Vector<br/>의미 유사도"]
-  Label["Label Bridge<br/>표준명 보조"]
-  Merge["후보 통합<br/>BM25 + Vector + Label"]
-  Rank["후보 정리<br/>근거 조합"]
-  Gate{"근거 충분?"}
-  Matched["matched_slots<br/>원페이퍼 표시"]
-  Unmatched["unmatched_spans<br/>맥락 보존"]
-
-  Span --> Query
-  Query --> BM25
-  Query --> Titan
-  Query --> Label
-  BM25 --> Merge
-  Titan --> Merge
-  Label --> Merge
-  Merge --> Rank
-  Rank --> Gate
-  Gate -- "의미 + 키워드 근거" --> Matched
-  Gate -- "근거 부족" --> Unmatched
-```
-
-즉, 환자 증상 발화를 “서울아산병원 질병백과 기반 표준 증상 목록”과 비교하여 근거가 충분한 항목만 다시 고르는 단계를 거칩니다.
-
-| 그래프 항목 | 쉬운 설명 | 예시 |
-| --- | --- | --- |
-| `LLM span` | 환자 발화에서 증상처럼 보이는 조각을 뽑고, 원문과 표준화 표현을 함께 남깁니다. | 원문 `"목도 아프고"` → 표준화 `"목이 아픔"` → 힌트 `"목 통증"` |
-| `IR query` | 검색에 사용할 짧은 문장을 만듭니다. | `목이 아픔 목 통증` |
-| `BM25` | 같은 단어가 많이 겹치는 표준 증상 문서를 찾습니다. | `목`, `통증` 단어가 있는 증상 후보가 올라옴 |
-| `Titan Vector` | 단어가 조금 달라도 뜻이 가까운 표준 증상 문서를 찾습니다. | `"목이 칼칼함"`이 `인후통`, `목의 통증`과 가까운지 비교 |
-| `Label Bridge` | 표준 증상명과 거의 같은 표현은 놓치지 않도록 보조합니다. | 환자 표현에 `두통`이 있으면 `두통` 후보를 보존 |
-| `후보 정리` | 키워드, 의미, 표준명 근거를 함께 보고 후보를 추립니다. | BM25와 Titan이 모두 지지하는 후보를 우선 확인 |
-| `근거 충분?` | 근거가 충분하면 원페이퍼에 증상으로 표시하고, 부족하면 문진 맥락에만 남깁니다. | 확실하면 `매칭됨`, 애매하면 의료진이 원문으로 확인 |
-
-### 예시
-
-| 단계 | 예시 |
-| --- | --- |
-| 환자 원문 | `"어제부터 목도 아프고 콧물도 조금 나와요"` |
-| 표준화 | `"어제부터 목도 아프고 콧물도 조금 나와요"` |
-| LLM span | `source_quote="목도 아프고"`, `normalized_text="목이 아픔"`, `type="new"`, `status="있음"`, `symptom_hint="목 통증"` |
-| IR query | `목이 아픔 목 통증` |
-| 표준 증상 매칭 | 서울아산병원 질병백과 기반 `symptom_index`와 `diseases_cleaned`에서 생성한 후보 중 `목의 통증` slot 확정 |
-| 원페이퍼 표시 | 증상명, 환자 원문 quote, 문진 맥락을 함께 표시하고 의료진이 확인 |
-
-이 흐름에서 LLM의 역할은 “환자 말을 의미 단위로 정리하는 것”이고, 실제 표준 증상명은 원천 데이터 기반 IR과 validator를 통과해야만 남습니다.
+> 8단계 처리 흐름, 다이어그램, 상세 예시는 **[docs/HYBRID_IR.md](docs/HYBRID_IR.md)** 에서 확인할 수 있습니다.
 
 ---
 
@@ -365,6 +252,8 @@ munjin-talk-talk/
 | [frontend/README.md](frontend/README.md) | 화면·라우팅·STT·API 연동 |
 | [backend/README.md](backend/README.md) | 백엔드 책임·LangGraph·LLM·IR·저장 |
 | [backend/serverless/README.md](backend/serverless/README.md) | SAM 배포·endpoint·환경변수 |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | 전체 아키텍처 다이어그램·기술 스택·Lambda 내부 구현 |
+| [docs/HYBRID_IR.md](docs/HYBRID_IR.md) | 표준 증상 매칭 Hybrid IR 흐름·예시 |
 | [docs/LANGGRAPH_PIPELINE.md](docs/LANGGRAPH_PIPELINE.md) | Q1~Q4 답변 묶음이 거치는 LangGraph 분석 흐름 |
 | [docs/DATA_SCHEMA.md](docs/DATA_SCHEMA.md) | DynamoDB·S3·extraction·onepaper·guide JSON |
 | [docs/SECURITY_DATA_INVENTORY.md](docs/SECURITY_DATA_INVENTORY.md) | 필드별 보안 처리 기준 |
