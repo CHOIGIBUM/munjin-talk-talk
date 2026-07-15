@@ -2,7 +2,11 @@
 
 > 루트 [README](../README.md)의 요약을 상세히 풀어 쓴 문서입니다. 화면, API, 백엔드 처리, AWS AI 서비스, 저장소 단위의 전체 흐름과 기술 선택 이유, Lambda 내부 파이프라인 구현을 다룹니다.
 
-아래 그래프는 문진톡톡의 전체 흐름을 화면, API, 백엔드 처리, AWS AI 서비스, 저장소 단위로 나누어 보여줍니다.
+![문진톡톡 시스템 아키텍처](architecture.png)
+
+위 그림은 문진톡톡의 전체 시스템 아키텍처입니다. 사용자 요청이 Amplify · WAF · API Gateway를 거쳐 Lambda로 전달되고, 즉시 응답용 API Lambda와 백그라운드 분석 Lambda(LangGraph)로 나뉘며, Transcribe · DynamoDB · Bedrock(Titan·Nova) · S3와 연동됩니다. 하단은 분석 Lambda 내부의 문진 처리 5단계(입력 검증 → 방언 정규화·RAG → LLM 의미 추출 → 검증·표준 매칭 → 저장·원페이퍼 동기화)를 보여줍니다.
+
+아래 그래프는 같은 흐름을 화면, API, 백엔드 처리, AWS AI 서비스, 저장소 단위로 다시 정리한 텍스트 버전입니다.
 
 문진 분석 파이프라인은 LangChain과 LangGraph로 구성했습니다. LangChain은 Bedrock 호출과 프롬프트 구성, JSON 파싱을 일관된 체인으로 묶는 데 사용했습니다. LangGraph는 이 체인들을 “방언 RAG 참고 → LLM 구조화 → 스키마 검증 → 증상 검색 → 원페이퍼 생성” 순서로 연결하고, 검증 실패나 재분석 같은 분기 흐름을 관리합니다.
 

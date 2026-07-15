@@ -107,6 +107,8 @@
 
 ## 🏗️ 기술 아키텍처
 
+![문진톡톡 시스템 아키텍처](docs/architecture.png)
+
 문진톡톡은 React SPA(4개 화면) → API Gateway → Lambda로 이어지는 서버리스 구조이며, Lambda 내부의 문진 분석은 **LangGraph + LangChain 파이프라인**(방언 RAG 참고 → LLM 구조화 → 스키마 검증 → Hybrid IR → 원페이퍼 생성)으로 처리합니다. 단순히 LLM을 한 번 호출해 결과를 그대로 쓰는 구조가 아니라, 각 단계의 입력·출력·검증 결과를 상태로 넘기며 처리합니다.
 
 | 영역 | 기술 |
